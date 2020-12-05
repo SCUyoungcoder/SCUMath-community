@@ -1,17 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <form method="post" action="/student">
+<p>
+    <button id="test">232</button>
+</p>
+<p id="test1">
+
+</p>
+    <!--<form method="post" action="/student">
         <p>
             <input type="text" name = "id">
         </p>
         <p>
             <input type="submit" value="123">
         </p>
-    </form>
+    </form>-->
 </body>
+<script>
+    $('#test').on('click',function(){
+    var data1 = {};
+    data1.id=1;
+        $.post("http://localhost:8080/student",
+        data1,
+        function(data){
+        console.log(data);
+        document.getElementById("test1").innerText = data;
+        }
+        )
+    });
+</script>
 </html>

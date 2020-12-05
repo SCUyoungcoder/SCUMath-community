@@ -16,13 +16,17 @@ import java.util.Date;
 public class UserController {
     @Autowired
     private UserService userService;
+    @RequestMapping(value = "/student",method = RequestMethod.POST)
+    @ResponseBody
+    public Date findtime(HttpServletRequest request,HttpServletResponse response){
+        return userService.findbyid(Integer.parseInt(request.getParameter("id"))).getCreateTime();
+    }
 
-
-    @RequestMapping(path = "/student" , method = RequestMethod.POST)
+  /*  @RequestMapping(path = "/student" , method = RequestMethod.POST)
     @ResponseBody
     public Date findtime(int id){
         Date u = userService.findbyid(id).getCreateTime();
         System.out.printf(u.toString());
         return u;
-    }
+    }*/
 }
