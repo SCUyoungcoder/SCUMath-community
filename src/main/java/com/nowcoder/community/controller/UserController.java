@@ -4,6 +4,7 @@ import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +17,15 @@ import java.util.Date;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @RequestMapping(path = "/index" , method = RequestMethod.GET)
+    public String testindex(Model model ){
+        Date i = userService.findbyid(1).getCreateTime();
+        model.addAttribute("test",i);
+        return "/index";
+    }
+
+
     @RequestMapping(value = "/student",method = RequestMethod.POST)
     @ResponseBody
     public Date findtime(HttpServletRequest request,HttpServletResponse response){

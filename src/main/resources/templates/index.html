@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th = "http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>fiirst</p>
+<p th:each="map:${test}">
+    <i th:text="${map}"></i>
+</p>
+    <!--<p th:text = "${map.test}"></p>-->
+</body>
+</html>
