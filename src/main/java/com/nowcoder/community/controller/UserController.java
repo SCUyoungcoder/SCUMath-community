@@ -22,7 +22,7 @@ public class UserController {
     public String testindex(Model model ){
         Date i = userService.findbyid(1).getCreateTime();
         model.addAttribute("test",i);
-        return "/index";/*github test*/
+        return "/index";/*github test123123*/
 
     }
 
