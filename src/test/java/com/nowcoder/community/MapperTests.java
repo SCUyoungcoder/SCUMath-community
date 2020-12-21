@@ -38,7 +38,6 @@ public class MapperTests {
         user.setPassword("123456");
         user.setSalt("abc");/*密码末尾加入的乱码*/
         user.setEmail("test@qq.com");
-        user.setHeaderUrl("http://www.nowcoder.com/101.png");
         user.setCreateTime(new Date());
 
         int rows = userMapper.insertUser(user);
@@ -51,7 +50,6 @@ public class MapperTests {
         int rows = userMapper.updateStatus(150, 1);
         System.out.println(rows);
 
-        rows = userMapper.updateHeader(150, "http://www.nowcoder.com/102.png");
         System.out.println(rows);
 
         rows = userMapper.updatePassword(150, "hello");

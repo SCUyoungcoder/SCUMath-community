@@ -20,8 +20,8 @@ public class UserController {
 
     @RequestMapping(path = "/index" , method = RequestMethod.GET)
     public String testindex(Model model ){
-        Date i = userService.findbyid(1).getCreateTime();
-        model.addAttribute("test",i);
+        /*Date i = userService.findbyid(1).getCreateTime();
+        model.addAttribute("test",i);*/
         return "/index";/*github test123123*/
 
     }

@@ -13,7 +13,7 @@
 </head><body id="front" class="with-cu-identity">
   
 <div class="flex-wrap-footer">
-    <header th:fragment="header"><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
+    <header ><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
       <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
       <!-- start desktop header -->
       <div class="columns is-vcentered is-hidden-mobile" id="cu-identity">
@@ -103,7 +103,18 @@
     </header>
 
     <main>
-      
+      <div class="main">
+        <div class="container mt-5">
+          <div class="jumbotron">
+            <p class="lead" th:text="${msg}">您的账号已经激活成功,可以正常使用了!</p>
+            <hr class="my-4">
+            <p>
+              系统会在 <span id="seconds" class="text-danger">8</span> 秒后自动跳转,
+              您也可以点此 <a id="target" th:href="@{${target}}" class="text-primary">链接</a>, 手动跳转!
+            </p>
+          </div>
+        </div>
+      </div>
       
       
     </main>
@@ -162,7 +173,17 @@
       </div>
     </footer>
   </div>
-  
-
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script>
+		$(function(){
+			setInterval(function(){
+				var seconds = $("#seconds").text();
+				$("#seconds").text(--seconds);
+				if(seconds == 0) {
+					location.href = $("#target").attr("href");
+				}
+			}, 1000);
+		});
+	</script>
 
 </body></html>
