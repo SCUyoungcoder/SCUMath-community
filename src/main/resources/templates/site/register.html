@@ -5,6 +5,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>数学视界</title>
   <link rel="icon" type="image/x-icon" href="./img/sculogo.png"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumathcat.css}">
@@ -77,7 +78,11 @@ If you register twice, with different accounts, your submission history will be 
 <div>
 <!--<label for="email"></label>-->
   <!--th:class="|form-control ${usernameMsg!=null?'is-invalid':''}|"-->
-<input type="text" name="email" id="email" size="30" maxlength="255" th:value="${user!=null?user.email:''}">
+<input type="text" name="email" id="email" size="30" maxlength="255"
+       th:value="${user!=null?user.email:''}" th:class="|${emailMsg!=null?'is-invalid':''}|" required>
+  <div class="invalid-feedback" th:text="${emailMsg}">
+    该邮箱已注册!
+  </div>
 </div></div>
   <br>
   </div>
@@ -93,7 +98,11 @@ If you register twice, with different accounts, your submission history will be 
   <div class="widgetElement">
 <div>
 <label for="username"></label>
-<input type="text" name="username"  size="30" maxlength="20" th:value="${user!=null?user.username:''}">
+<input type="text" name="username"  size="30" maxlength="20"
+       th:value="${user!=null?user.username:''}" th:class="|${usernameMsg!=null?'is-invalid':''}|" required>
+  <div class="invalid-feedback" th:text="${usernameMsg}">
+    该账号已存在!
+  </div>
 </div></div>
 
 </div>
@@ -124,12 +133,20 @@ If you register twice, with different accounts, your submission history will be 
           <td align="left">
 <div>
 <label for="password"></label>
-<input type="password" name="password" id="password" th:value="${user!=null?user.password:''}">
+<input type="password" name="password" id="password"
+       th:value="${user!=null?user.password:''}"
+       th:class="|${passwordMsg!=null?'is-invalid':''}|" required>
+  <div class="invalid-feedback" th:text="${passwordMsg}">
+    密码长度不能小于8位!
+  </div>
 </div></td>
           <td align="left">
 <div>
 <label for="_password"></label>
-<input type="password" name="_password" id="_password" th:value="${user!=null?user.password:''}">
+<input type="password" name="_password" id="_password" th:value="${user!=null?user.password:''}" required>
+  <div class="invalid-feedback">
+    两次输入的密码不一致!
+  </div>
 </div></td>
         </tr>
       </tbody>
@@ -238,7 +255,10 @@ If you register twice, with different accounts, your submission history will be 
       </div>
     </footer>
   </div>
-  
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script th:src="@{/js/register.js}"></script>
 
 
 </body></html>

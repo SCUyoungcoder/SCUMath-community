@@ -22,6 +22,11 @@ public class LoginController {
         return "/site/register";
     }
 
+    @RequestMapping(path = "/index",method = RequestMethod.GET)
+    public String getindexPage(){
+        return "/index";
+    }
+
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     public String getLoginPage(){
         return "/site/login";
