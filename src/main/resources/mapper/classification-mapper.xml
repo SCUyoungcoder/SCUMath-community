@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.ClassificationMapper">
+    <!--usermapper路径-->
+    <!--每一个对应于usermapper的一个-->
+    <sql id="insertFields"><!---->
+        name
+    </sql><!--定义标签-->
+
+    <sql id="selectFields"><!---->
+        id, name
+    </sql>
+
+    <select id="selectById" resultType="Classification">
+        select <include refid="selectFields"></include><!---->
+        <!--上面等价于select id, username, password, salt, email, type, status, activation_code,  create_time-->
+        from classification
+        where id = #{id}<!--#字段表明引用方法的参数int id-->
+    </select>
+
+    <select id="selectByName" resultType="Classification">
+        select <include refid="selectFields"></include>
+        from classification
+        where name = #{name}
+    </select>
+    <!--查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径-->
+
+    <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
+    <insert id="insertClassification" parameterType="Classification" keyProperty="id">
+        insert into classification (<include refid="insertFields"></include>)
+        values(#{name})
+    </insert>
+    <!--update标签-->
+    <delete id="deleteByName">
+        delete from classification where name = #{name}
+    </delete>
+
+
+
+</mapper>

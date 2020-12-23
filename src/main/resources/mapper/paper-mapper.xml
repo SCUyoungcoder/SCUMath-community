@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.PaperMapper">
+    <!--papermapper路径-->
+    <!--每一个对应于papermapper的一个-->
+    <sql id="insertFields">
+        father_id, user_id, title, content, file_path, status, create_time,download_count
+    </sql><!--定义标签-->
+    <sql id="selectFields">
+        id, father_id, user_id, title, content, file_path, status, create_time,download_count
+    </sql>
+    <!--<sql id="insertFields">
+        username, password, salt, email, type, status, activation_code,  create_time
+    </sql>
+
+    <sql id="selectFields">
+        id, username, password, salt, email, type, status, activation_code, create_time
+    </sql>-->
+    <select id="selectById" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where id = #{id}<!--#字段表明引用方法的参数int id-->
+    </select>
+
+
+    <select id="selectByFatherid" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where father_id = #{fatherid}
+    </select>
+    <!--查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径-->
+    <select id="selecyByUserid" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where user_id = #{userid}
+    </select>
+    <select id="selectByTitle" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where title = #{title}
+    </select>
+    <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
+    <insert id="insertPaper" parameterType="Paper" keyProperty="id">
+        insert into paper (<include refid="insertFields"></include>)
+        values(#{fatherid}, #{userid}, #{title}, #{content}, #{filepath}, #{status}, #{createtime}, #{downloadcount})
+    </insert>
+    <delete id="delectById">
+        delete from paper where id = #{id}
+    </delete>
+    <!--update标签-->
+    <update id="updateDownloadcount">
+        update paper set download_count = #{downloadcount} where id = #{id}
+    </update>
+
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.LoginticketMapper">
+    <!--papermapper路径-->
+    <!--每一个对应于papermapper的一个-->
+    <sql id="insertFields">
+        user_id, type, ticket, status, expired
+    </sql><!--定义标签-->
+    <sql id="selectFields">
+        id, user_id, type, ticket, status, expired
+    </sql>
+    <select id="selectByTicket" resultType="Loginticket">
+        select <include refid="selectFields"></include>
+        from login_ticket
+        where ticket = #{ticket}<!--#字段表明引用方法的参数int id-->
+    </select>
+    <insert id="insertTicket" parameterType="Loginticket" keyProperty="id">
+        insert into login_ticket (<include refid="insertFields"></include>)
+        values(#{userid}, #{type}, #{ticket}, #{status}, #{expired})
+    </insert>
+    <delete id="delectByTicket">
+        delete from login_ticket where ticket = #{ticket}
+    </delete>
+
+</mapper>

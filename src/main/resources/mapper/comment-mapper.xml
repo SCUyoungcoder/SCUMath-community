@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.CommentMapper">
+    <!--papermapper路径-->
+    <!--每一个对应于papermapper的一个-->
+    <sql id="insertFields">
+        user_id, entity_type, entity_id, target_id, content, status, create_time, type
+    </sql><!--定义标签-->
+    <sql id="selectFields">
+        id, user_id, entity_type, entity_id, target_id, content, status, create_time, type
+    </sql>
+    <select id="selectById" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where id = #{id}
+    </select>
+    <select id="selectByEntity" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where entity_type = #{entitytype} and entity_id = #{entityid}
+    </select>
+    <select id="selectByTargetid" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where target_id = #{targetid}
+    </select>
+    <select id="selectByType" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where type = #{type}
+    </select>
+    <insert id="insertComment" parameterType="Comment" keyProperty="id">
+        insert into comment (<include refid="insertFields"></include>)
+        values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{content},#{status},#{createtime},#{type})
+    </insert>
+    <delete id="deleteById">
+        delete from comment where id = #{id}
+    </delete>
+
+</mapper>
