@@ -14,7 +14,7 @@ import java.util.Date;
 /*type将来会弱化，所以写一个固定的就行了.后面两个根据服务器处理能力配置*/
 @Document(indexName = "paper",type = "_doc",shards =6 ,replicas =3 )
 public class Paper {
-
+    /*将数据库中的字段与索引的字段链接起来*/
     @Id
     private int id;
     @Field(type = FieldType.Integer)

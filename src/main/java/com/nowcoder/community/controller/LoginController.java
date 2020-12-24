@@ -1,6 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.ElasticsearchService;
 import com.nowcoder.community.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)
+
     public String register(Model model, User user){
         Map<String,Object>map = loginService.register(user);
         if(map == null || map.isEmpty()){
