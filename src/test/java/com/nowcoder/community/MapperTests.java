@@ -83,7 +83,7 @@ public class MapperTests {
     }
     @Test
     public void delectticket(){
-        int row = loginticketMapper.delectByTicket("dsadsadsadsaw");
+        int row = loginticketMapper.deleteByTicket("dsadsadsadsaw");
         System.out.println(row);
     }
     @Test

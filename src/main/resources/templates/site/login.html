@@ -8,6 +8,13 @@
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
   <link rel="stylesheet" th:href="@{/css/scumathstyle.css}">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script>
+		function refresh_kaptcha() {
+			var path = "/kaptcha?p=" + Math.random();
+			$("#kaptcha").attr("src", path);
+		}
+	</script>
   <!-- Pendo -->
   <!--运行前调用预处理-->
   
@@ -78,7 +85,17 @@
                     
                       <input class="input is-medium" id="password" name="password" required="" type="password" value="">
                     
-                    <p class="help"><a href="https://arxiv.org/user/lost_password">忘记密码?</a></p>
+
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <label class="label" for="username">验证码</label>
+
+                    <input style="width: 40%; margin-bottom: 20px;" class="input is-medium" id="verifycode" name="code" required="" type="text" value="">
+                    <img th:src="@{/kaptcha}" id="kaptcha">
+                    <a href="javascript:refresh_kaptcha();" >刷新验证码</a>
+                    <p class="help"><a href="#">忘记密码?</a></p>   <!---->
                   </div>
                 </div>
                 <div class="field">
@@ -153,6 +170,4 @@
     </footer>
   </div>
   
-
-
 </body></html>

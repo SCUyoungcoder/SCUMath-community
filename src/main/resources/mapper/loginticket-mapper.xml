@@ -21,7 +21,7 @@
         insert into login_ticket (<include refid="insertFields"></include>)
         values(#{userid}, #{type}, #{ticket}, #{status}, #{expired})
     </insert>
-    <delete id="delectByTicket">
+    <delete id="deleteByTicket">
         delete from login_ticket where ticket = #{ticket}
     </delete>
 
