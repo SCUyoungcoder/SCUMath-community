@@ -134,7 +134,7 @@ public class ElasticsearthTests {
                     post.setId(Integer.valueOf(id));
 
                     String fatherid = hit.getSourceAsMap().get("fatherid").toString();
-                    post.setFatherid(Integer.valueOf(fatherid));
+                    post.setFatherid(fatherid);
 
                     String userid = hit.getSourceAsMap().get("userid").toString();
                     post.setUserid(Integer.valueOf(userid));

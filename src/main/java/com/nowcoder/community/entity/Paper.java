@@ -17,21 +17,29 @@ public class Paper {
     /*将数据库中的字段与索引的字段链接起来*/
     @Id
     private int id;
-    @Field(type = FieldType.Integer)
-    private int fatherid;
+
+    @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
+    private String fatherid;//数据库里记录论文所属标签信息的fatherid用String类型存储  --By MY
+
     @Field(type = FieldType.Integer)
     private int userid;
+
     /*拆分存储。存储时尽量多拆分，搜索时没必要拆分这么细....？？？英文分词器？？？*/
     @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String title;
+
     @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String content;
+
     @Field(type = FieldType.Text)
     private String filepath;
+
     @Field(type = FieldType.Integer)
     private int status;
+
     @Field(type = FieldType.Date)
     private Date createtime;
+
     @Field(type = FieldType.Integer)
     private int downloadcount;
 
@@ -43,11 +51,11 @@ public class Paper {
         this.id = id;
     }
 
-    public int getFatherid() {
+    public String getFatherid() {
         return fatherid;
     }
 
-    public void setFatherid(int fatherid) {
+    public void setFatherid(String fatherid) {
         this.fatherid = fatherid;
     }
 
