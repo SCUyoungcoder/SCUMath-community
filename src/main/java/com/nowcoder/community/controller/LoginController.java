@@ -4,6 +4,7 @@ import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.util.CommunityUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,38 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/index",method = RequestMethod.GET)
-    public String getindexPage(){
+    public String getindexPage(Model model){
+    /*用login里的方式更改登录都页面的改变*/
+        /*model.addAttribute("loginMsg","登录");
+        model.addAttribute("logoutMsg","退出");
+        model.addAttribute("manageMsg","管理");*/
         return "/index";
     }
+    @RequestMapping(path = "/login", method = RequestMethod.POST)/*。。。。。remreber me。。用户验证码放session里 response创建cookie*/
+    public String login(String username, String password, String code, boolean rememberme,
+                        Model model, HttpSession session, HttpServletResponse response) {
+        // 检查验证码
+        String kaptcha = (String) session.getAttribute("kaptcha");
+        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
+            model.addAttribute("codeMsg", "验证码不正确!");
+            return "/site/login";
+        }
 
+        // 检查账号,密码                      两个常量，勾选了记住我，记住时间很长，否则相对短
+        int expiredSeconds = rememberme ? 3600*24*100 : 3600*12;
+        Map<String, Object> map = loginService.login(username, password, expiredSeconds);
+        if (map.containsKey("ticket")) {/*map里包含ticket就成功了，需要跳转到index页面*/
+            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            /*cookie.setPath(contextPath);*//*cookie有效的路径为整个项目，在application.properties里*/
+            cookie.setMaxAge(expiredSeconds);/*cookie有效时间*/
+            response.addCookie(cookie);
+            return "redirect:/index";/*重定向到首页*/
+        } else {
+            model.addAttribute("usernameMsg", map.get("usernameMsg"));/*如果不是usernameMsy的问题get到的是null，不影响*/
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/login";
+        }
+    }
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     public String getLoginPage(){
         return "/site/login";
@@ -75,6 +104,17 @@ public class LoginController {
         }
         return "/site/registerresult";
     }
+
+
+
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket) {
+        loginService.logout(ticket);
+        return "redirect:/login";
+    }
+
+
+    /*生成验证码*/
     @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response, HttpSession session) {
         // 生成验证码.返回对象是图片，故用response手动输出。图片与实际验证码生成，验证码是敏感数据，存入session

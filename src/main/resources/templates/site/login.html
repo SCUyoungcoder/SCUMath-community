@@ -66,7 +66,7 @@
         <div class="columns" style="width: 100%;">
           <div class="column is-half">
             <h1>川大数学视界登录</h1>
-            <form name="user-login" action="https://arxiv.org/login?next_page=https%3A//arxiv.org/user" method="POST" class="breathe-vertical">
+            <form name="user-login" th:action="@{/login}" method="POST" class="breathe-vertical">
               
               <fieldset class="fieldset ">
                 <legend class="title is-4 has-text-weight-semibold">如果你已经注册</legend>
@@ -75,16 +75,21 @@
                   <div class="control">
                     <label class="label" for="username">用户名</label>
                     
-                      <input class="input is-medium" id="username" name="username" required="" type="text" value="">
-                    
+                      <input id="username" name="username" class="input is-medium"
+                             th:value="${param.username}" required="" type="text" value="">
+                    <div  th:text="${usernameMsg}">
+
+                    </div>
                   </div>
                 </div>
                 <div class="field">
                   <div class="control">
                     <label class="label" for="password">密码</label>
                     
-                      <input class="input is-medium" id="password" name="password" required="" type="password" value="">
-                    
+                      <input class="input is-medium" id="password" name="password" th:value="${param.password}" required="" type="password" value="">
+                    <div  th:text="${passwordMsg}">
+
+                    </div>
 
                   </div>
                 </div>
@@ -95,7 +100,19 @@
                     <input style="width: 40%; margin-bottom: 20px;" class="input is-medium" id="verifycode" name="code" required="" type="text" value="">
                     <img th:src="@{/kaptcha}" id="kaptcha">
                     <a href="javascript:refresh_kaptcha();" >刷新验证码</a>
-                    <p class="help"><a href="#">忘记密码?</a></p>   <!---->
+                    <div  th:text="${codeMsg}">
+
+                    </div>
+                    <!--<p class="help"><a href="#">忘记密码?</a></p>   --><!---->
+                  </div>
+                </div>
+                <div >
+                  <!--<div class="col-sm-2"></div>-->
+                  <div class="col-sm-10">
+                    <input type="checkbox" id="remember-me" name="rememberme"
+                           th:checked="${param.rememberme}">
+                    <label class="form-check-label" for="remember-me">记住我</label>
+                    <a href="forget.html" class="text-danger float-right">忘记密码?</a>
                   </div>
                 </div>
                 <div class="field">

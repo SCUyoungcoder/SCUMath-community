@@ -132,6 +132,7 @@ public class LoginService {
         // 生成登录凭证
         Loginticket loginticket = new Loginticket();
         loginticket.setUserid(user.getId());
+        loginticket.setType(user.getType());
         loginticket.setTicket(CommunityUtil.generateUUID());/*这里的ticket是一个随机生成的字符串，存进数据库后，将其发给客户端，让其凭此访问服务器*/
         loginticket.setStatus(0);
         loginticket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
@@ -143,5 +144,8 @@ public class LoginService {
 
     public void logout(String ticket) {
         loginticketMapper.updateStatus(ticket, 1);
+    }
+    public Loginticket findLoginTicket(String ticket) {
+        return loginticketMapper.selectByTicket(ticket);
     }
 }
