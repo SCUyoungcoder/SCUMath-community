@@ -73,7 +73,6 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)
-
     public String register(Model model, User user){
         Map<String,Object>map = loginService.register(user);
         if(map == null || map.isEmpty()){
@@ -134,6 +133,7 @@ public class LoginController {
         }
     }
     //cookie示例 不够隐私，每次自动返回cookie增加数据量。浏览器关闭cookie消失
+    /*                                                  4个测试用例，项目整合时期删除*/
     @RequestMapping(path = "/cookie/set",method = RequestMethod.GET)
     @ResponseBody/*将返回值转换为json格式*/
     public String setCookie(HttpServletResponse response) {

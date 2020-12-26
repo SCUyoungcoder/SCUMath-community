@@ -114,14 +114,14 @@ public class MapperTests {
         Date dayy=new Date();
 
         Paper paper = new Paper();
-        paper.setFatherid(1);
+        paper.setFatherid("计算数学基础数学");
         paper.setUserid(2);
         paper.setTitle("asleep");
         paper.setContent("dsadsadsa");
         paper.setFilepath("c:sdsadsa");/*试试斜杠能不能存储*/
         paper.setStatus(1);
         paper.setCreatetime(dayy);
-        paper.setDownloadcount(22);
+        paper.setDownloadcount(1);
         int rows = paperMapper.insertPaper(paper);
         System.out.println(rows);
         System.out.println(paper.getId());
@@ -156,12 +156,12 @@ public class MapperTests {
 
     @Test
     public void updateUser() {
-        int rows = userMapper.updateStatus(150, 1);
+        int rows = userMapper.updateStatus(110, 1);
         System.out.println(rows);
 
         System.out.println(rows);
 
-        rows = userMapper.updatePassword(150, "hello");
+        rows = userMapper.updatePassword(110, "hello" ,"adsa");
         System.out.println(rows);
     }
 }

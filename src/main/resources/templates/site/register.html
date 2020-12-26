@@ -9,8 +9,19 @@
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumathcat.css}">
-  <!-- Pendo -->
-  <!--运行前调用预处理-->
+  <script>
+    function check(){
+	if(document.getElementById("password").value!=
+		document.getElementById("_password").value)
+	{
+		document.getElementById("checkpassword").innerText="两次密码的输入不一致!";
+		return false;
+	}else{
+	    document.getElementById("checkpassword").innerText="";
+	    return true;
+	}
+}
+  </script>
 </head><body id="front" class="with-cu-identity">
   
 <div class="flex-wrap-footer">
@@ -69,7 +80,7 @@ arXiv associates papers that you have submitted with your user account.
 We must retain the information you submit for registration indefinitely in order to preserve the scholarly record, support academic integrity, and prevent abuse of our systems.
 If you register twice, with different accounts, your submission history will be inaccurate.</p>
 <br>
-<form th:action="@{/register}" method="post" enctype="multipart/form-data" accept="us-ascii,utf8">
+<form th:action="@{/register}" method="post" enctype="multipart/form-data" accept="us-ascii,utf8" onsubmit="return check()">
 <div class="widget" >
   <div class="widgetTitle">Email:</div>
   <p>You <b>must</b> be able to receive mail at this address to register. We take <a href="https://arxiv.org/help/email-protection">strong measures</a> to protect your email address from viruses 
@@ -79,9 +90,9 @@ If you register twice, with different accounts, your submission history will be 
 <!--<label for="email"></label>-->
   <!--th:class="|form-control ${usernameMsg!=null?'is-invalid':''}|"-->
 <input type="text" name="email" id="email" size="30" maxlength="255"
-       th:value="${user!=null?user.email:''}" th:class="|${emailMsg!=null?'is-invalid':''}|" required>
-  <div class="invalid-feedback" th:text="${emailMsg}">
-    该邮箱已注册!
+       th:value="${user!=null?user.email:''}" required>
+  <div th:text="${emailMsg}">
+
   </div>
 </div></div>
   <br>
@@ -99,12 +110,15 @@ If you register twice, with different accounts, your submission history will be 
 <div>
 <label for="username"></label>
 <input type="text" name="username"  size="30" maxlength="20"
-       th:value="${user!=null?user.username:''}" th:class="|${usernameMsg!=null?'is-invalid':''}|" required>
-  <div class="invalid-feedback" th:text="${usernameMsg}">
-    该账号已存在!
+       th:value="${user!=null?user.username:''}" required>
+  <div  th:text="${usernameMsg}">
+
+  </div>
+  <div th:text="${emailMsg}">
+
   </div>
 </div></div>
-
+<br>
 </div>
 
 <div class="widget" >
@@ -135,19 +149,19 @@ If you register twice, with different accounts, your submission history will be 
 <label for="password"></label>
 <input type="password" name="password" id="password"
        th:value="${user!=null?user.password:''}"
-       th:class="|${passwordMsg!=null?'is-invalid':''}|" required>
-  <div class="invalid-feedback" th:text="${passwordMsg}">
-    密码长度不能小于8位!
+       required>
+  <div th:text="${passwordMsg}">
+
   </div>
 </div></td>
           <td align="left">
 <div>
 <label for="_password"></label>
-<input type="password" name="_password" id="_password" th:value="${user!=null?user.password:''}" required>
-  <div class="invalid-feedback">
-    两次输入的密码不一致!
-  </div>
-</div></td>
+<input type="password" name="_password" id="_password"   th:value="${user!=null?user.password:''}" required>
+
+</div>
+
+          </td>
         </tr>
       </tbody>
     </table>
@@ -187,6 +201,9 @@ If you register twice, with different accounts, your submission history will be 
 <!--<input type="hidden" name="certify_email" value="0">-->
 
 <input type="submit" class="button u-btn" name="go_next" value="注册">
+  <dic  id="checkpassword">                <!--修改-->
+
+  </dic>
 </form>
 
 <br>
@@ -255,10 +272,10 @@ If you register twice, with different accounts, your submission history will be 
       </div>
     </footer>
   </div>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+<!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-<script th:src="@{/js/register.js}"></script>
+<script th:src="@{/js/register.js}"></script>-->
 
 
 </body></html>

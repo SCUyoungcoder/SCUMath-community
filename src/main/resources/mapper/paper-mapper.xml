@@ -42,6 +42,11 @@
         from paper
         where title = #{title}
     </select>
+    <select id="selectByFulltitle" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where title = #{title}
+    </select>
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
     <insert id="insertPaper" parameterType="Paper" keyProperty="id">
         insert into paper (<include refid="insertFields"></include>)

@@ -33,7 +33,7 @@
         <h1>数学视界</h1>
         <div class="login">
           <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
-          <a th:href="@{/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
+          <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
           <a th:href="@{/logout}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->退出</a>
 
         </div>
