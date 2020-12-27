@@ -75,6 +75,7 @@ em.boxed {
   font-weight: bold;
 }
 
+
 /****************************************
  * Cornell Identity
  *****************************************/
@@ -549,6 +550,14 @@ footer .sorry-app-links .a11y-main-link {
   border: 2px solid #b31a1a;
   border-radius: 10px;
   background-color: #fef6f6;
+  padding: .5em 1em;
+  margin: 1em 1% 1em 1%;
+  width: 92%;
+}
+.message-general {
+  border: 2px solid #b31a1a;
+  border-radius: 10px;
+  background-color: #FFFFFF;
   padding: .5em 1em;
   margin: 1em 1% 1em 1%;
   width: 92%;
