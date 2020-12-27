@@ -55,8 +55,8 @@ public class ElasticsearthTests {
     }
     @Test
     public void esinsertList(){
-        paperRepository.saveAll(paperMapper.selecyByUserid(4));
-        paperRepository.saveAll(paperMapper.selecyByUserid(2));
+        paperRepository.saveAll(paperMapper.selecyByUserid(112));
+        paperRepository.saveAll(paperMapper.selecyByUserid(111));
     }
     @Test
     public void esupdate(){

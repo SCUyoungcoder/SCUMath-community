@@ -33,21 +33,22 @@ public class ElasticsearchClassService {
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;//高亮显示，应该不需要
 
-    public void savepaper(Paper post){
-        paperRepository.save(post);
+    public void savepaper(Paper paper){
+        paperRepository.save(paper);
     }//向ES里提交论文信息
     public void deletepaper(int id){
         paperRepository.deleteById(id);
     }
 
+    //提供一个搜索方法，返回Page，里面封装的是Paper的实体
     //Page是Spring提供的一种类型  ； 分页条件：*current当前页码，从0开始。limit每页最大多少条数据*/
     public Page<Paper> searchPaperByClass(String classname,int current,int limit){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery(classname,"fatherid"))
-                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
+                .withQuery(QueryBuilders.multiMatchQuery(classname,"fatherid"))//构造查询条件——classname，在fatherid里面查
+                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))//查询排序
                 .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(current,limit ))
+                .withPageable(PageRequest.of(current,limit ))//分页展示
                 .build();
 
         return elasticsearchTemplate.queryForPage(searchQuery, Paper.class, new SearchResultMapper() {
@@ -56,18 +57,18 @@ public class ElasticsearchClassService {
                 SearchHits hits = response.getHits();//获取命中的数据
                 if (hits.getTotalHits()<=0){
                     return null;
-                }//对它做了一个判断
+                }//判断是否查询到数据（数据量是否大于0）
 
-                List<Paper> list = new ArrayList<>();//实例化一个集合
-                for (SearchHit hit:hits){
-                    Paper post = new Paper();//集合内实例化了一个实体
+                List<Paper> list = new ArrayList<>();//实例化一个集合，把数据封装到这个集合里
+                for (SearchHit hit:hits){//遍历命中的数据，找到并作处理，处理完放进集合里
+                    Paper post = new Paper();//实例化了一个实体，每得到一个数据，将其包装到实体类中，然后返回
 
                     //根据命中的数据去构造这个实体
                     String id = hit.getSourceAsMap().get("id").toString();
-                    post.setId(Integer.valueOf(id));
+                    post.setId(Integer.valueOf(id));//先作toString，再转为Int
 
                     String fatherid = hit.getSourceAsMap().get("fatherid").toString();
-                    post.setFatherid(fatherid);
+                    post.setFatherid(fatherid);//本身就是Spring，不用转了
 
                     String userid = hit.getSourceAsMap().get("userid").toString();
                     post.setUserid(Integer.valueOf(userid));
@@ -94,10 +95,10 @@ public class ElasticsearchClassService {
                     String downloadcount = hit.getSourceAsMap().get("downloadcount").toString();
                     post.setDownloadcount(Integer.valueOf(downloadcount));
 
-                    list.add(post);
+                    list.add(post);//处理完的数据加进集合里
                 }
                 return new AggregatedPageImpl(list,pageable,hits.getTotalHits(),response.getAggregations(),
-                        response.getScrollId(),hits.getMaxScore());
+                        response.getScrollId(),hits.getMaxScore());//返回的类型是AggregatedPage，所以需要传很多参数来建立
             }
         });
     }

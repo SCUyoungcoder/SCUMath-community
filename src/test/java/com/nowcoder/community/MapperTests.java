@@ -114,7 +114,7 @@ public class MapperTests {
         Date dayy=new Date();
 
         Paper paper = new Paper();
-        paper.setFatherid(1);
+        paper.setFatherid("计算数学");
         paper.setUserid(2);
         paper.setTitle("asleep");
         paper.setContent("dsadsadsa");
