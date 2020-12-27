@@ -74,7 +74,11 @@ em.boxed {
 .primary-subject {
   font-weight: bold;
 }
-
+.nk-container {
+	position: relative;
+	height: auto;
+	min-height: 100%;
+}
 /****************************************
  * Cornell Identity
  *****************************************/
