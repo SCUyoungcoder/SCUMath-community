@@ -26,6 +26,12 @@
         from classification
         where name = #{name}
     </select>
+
+    <!--新手 王 添加-->
+    <select id="selectAll" resultType="Classification">
+        select <include refid="selectFields"></include>
+        from classification
+    </select>
     <!--查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径-->
 
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
