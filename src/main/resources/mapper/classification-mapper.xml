@@ -7,11 +7,11 @@
     <!--usermapper路径-->
     <!--每一个对应于usermapper的一个-->
     <sql id="insertFields"><!---->
-        name
+        name, searchname
     </sql><!--定义标签-->
 
     <sql id="selectFields"><!---->
-        id, name
+        id, name, searchname
     </sql>
 
     <select id="selectById" resultType="Classification">
@@ -37,7 +37,7 @@
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
     <insert id="insertClassification" parameterType="Classification" keyProperty="id">
         insert into classification (<include refid="insertFields"></include>)
-        values(#{name})
+        values(#{name},#{searchname})
     </insert>
     <!--update标签-->
     <delete id="deleteByName">

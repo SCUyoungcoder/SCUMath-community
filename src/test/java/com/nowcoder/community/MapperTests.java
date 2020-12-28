@@ -38,6 +38,7 @@ public class MapperTests {
     public void insertclass(){
         Classification classification = new Classification();
         classification.setName("计算数学");
+        classification.setSearchname("compute");
         int row = classificationMapper.insertClassification(classification);
         System.out.println(row);
     }

@@ -3,6 +3,15 @@ package com.nowcoder.community.entity;
 public class Classification {
     private int id;
     private String name;
+    private String searchname;
+
+    public String getSearchname() {
+        return searchname;
+    }
+
+    public void setSearchname(String searchname) {
+        this.searchname = searchname;
+    }
 
     public int getId() {
         return id;
@@ -25,6 +34,7 @@ public class Classification {
         return "Classification{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", searchname='" + searchname + '\'' +
                 '}';
     }
 }
