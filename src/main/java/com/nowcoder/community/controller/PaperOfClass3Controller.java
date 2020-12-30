@@ -56,6 +56,7 @@ public class PaperOfClass3Controller {
         //分页信息
         page.setPath("/paperofclass?classname=" + classname);//路径
         page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
+
         System.out.print(papers);
         System.out.print(page);
         return "/paperofclass";//返回第二级网页
