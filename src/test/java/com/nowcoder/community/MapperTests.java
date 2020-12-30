@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,9 +28,17 @@ public class MapperTests {
     @Autowired
     private ClassificationMapper classificationMapper;
     @Test
+    public void selectallclass(){
+        List<Classification> classes = classificationMapper.selectAll();
+        for (Classification class1:classes){
+            System.out.println(class1);
+        }
+    }
+    @Test
     public void insertclass(){
         Classification classification = new Classification();
         classification.setName("计算数学");
+        classification.setSearchname("compute");
         int row = classificationMapper.insertClassification(classification);
         System.out.println(row);
     }

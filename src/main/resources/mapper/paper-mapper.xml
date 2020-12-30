@@ -37,6 +37,11 @@
         from paper
         where user_id = #{userid}
     </select>
+    <select id="selectByStatus" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where status = #{status}
+    </select>
     <select id="selectByTitle" resultType="Paper">
         select <include refid="selectFields"></include>
         from paper

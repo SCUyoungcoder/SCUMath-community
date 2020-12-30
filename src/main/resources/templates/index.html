@@ -104,7 +104,26 @@
     </header>
 
     <main>
-      
+      <div class="message-general">
+        <div>
+          <!-- 论文列表 -->
+          <ul class="list-unstyled mt-4">
+            <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="map:${allClass}"><!--//遍历map:${papers}"-->
+              <!--//不需要论文头像【删去此行原本的代码】-->
+              <div class="media-body">
+                <h6  class="mt-0 mb-3">
+                  <!--//论文标题（需要做动态处理），另外标题应该能链接到具体论文详情页面上，地址设为/paper/detail/（论文的id）-->
+                  <a th:href="@{|/paperofclass?classname=${map.class1.searchname}| }" th:utext="${map.class1.name}">备战<em>春招</em>，面试刷题跟他复习，一个月全搞定！</a>
+                </h6>
+
+
+              </div>
+            </li>
+          </ul>
+
+
+      <!-- 尾部 -->
+
       
       
     </main>

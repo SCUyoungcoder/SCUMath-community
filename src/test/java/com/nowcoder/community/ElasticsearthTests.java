@@ -66,10 +66,10 @@ public class ElasticsearthTests {
     }
     @Test
     public void sedelete(){
-        /*paperRepository.deleteById(2);*/
+        paperRepository.deleteById(2);
 
         /*删除所有数据*/
-        paperRepository.deleteAll();
+        /*paperRepository.deleteAll();*/
     }
     @Test
     public void searchByRepository(){

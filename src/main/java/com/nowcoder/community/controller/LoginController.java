@@ -34,14 +34,15 @@ public class LoginController {
         return "/site/register";
     }
 
+    /*index的引用路径在HomeController里面用了，去那里找
     @RequestMapping(path = "/index",method = RequestMethod.GET)
     public String getindexPage(Model model){
-    /*用login里的方式更改登录都页面的改变*/
-        /*model.addAttribute("loginMsg","登录");
+    *//*用login里的方式更改登录都页面的改变*//*
+        *//*model.addAttribute("loginMsg","登录");
         model.addAttribute("logoutMsg","退出");
-        model.addAttribute("manageMsg","管理");*/
+        model.addAttribute("manageMsg","管理");*//*
         return "/index";
-    }
+    }*/
     @RequestMapping(path = "/login", method = RequestMethod.POST)/*。。。。。remreber me。。用户验证码放session里 response创建cookie*/
     public String login(String username, String password, String code, boolean rememberme,
                         Model model, HttpSession session, HttpServletResponse response) {
