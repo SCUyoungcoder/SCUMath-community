@@ -15,4 +15,5 @@ public class ClassificationService {
     public List<Classification> AllClassifications() {
         return classificationMapper.selectAll();
     }
+    public Classification GetNameBySearchname(String searchname){return classificationMapper.selectBySearchname(searchname);}
 }

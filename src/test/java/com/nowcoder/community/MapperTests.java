@@ -28,6 +28,11 @@ public class MapperTests {
     @Autowired
     private ClassificationMapper classificationMapper;
     @Test
+    public void xxx(){
+        User user = userMapper.selectById(111);
+        System.out.println(user);
+    }
+    @Test
     public void selectallclass(){
         List<Classification> classes = classificationMapper.selectAll();
         for (Classification class1:classes){

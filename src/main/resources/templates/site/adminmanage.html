@@ -2,14 +2,28 @@
 <!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" >-->
 <!doctype html>
 <!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
-<html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>数学视界</title>
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
     <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <!-- Pendo -->
     <!--运行前调用预处理-->
-
+    <script type="text/javascript">
+    function check(){
+        var password = document.getElementById("password").value;
+        var pwd = document.getElementById("_password").value;
+        if(password==pwd){
+            //alert("验证正确");
+            return true;
+        }else{
+            alert("验证错误，请重新输入");
+            //window.location.href="index.jsp";
+            return false;
+    }
+    }
+</script>
 </head><body id="front" class="with-cu-identity">
 
 <div class="flex-wrap-footer">
@@ -104,16 +118,64 @@
     </header>
 
     <main>
-        <div>
+        <table class="message-general">
+            <tbody>
+            <tr><td><b>用户名：</b><a th:utext="${username}"></a></td></tr>
+            <tr><td><b>用户类型：</b><a th:utext="${type}"></a></td></tr>
+            <tr><td><b>邮箱：</b><a th:utext="${email}"></a></td></tr>
+            <tr><td><b>创建时间：</b><a th:utext="${#dates.format(createtime,'yyyy-MM-dd HH:mm:ss')}"></a></td></tr>
+            </tbody>
+        </table>
+        <!--<div class="message-general">
+            <div>
+                <ul class="list-unstyled mt-4">
+                    <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="map:${allClass}">
+                        <div class="media-body">
+                            <h6  class="mt-0 mb-3">
+                                <a th:href="@{|/paperofclass?classname=${map.class1.searchname}| }" th:utext="${map.class1.name}">备战<em>春招</em>，面试刷题跟他复习，一个月全搞定！</a>
+                            </h6>
+
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>-->
+
+
+
+        <div class="message-general">
+            <b>上传文件：</b>
+            <br>
             <form method="post" enctype="multipart/form-data" th:action="@{/user/upload}" class="breathe-vertical">
                 <div>
                     <input type="file"
                            id="paperfile" name="paperfile" lang="es" required="">
-                    <label  for="paperfile" data-browse="文件">选择论文</label>
-                    <label class="label" for="fatherid">选择论文类别</label>
-                    <input id="fatherid" name="fatherid" class="input is-medium"
-                           required="" type="text" value="">
-                    <label class="label" for="content">摘要</label>
+                    <br>
+                    <!--<label  for="paperfile" data-browse="文件">选择论文</label>-->
+                    <b class="label" >选择论文类别:</b>
+                    <!--<input id="fatherid" name="fatherid" class="input is-medium"
+                        required="" type="text" value="">-->
+                    <label><input type="checkbox" name="fatherid" value="logic">数理逻辑与数学基础</label>
+                    <label><input type="checkbox" name="fatherid" value="compute">计算数学</label>
+                    <label><input type="checkbox" name="fatherid" value="number">数论</label>
+                    <label><input type="checkbox" name="fatherid" value="algebra">代数</label>
+                    <label><input type="checkbox" name="fatherid" value="geometry">几何</label>
+                    <label><input type="checkbox" name="fatherid" value="topology">拓扑</label>
+                    <label><input type="checkbox" name="fatherid" value="analysis">数学分析</label>
+                    <label><input type="checkbox" name="fatherid" value="ODE">常微分方程</label>
+                    <label><input type="checkbox" name="fatherid" value="PDE">偏微分方程</label>
+                    <label><input type="checkbox" name="fatherid" value="dynamical">动力系统</label>
+                    <label><input type="checkbox" name="fatherid" value="functional">泛函分析</label>
+                    <label><input type="checkbox" name="fatherid" value="probability">概率论</label>
+                    <label><input type="checkbox" name="fatherid" value="statistics">统计学</label>
+                    <label><input type="checkbox" name="fatherid" value="opsearch">运筹学</label>
+                    <label><input type="checkbox" name="fatherid" value="combinatorial">组合数学</label>
+                    <label><input type="checkbox" name="fatherid" value="fuzzy">模糊数学</label>
+                    <label><input type="checkbox" name="fatherid" value="quantum">量子数学</label>
+                    <label><input type="checkbox" name="fatherid" value="applied">应用数学</label>
+                    <br>
+                    <b class="label" for="content">摘要</b>
                     <input id="content" name="content" class="input is-medium"
                            required="" type="text" value="">
                     <button type="submit" >立即上传</button>
@@ -123,18 +185,55 @@
             </form>
             <div th:text="${error}"></div>
         </div>
-        <div>
-            <form method="POST" th:action="@{/user/updatepassword}" class="breathe-vertical">
-                <label class="label" for="fatherid">输入密码</label>
+        <div class="message-general">
+            <b>修改密码：</b>
+            <form method="POST" th:action="@{/user/updatepassword}" onsubmit="return check();" class="breathe-vertical">
+                <label class="label" for="password">输入密码</label>
                 <input id="password" name="password" class="input is-medium"
                        required="" type="password" value="">
-                <label class="label" for="fatherid">确认密码</label>
+                <label class="label" for="_password">确认密码</label>
                 <input id="_password" name="_password" class="input is-medium"
                        required="" type="password" value="">
                 <button type="submit" >修改密码</button>
                 <div  th:text="${passwordMsg}"></div>
             </form>
         </div>
+
+
+        <div class="message-general">
+            <b>检查用户上传文件：</b>
+            <br>
+            <div class="message-general" th:each="map:${papers}">
+                <a th:utext="${map.paper.title}" th:href="@{|/user/file/${map.paper.title}|}"></a>
+                <form method="post" enctype="multipart/form-data" th:action="@{/user/update}" class="breathe-vertical">
+                    <div>
+                        <!--<input type="file"
+                               id="paperfile" name="paperfile" lang="es" required="">-->
+                        <b class="label" >文件ID:</b>
+                        <input id="content2" name="id" class="input is-medium"
+                               required="" type="text" th:value="${map.paper.id}" readonly>
+                        <br>
+                        <b class="label" >文件类别:</b>
+                        <a th:each="fid:${map.fathers}">
+                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" checked></label>
+                        </a>
+                        <a th:each="fid:${map.otherfathers}">
+                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" ></label>
+                        </a>
+                        <br>
+                        <b class="label" for="content">摘要</b>
+                        <input id="content1" name="content" class="input is-medium"
+                               required="" type="text" th:value="${map.paper.content}">
+                        <button type="submit" >确认信息</button>
+                        <div  th:text="${error}"></div>
+                    </div>
+
+                </form>
+                <div th:text="${error}"></div>
+            </div>
+
+        </div>
+
 
 
     </main>
@@ -193,7 +292,5 @@
         </div>
     </footer>
 </div>
-
-
-
-</body></html>
+</body>
+</html>

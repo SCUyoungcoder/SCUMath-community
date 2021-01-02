@@ -39,34 +39,28 @@
         </div>
         
   <div class="search-block level-right">
-    <form class="level-item mini-search" method="GET" action="https://arxiv.org/search">        <!--_-->
+    <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
       <div class="field has-addons">
         <div class="control">
-          <input class="input is-small" type="text" name="query" placeholder="搜索..." aria-label="Search term or terms">
-          <p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>              <!---->
+          <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+          <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
         </div>
         <div class="control">
-          <div class="select is-small">
-            <select name="searchtype" aria-label="Field to search">
-              <option value="all" selected="selected">所有文件</option>
-              <option value="title">Title</option>                                                          <!--更改下拉菜单项-->
-              <option value="author">Author</option>
-              <option value="abstract">Abstract</option>
-              <option value="comments">Comments</option>
-              <option value="journal_ref">Journal reference</option>
-              <option value="acm_class">ACM classification</option>
-              <option value="msc_class">MSC classification</option>
-              <option value="report_num">Report number</option>
-              
-              <option value="doi">DOI</option>
-              <option value="orcid">ORCID</option>
-              
-              <option value="help">Help pages</option>
-              <option value="full_text">Full text</option>
+          <div >
+            <select name="fieldname" aria-label="Field to search">
+              <option value="title" selected="selected">名字</option>
+              <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
             </select>
           </div>
         </div>
-        <input type="hidden" name="source" value="header">
+        <div class="control">
+          <div >
+            <select name="sortname" aria-label="Field to search">
+              <option value="createtime" selected="selected">上传时间</option>
+              <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+            </select>
+          </div>
+        </div>
         <button class="button is-small is-cul-darker">搜索</button>
       </div>
     </form>
@@ -113,14 +107,15 @@
               <div class="media-body">
                 <h6  class="mt-0 mb-3">
                   <!--//论文标题（需要做动态处理），另外标题应该能链接到具体论文详情页面上，地址设为/paper/detail/（论文的id）-->
-                  <a th:href="@{|/paperofclass?classname=${map.class1.searchname}| }" th:utext="${map.class1.name}">备战<em>春招</em>，面试刷题跟他复习，一个月全搞定！</a>
+                  <a th:href="@{|/paperofclass?classname=${map.class1.searchname}| }" th:utext="${map.class1.name}">备战<em>春招</em></a>
                 </h6>
 
 
               </div>
             </li>
           </ul>
-
+        </div>
+      </div>
 
       <!-- 尾部 -->
 

@@ -42,15 +42,17 @@ public class PaperOfClass3Controller {
                 elasticsearchClassService.searchPaperByClass(classname,page.getCurrent() - 1 ,page.getLimit());
         //聚合数据——上面操作得到的只是Paper实体类，里面包含的信息需要查出来，处理一下聚合起来
         List<Map<String,Object>> papers = new ArrayList<>();//声明聚合的结果——一个集合，里面封装的Map，命名为papers，这是我最终实例化的结果
-        Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
         if(searchResult != null){
             for (Paper paper : searchResult){//遍历，每次都会得到一个paper（论文）
-
-                //把论文放进去
-                /*paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());*/
+                if( paper.getStatus()==0){
+                    /*整合时，以下部分放入if里*/
+                }
+                /*下面这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
+                Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
+                /*显示用户名*/
+                paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
                 map.put("paper",paper);
                 //如果还有啥需要往里放的还可以添加，写好相应的service，然后继续map.put()即可
-
                 papers.add(map);//得到聚合数据map后，装进集合里
             }
         }

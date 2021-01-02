@@ -15,8 +15,10 @@ public interface PaperMapper {
     /*Paper selectByTitle(String title);*/
     List<Paper> selectByTitle(String title);/*这里是否与elasticsearch搜索有关*/
     Paper selectByFulltitle(String title);
-    List<Paper> selectByStatus(int status);
+    List<Paper> selectByStatus(int status, int offset,int limit);
     int insertPaper(Paper paper);
     int delectById(int id);
     int updateDownloadcount(int id,int downloadcount);
+    int updatePaperstatus(Paper paper);
+    int countstatus(int status);
 }

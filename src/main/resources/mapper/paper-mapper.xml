@@ -41,6 +41,8 @@
         select <include refid="selectFields"></include>
         from paper
         where status = #{status}
+        order by id asc
+        limit #{offset},#{limit}
     </select>
     <select id="selectByTitle" resultType="Paper">
         select <include refid="selectFields"></include>
@@ -61,10 +63,17 @@
         delete from paper where id = #{id}
     </delete>
     <!--update标签-->
+    <update id="updatePaperstatus">
+        update paper set content = #{content},father_id = #{fatherid},status = #{status} where id = #{id}
+    </update>
     <update id="updateDownloadcount">
         update paper set download_count = #{downloadcount} where id = #{id}
     </update>
-
+    <select id="countstatus" resultType="int">
+        select count(id)
+        from paper
+        where status = #{status}
+    </select>
 
 
 </mapper>
