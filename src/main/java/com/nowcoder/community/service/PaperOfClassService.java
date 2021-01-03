@@ -22,6 +22,7 @@ public class PaperOfClassService {
 
     public Paper selectpaperByTitle(String title){ return paperMapper.selectByFulltitle(title);}
     public Paper selectPaperById(int id){return paperMapper.selectById(id);}
+    public int updateDownloadcount(int id,int downloadcount){return paperMapper.updateDownloadcount(id,downloadcount);}
     /*public int updateHeader(int userId, String headerUrl) {
         return userMapper.updateHeader(userId, headerUrl);*//*上传文件例子*/
     /*将paper信息存到数据库*/

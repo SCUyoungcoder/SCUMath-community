@@ -121,6 +121,8 @@ public class UserController {
                         map2.put("name",classificationService.GetNameBySearchname(str).getName());
                         otherfatherss.add(map2);
                     }
+                    /*paper.setTitle(paper.getFilepath().substring(paper.getFilepath().lastIndexOf("/")));*/
+                    paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf(".")));
                     map.put("paper",paper);
                     map.put("fathers",fatherss);
                     map.put("otherfathers",otherfatherss);
@@ -267,22 +269,23 @@ public class UserController {
         }else {
             return "/site/usermanage";
         }
+        //return "redirect:/user/manage";
         /*return "redirect:/index";*/
     }
 
-    /*下载文件接口*/    /*1.文件下载下来全是空的.2.下载后下载数没有+1            待解决*/
+    /*下载文件接口*/    /*1.文件下载下来全是空的.2.下载后下载数没有+1            全解决*/
     /*google浏览器会将最新下载的文件显示为未确认，ie浏览器没这个问题。在response.setHeader中解决中文编码问题后又没问题了。。*/
-    @LoginRequired
+    /*@LoginRequired
     @RequestMapping(path = "/file/{fileName}", method = RequestMethod.GET)
-    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
+    public void getfile(@PathVariable("fileName") String fileName, HttpServletResponse response) {
          String filename = fileName;
         // 服务器存放路径
         fileName = uploadPath + "/" + fileName;
         // 文件后缀
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         // 响应图片
-        /*response.setContentType("image/" + suffix);*/
-        /*response.setContentType("text/html;charset=utf-8");*/
+        //response.setContentType("image/" + suffix);
+        //response.setContentType("text/html;charset=utf-8");
         response.setHeader("content-type", "application/octet-stream");
         response.setContentType("application/octet-stream");
 
@@ -290,20 +293,38 @@ public class UserController {
         BufferedInputStream bis = null;
         OutputStream outputStream = null;
         try {
-            response.setHeader("Content-Disposition", "attachment;filename=" + /*filename*/new String(filename.getBytes("gb2321"),"ISO8859-1"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + filenamenew String(filename.getBytes("gb2321"),"ISO8859-1"));
             outputStream = response.getOutputStream();
             bis = new BufferedInputStream(new FileInputStream(new File(fileName)));
             int read = bis.read(buffer);
             while (read != -1){
                 outputStream.write(buffer,0,buffer.length);
                 outputStream.flush();
+                outputStream.close();
                 read = bis.read(buffer);
+
             }
+            //outputStream.close();
         }catch (IOException e){
 
         }
 
-        /*try (
+
+    }
+*/
+    @LoginRequired
+    @RequestMapping(path = "/file/{fileName}", method = RequestMethod.GET)
+    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
+        // 文件后缀
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        //文件前缀
+        String title = fileName.substring(0,fileName.lastIndexOf("."));
+        // 服务器存放路径
+        fileName = uploadPath + "/" + fileName;
+        // 设置类型为文件
+        response.setContentType("application/octet-stream");
+        //response.setContentType("image/" + suffix);
+        try (
                 FileInputStream fis = new FileInputStream(fileName);
                 OutputStream os = response.getOutputStream();
         ) {
@@ -314,9 +335,12 @@ public class UserController {
             }
         } catch (IOException e) {
             logger.error("下载文件失败: " + e.getMessage());
-        }*/
-    }
+        }
+        System.out.println(title);
+        Paper paper = paperOfClassService.selectpaperByTitle(title);
 
+        paperOfClassService.updateDownloadcount(paper.getId(),paper.getDownloadcount()+1);
+    }
     /*更改密码*/
     @LoginRequired
     @RequestMapping(path = "updatepassword",method = RequestMethod.POST)

@@ -64,7 +64,7 @@ public class MapperTests {
         comment.setUserid(3);
         comment.setEntitytype(4);
         comment.setEntityid(5);
-        comment.setTargetid(6);
+        /*comment.setTargetid(6);*/
         comment.setContent("dsad545");
         comment.setStatus(7);
         comment.setCreatetime(dayy);

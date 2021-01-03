@@ -9,7 +9,9 @@
     <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
     <!-- Pendo -->
     <!--运行前调用预处理-->
-
+<style>
+    li{list-style:none;}
+</style>
 </head><body id="front" class="with-cu-identity">
 
 <div class="flex-wrap-footer">
@@ -103,7 +105,94 @@
     </header>
 
     <main>
+        <div class="message-general">
+            <div>
+                <!-- 论文列表 -->
+                <ul class="list-unstyled mt-4">
+                    <li class="media pb-3 pt-3 mb-3 border-bottom"><!--//遍历map:${papers}"-->
+                        <!--//不需要论文头像【删去此行原本的代码】-->
+                        <div class="media-body">
+                            <h6  class="mt-0 mb-3">
+                                <!--//论文标题（需要做动态处理），另外标题应该能链接到具体论文详情页面上，地址设为/paper/detail/（论文的id）-->
+                                <a th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
+                            </h6>
+                            <div class="mb-3"><!--论文简介-->
+                                <b>摘要：</b>
+                                <h th:utext="${paper.content}"></h>
+                            </div>
+                            <b>类别：</b>
+                            <h class="mb-3" th:each="fathername:${fathernames}">
+                                <h th:utext="${fathername}"></h>
+                            </h>
+                            <div  class="text-muted font-size-12">
+                                <u  class="mr-3" th:utext="${username}"> </u>发布于<h th:text="${#dates.format(paper.createtime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</h>
+                                <!--<ul  class="d-inline float-right" style="float:rigth">
+                                    <li class="d-inline ml-2">下载次数: <i th:text="${paper.downloadcount}"></i></li>
+                                </ul>-->
+                                <h style="float:right">下载次数：<h th:text="${paper.downloadcount}"></h></h>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div style="border-bottom:1px solid #CCC"></div>
+            </div>
+            <div>
+                <div>
+                    <h>评论:</h>
+                </div>
+                <!--<div  style="float:right">评论</div>-->
+                <ul>
+                    <li th:each="comment:${comments}">
+                        <br>
+                        <div>
+                            <b style="" th:utext="${comment.username}"></b>
+                        </div>
+                        <div th:utext="${comment.content}"></div>
+                        <div><span>发布于<h th:utext="${#dates.format(comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></h></span></div>
+                        <ul>
+                            <li th:each="cct:${comment.commentcomments}">
+                                <br>
 
+                                    <b th:utext="${cct.username}"></b><h th:if="${cct.targetname}">回复</h><b th:if="${cct.targetname}" th:utext="${cct.targetname}"></b>
+                                    <h th:utext="${cct.content}"></h>
+
+                                <!--<div th:utext="${cct.content}"></div>-->
+                                <div style="float:right">
+                                    <form method="POST" th:action="@{|/add/${paper.id}|}">
+                                        <textarea th:placeholder="|回复${cct.username}|" name="content"></textarea>
+                                        <input type="hidden" name="entitytype" value="1">
+                                        <input type="hidden" name="entityid" th:value="${comment.id}">
+                                        <input type="hidden" name="targetid" th:value="${cct.userid}">
+                                        <button type="submit" >回复</button>
+                                    </form>
+                                </div>
+                                <br>
+                                <span><h th:utext="${#dates.format(cct.createtime,'yyyy-MM-dd HH:mm:ss')}"></h></span>
+
+
+
+                                <div style="border-bottom:1px solid #CCC"></div>
+                            </li>
+                        </ul>
+                        <form method="POST" th:action="@{|/add/${paper.id}|}">
+                            <textarea placeholder="请输入你的观点!" name="content"></textarea>
+                            <input type="hidden" name="entitytype" value="1">
+                            <input type="hidden" name="entityid" th:value="${comment.id}">
+                            <button type="submit" >回复</button>
+                        </form>
+                        <div style="border-bottom:1px solid #CCC"></div>
+                    </li>
+                </ul>
+                <form method="POST" th:action="@{|/add/${paper.id}|}">
+                    <textarea placeholder="请输入你的观点!" name="content"></textarea>
+                    <input type="hidden" name="entitytype" value="0">
+                    <input type="hidden" name="entityid" th:value="${paper.id}">
+                    <button type="submit" >回复</button>
+                </form>
+            </div>
+
+
+        </div>
 
 
     </main>
