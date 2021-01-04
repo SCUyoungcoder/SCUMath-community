@@ -1,36 +1,26 @@
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" >-->
 <!doctype html>
-<!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
-<html xmlns:th="www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>数学视界</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
-    <link rel="stylesheet" th:href="@{/css/scumathstyle.css}">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-    <script>
-		function refresh_kaptcha() {
-			var path = "/kaptcha?p=" + Math.random();
-			$("#kaptcha").attr("src", path);
-		}
-	</script>
-    <!-- Pendo -->
-    <!--运行前调用预处理-->
-
-</head><body id="front" class="with-cu-identity">
-
-<div class="flex-wrap-footer">
-    <header>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <title>论文搜索结果</title>
+</head>
+<body>
+<div >
+    <!-- 头部 -->
+    <header th:fragment="header"><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
         <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
         <!-- start desktop header -->
-        <div class="columns is-vcentered is-hidden-mobile" style="padding: 0px; margin: 0px; height: 73px;" id="cu-identity">
-            <div class="column" style="padding-top: 0px; padding-left: 12px;" id="cu-logo" >
+        <div class="column" style="background-color: #222222">
+            <div style="list-style: none; line-height: 2;">
                 <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
-                <a href="http://scu.edu.cn/"><img src="./img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
-                <a href="http://scu.edu.cn/"><img src="./img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
+                <a href="http://scu.edu.cn/"><img src="../img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
+                <a href="http://scu.edu.cn/"><img src="../img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
             </div>
-
             <!-- timeboxed column --><!-- /end timeboxed column -->
 
             <!--<div class="column" id="support-ack">
@@ -38,22 +28,51 @@
             </div>-->
         </div>
 
-        <div id="header" class="is-hidden-mobile" style="height: 92px;padding-top: 7px;overflow: hidden;">
-            <h1 style="font-size: 40px;"><a th:href="@{index}">数学视界</a>>登录</h1>
+        <div id="header" class="is-hidden-mobile">
+            <h1 style="font-size:30px"><a th:href="@{../index}">数学视界</a>><u th:utext="${classname}"></u>搜索结果</h1>
             <div class="login">
-
+                <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
+                <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
+                <a th:href="@{/mymsg}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->消息</a>
+                <a th:href="@{/logout}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->退出</a>
 
             </div>
 
-        </div><!-- /end desktop header -->
+            <div class="search-block level-right">
+                <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+                            <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
+                        </div>
+                        <div class="control">
+                            <div >
+                                <select name="fieldname" aria-label="Field to search">
+                                    <option value="title" selected="selected">名字</option>
+                                    <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control">
+                            <div >
+                                <select name="sortname" aria-label="Field to search">
+                                    <option value="createtime" selected="selected">上传时间</option>
+                                    <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
+                        <button class="button is-small is-cul-darker">搜索</button>
+                    </div>
+                </form>
+            </div>
 
         <div class="mobile-header" style="height: 75px;">                         <!--手机界面-->
             <div class="columns is-mobile">
                 <div class="column logo-arxiv" style="width: 143px; padding-top: 20px;padding-left: 26px; height: 85px;"><a href="http://math.scu.edu.cn/" style="color:white ;font-size:25px">数学学院</a></div>
                 <div class="column logo-arxiv" style=" margin-top: 21px;width: 464px;"><a href="http://math.scu.edu.cn/">
                     <picture>
-                        <img src="./img/sculogo.png"  style="width: 50px;height: 50px;" alt="Sichuan University Logo">
-                        <img src="./img/scuname.png" style="width: 120px;height: 50px;">
+                        <img src="../img/sculogo.png"  style="width: 50px;height: 50px;" alt="Sichuan University Logo">
+                        <img src="../img/scuname.png" style="width: 120px;height: 50px;">
                     </picture>
                 </a></div>
 

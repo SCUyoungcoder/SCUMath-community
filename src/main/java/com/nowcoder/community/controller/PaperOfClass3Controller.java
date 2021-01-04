@@ -47,20 +47,19 @@ public class PaperOfClass3Controller {
         if(searchResult != null){
             for (Paper paper : searchResult){//遍历，每次都会得到一个paper（论文）
                 if( paper.getStatus()==0){
-                    /*整合时，以下部分放入if里*/
+                    Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
+                    /*显示用户名*/
+                    paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
+                    map.put("paper",paper);
+                    //如果还有啥需要往里放的还可以添加，写好相应的service，然后继续map.put()即可
+                    papers.add(map);//得到聚合数据map后，装进集合里
                 }
                 /*下面这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
-                Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
-                /*显示用户名*/
-                paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
-                map.put("paper",paper);
-                //如果还有啥需要往里放的还可以添加，写好相应的service，然后继续map.put()即可
-                papers.add(map);//得到聚合数据map后，装进集合里
             }
         }
         /*System.out.println(papers);*/
         model.addAttribute("papers",papers);//得到的最终数据要传给模板/页面
-        model.addAttribute("classname",classname);//希望返回的页面上也带上刚刚的classname参数信息
+        model.addAttribute("classname",classificationService.GetNameBySearchname(classname).getName());//希望返回的页面上也带上刚刚的classname参数信息
         //分页信息
         page.setPath("/paperofclass?classname=" + classname);//路径
         page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
@@ -112,7 +111,9 @@ public class PaperOfClass3Controller {
         for (String fatherid:fatherids){
             fathernames.add(classificationService.GetNameBySearchname(fatherid).getName());
         }
-        paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf('.')));
+        if (paper.getStatus()== 0){
+            paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf('.')));
+        }
         model.addAttribute("username",userService.findUserById(paper.getUserid()).getUsername());
         model.addAttribute("paper",paper);
         model.addAttribute("fathernames",fathernames);

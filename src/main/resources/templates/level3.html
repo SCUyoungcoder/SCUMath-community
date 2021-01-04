@@ -3,7 +3,7 @@
 <!doctype html>
 <!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>数学视界</title>
+    <title>论文详情</title>
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
     <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
@@ -32,48 +32,42 @@
         </div>
 
         <div id="header" class="is-hidden-mobile">
-            <h1>数学视界</h1>
+            <h1 style="font-size:30px"><a th:href="@{index}">数学视界</a>>论文详情</h1>
             <div class="login">
-
-                <a th:href="@{/login}">登录</a>       <!---->
+                <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
+                <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
+                <a th:href="@{/mymsg}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->消息</a>
+                <a th:href="@{/logout}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->退出</a>
 
             </div>
 
             <div class="search-block level-right">
-                <form class="level-item mini-search" method="GET" action="https://arxiv.org/search">        <!--_-->
+                <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
                     <div class="field has-addons">
                         <div class="control">
-                            <input class="input is-small" type="text" name="query" placeholder="搜索..." aria-label="Search term or terms">
-                            <p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>              <!---->
+                            <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+                            <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
                         </div>
                         <div class="control">
-                            <div class="select is-small">
-                                <select name="searchtype" aria-label="Field to search">
-                                    <option value="all" selected="selected">所有文件</option>
-                                    <option value="title">Title</option>                                                          <!--更改下拉菜单项-->
-                                    <option value="author">Author</option>
-                                    <option value="abstract">Abstract</option>
-                                    <option value="comments">Comments</option>
-                                    <option value="journal_ref">Journal reference</option>
-                                    <option value="acm_class">ACM classification</option>
-                                    <option value="msc_class">MSC classification</option>
-                                    <option value="report_num">Report number</option>
-
-                                    <option value="doi">DOI</option>
-                                    <option value="orcid">ORCID</option>
-
-                                    <option value="help">Help pages</option>
-                                    <option value="full_text">Full text</option>
+                            <div >
+                                <select name="fieldname" aria-label="Field to search">
+                                    <option value="title" selected="selected">名字</option>
+                                    <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
                                 </select>
                             </div>
                         </div>
-                        <input type="hidden" name="source" value="header">
+                        <div class="control">
+                            <div >
+                                <select name="sortname" aria-label="Field to search">
+                                    <option value="createtime" selected="selected">上传时间</option>
+                                    <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
                         <button class="button is-small is-cul-darker">搜索</button>
                     </div>
                 </form>
             </div>
-
-        </div><!-- /end desktop header -->
 
         <div class="mobile-header">                         <!--手机界面-->
             <div class="columns is-mobile" >
@@ -111,13 +105,16 @@
                 <ul class="list-unstyled mt-4">
                     <li class="media pb-3 pt-3 mb-3 border-bottom"><!--//遍历map:${papers}"-->
                         <!--//不需要论文头像【删去此行原本的代码】-->
-                        <div class="media-body">
+                        <div class="media-body">            <!--<b th:if="${cct.targetname}" th:utext="${cct.targetname}"></b>-->
                             <h6  class="mt-0 mb-3">
                                 <!--//论文标题（需要做动态处理），另外标题应该能链接到具体论文详情页面上，地址设为/paper/detail/（论文的id）-->
-                                <a th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
+                                <a th:if="${paper.status}==0" th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
+
                             </h6>
+                            <h1><b th:if="${paper.status}==2" th:utext="${paper.title}"></b></h1>
                             <div class="mb-3"><!--论文简介-->
-                                <b>摘要：</b>
+                                <b th:if="${paper.status}==0">摘要：</b>
+                                <b th:if="${paper.status}==2">问题、悬赏描述:</b>
                                 <h th:utext="${paper.content}"></h>
                             </div>
                             <b>类别：</b>
@@ -129,7 +126,7 @@
                                 <!--<ul  class="d-inline float-right" style="float:rigth">
                                     <li class="d-inline ml-2">下载次数: <i th:text="${paper.downloadcount}"></i></li>
                                 </ul>-->
-                                <h style="float:right">下载次数：<h th:text="${paper.downloadcount}"></h></h>
+                                <h th:if="${paper.status}==0" style="float:right">下载次数：<h th:text="${paper.downloadcount}"></h></h>
                             </div>
                         </div>
                     </li>

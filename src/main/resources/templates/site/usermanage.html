@@ -1,16 +1,14 @@
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" >-->
 <!doctype html>
-<!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
-<html xmlns:th="http://www.thymeleaf.org" lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>数学视界</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
-    <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <!-- Pendo -->
-    <!--运行前调用预处理-->
-<script type="text/javascript">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <title>用户管理</title>
+    <script type="text/javascript">
     function check(){
         var password = document.getElementById("password").value;
         var pwd = document.getElementById("_password").value;
@@ -24,17 +22,18 @@
     }
     }
 </script>
-</head><body id="front" class="with-cu-identity">
-
-<div class="flex-wrap-footer">
-    <header th:fragment="header"><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
+</head>
+<body>
+<div >
+    <!-- 头部 -->
+    <header ><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
         <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
         <!-- start desktop header -->
-        <div class="columns is-vcentered is-hidden-mobile" id="cu-identity">
-            <div class="column" id="cu-logo">
+        <div class="column" style="background-color: #222222">
+            <div style="list-style: none; line-height: 2;">
                 <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
-                <a href="http://scu.edu.cn/"><img src="./img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
-                <a href="http://scu.edu.cn/"><img src="./img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
+                <a href="http://scu.edu.cn/"><img src="../img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
+                <a href="http://scu.edu.cn/"><img src="../img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
             </div>
             <!-- timeboxed column --><!-- /end timeboxed column -->
 
@@ -44,57 +43,50 @@
         </div>
 
         <div id="header" class="is-hidden-mobile">
-            <h1>数学视界</h1>
+            <h1 style="font-size:30px"><a href="../index">数学视界</a>><u th:utext="${classname}"></u>用户管理</h1>
             <div class="login">
                 <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
                 <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
+                <a th:href="@{/mymsg}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->消息</a>
                 <a th:href="@{/logout}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->退出</a>
 
             </div>
 
             <div class="search-block level-right">
-                <form class="level-item mini-search" method="GET" action="https://arxiv.org/search">        <!--_-->
+                <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
                     <div class="field has-addons">
                         <div class="control">
-                            <input class="input is-small" type="text" name="query" placeholder="搜索..." aria-label="Search term or terms">
-                            <p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>              <!---->
+                            <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+                            <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
                         </div>
                         <div class="control">
-                            <div class="select is-small">
-                                <select name="searchtype" aria-label="Field to search">
-                                    <option value="all" selected="selected">所有文件</option>
-                                    <option value="title">Title</option>                                                          <!--更改下拉菜单项-->
-                                    <option value="author">Author</option>
-                                    <option value="abstract">Abstract</option>
-                                    <option value="comments">Comments</option>
-                                    <option value="journal_ref">Journal reference</option>
-                                    <option value="acm_class">ACM classification</option>
-                                    <option value="msc_class">MSC classification</option>
-                                    <option value="report_num">Report number</option>
-
-                                    <option value="doi">DOI</option>
-                                    <option value="orcid">ORCID</option>
-
-                                    <option value="help">Help pages</option>
-                                    <option value="full_text">Full text</option>
+                            <div >
+                                <select name="fieldname" aria-label="Field to search">
+                                    <option value="title" selected="selected">名字</option>
+                                    <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
                                 </select>
                             </div>
                         </div>
-                        <input type="hidden" name="source" value="header">
+                        <div class="control">
+                            <div >
+                                <select name="sortname" aria-label="Field to search">
+                                    <option value="createtime" selected="selected">上传时间</option>
+                                    <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
                         <button class="button is-small is-cul-darker">搜索</button>
                     </div>
                 </form>
             </div>
-
-        </div><!-- /end desktop header -->
 
         <div class="mobile-header">                         <!--手机界面-->
             <div class="columns is-mobile" >
                 <div class="column logo-arxiv"><a href="http://math.scu.edu.cn/" style="color:white ;font-size:25px">数学学院</a></div>
                 <div class="column logo-cornell"><a href="http://math.scu.edu.cn/">
                     <picture>
-                        <img src="./img/sculogo.png"  style="width: 50px;height: 50px;" alt="Sichuan University Logo">
-                        <img src="./img/scuname.png" style="width: 120px;height: 50px;">
+                        <img src="../img/sculogo.png"  style="width: 50px;height: 50px;" alt="Sichuan University Logo">
+                        <img src="../img/scuname.png" style="width: 120px;height: 50px;">
                     </picture>
                 </a></div>
                 <div class="column nav" id="toggle-container" role="menubar">
@@ -118,14 +110,14 @@
     </header>
 
     <main>
-       <table class="message-general">
+       <div class="message-general">
            <tbody>
-           <tr><td><b>用户名：</b><a th:utext="${username}"></a></td></tr>
-           <tr><td><b>用户类型：</b><a th:utext="${type}"></a></td></tr>
-           <tr><td><b>邮箱：</b><a th:utext="${email}"></a></td></tr>
-           <tr><td><b>创建时间：</b><a th:utext="${#dates.format(createtime,'yyyy-MM-dd HH:mm:ss')}"></a></td></tr>
+           <b>用户名：</b><a th:utext="${username}"></a><br>
+           <b>用户类型：</b><a th:utext="${type}"></a><br>
+           <b>邮箱：</b><a th:utext="${email}"></a><br>
+           <b>创建时间：</b><a th:utext="${#dates.format(createtime,'yyyy-MM-dd HH:mm:ss')}"></a>
            </tbody>
-       </table>
+       </div>
         <!--<div class="message-general">
             <div>
                 <ul class="list-unstyled mt-4">
@@ -145,17 +137,59 @@
 
 
         <div class="message-general">
-            <b>上传文件：</b>
+        <b>上传文件：</b>
+        <br>
+        <form method="post" enctype="multipart/form-data" th:action="@{/user/upload}" class="breathe-vertical">
+            <div>
+                <input type="file"
+                       id="paperfile" name="paperfile" lang="es" required="">
+                <br>
+                <!--<label  for="paperfile" data-browse="文件">选择论文</label>-->
+                <b class="label" >选择论文类别:</b>
+                <!--<input id="fatherid" name="fatherid" class="input is-medium"
+                    required="" type="text" value="">-->
+                <label><input type="checkbox" name="fatherid" value="logic">数理逻辑与数学基础</label>
+                <label><input type="checkbox" name="fatherid" value="compute">计算数学</label>
+                <label><input type="checkbox" name="fatherid" value="number">数论</label>
+                <label><input type="checkbox" name="fatherid" value="algebra">代数</label>
+                <label><input type="checkbox" name="fatherid" value="geometry">几何</label>
+                <label><input type="checkbox" name="fatherid" value="topology">拓扑</label>
+                <label><input type="checkbox" name="fatherid" value="analysis">数学分析</label>
+                <label><input type="checkbox" name="fatherid" value="ODE">常微分方程</label>
+                <label><input type="checkbox" name="fatherid" value="PDE">偏微分方程</label>
+                <label><input type="checkbox" name="fatherid" value="dynamical">动力系统</label>
+                <label><input type="checkbox" name="fatherid" value="functional">泛函分析</label>
+                <label><input type="checkbox" name="fatherid" value="probability">概率论</label>
+                <label><input type="checkbox" name="fatherid" value="statistics">统计学</label>
+                <label><input type="checkbox" name="fatherid" value="opsearch">运筹学</label>
+                <label><input type="checkbox" name="fatherid" value="combinatorial">组合数学</label>
+                <label><input type="checkbox" name="fatherid" value="fuzzy">模糊数学</label>
+                <label><input type="checkbox" name="fatherid" value="quantum">量子数学</label>
+                <label><input type="checkbox" name="fatherid" value="applied">应用数学</label>
+                <br>
+                <b class="label" for="content">摘要</b><br>
+                <!--<input id="content" name="content" class="input is-medium"
+                       required="" type="text" value="">-->
+                <textarea style="width:50%;height:91px;"  id="content" name="content" class="input is-medium"
+                          required="" type="text" value=""></textarea>
+                <button type="submit" >立即上传</button>
+            </div>
+        </form>
+        <div th:text="${error}"></div>
+    </div>
+        <div class="message-general">
+            <b>发布悬赏：</b>
             <br>
-            <form method="post" enctype="multipart/form-data" th:action="@{/user/upload}" class="breathe-vertical">
+            <form method="post" enctype="multipart/form-data" th:action="@{/user/reward}" class="breathe-vertical">
                 <div>
-                    <input type="file"
-                        id="paperfile" name="paperfile" lang="es" required="">
+                    <b class="label" for="title">悬赏主题</b>
+                    <input id="title" name="title" class="input is-medium"
+                           required="" type="text" value="">
                     <br>
-                        <!--<label  for="paperfile" data-browse="文件">选择论文</label>-->
-                    <label class="label" >选择论文类别:</label>
-                        <!--<input id="fatherid" name="fatherid" class="input is-medium"
-                            required="" type="text" value="">-->
+                    <!--<label  for="paperfile" data-browse="文件">选择论文</label>-->
+                    <b class="label" >选择问题类别:</b>
+                    <!--<input id="fatherid" name="fatherid" class="input is-medium"
+                        required="" type="text" value="">-->
                     <label><input type="checkbox" name="fatherid" value="logic">数理逻辑与数学基础</label>
                     <label><input type="checkbox" name="fatherid" value="compute">计算数学</label>
                     <label><input type="checkbox" name="fatherid" value="number">数论</label>
@@ -175,15 +209,15 @@
                     <label><input type="checkbox" name="fatherid" value="quantum">量子数学</label>
                     <label><input type="checkbox" name="fatherid" value="applied">应用数学</label>
                     <br>
-                    <label class="label" for="content">摘要</label>
-                    <input id="content" name="content" class="input is-medium"
-                            required="" type="text" value="">
-                    <button type="submit" >立即上传</button>
-                    <div  th:text="${error}"></div>
+                    <b class="label" for="rewardcontent">问题、悬赏描述</b><br>
+                    <!--<input id="rewardcontent" name="content" class="input is-medium"
+                           required="" type="text" value="">-->
+                    <textarea style="width:50%;height:91px;"  id="rewardcontent" name="content" class="input is-medium"
+                              required="" type="text" value=""></textarea>
+                    <button type="submit" >立即发布</button>
                 </div>
-
             </form>
-            <div th:text="${error}"></div>
+            <div  th:text="${error1}"></div>
         </div>
         <div class="message-general">
             <b>修改密码：</b>

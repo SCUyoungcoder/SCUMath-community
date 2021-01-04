@@ -145,13 +145,12 @@ public class UserController {
         List<Map<String ,Object>> papers = new ArrayList<>();
         if (searchpapers !=null){
             for (Paper paper:searchpapers){
-                if(paper.getStatus()==0){
-                    /*整合时，以下部分放入if里*/
+                if(paper.getStatus()==0){                   /*针对论文的搜索，是否需要写针对悬赏的搜索*/
+                    Map<String,Object> map = new HashMap<>();
+                    paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
+                    map.put("paper",paper);
+                    papers.add(map);
                 }
-                Map<String,Object> map = new HashMap<>();
-                paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
-                map.put("paper",paper);
-                papers.add(map);
             }
         }
         model.addAttribute("papers",papers);
@@ -182,6 +181,31 @@ public class UserController {
             paperRepository.save(pp);
        //return "/site/adminmanage";
         return "redirect:/user/manage";
+   }
+   @LoginRequired
+   @RequestMapping(path = "/reward",method = RequestMethod.POST)
+   public String offerreward(Paper paper,Model model){
+       User user = hostHolder.getUser();
+       Date dayy=new Date();
+       paper.setCreatetime(dayy);
+       paper.setUserid(user.getId());
+       paper.setStatus(2);
+       paperOfClassService.uploadpaper(paper);
+       paperRepository.save(paper);                                                /*每次上传论文存储信息进数据库的同时也存储进elasticsearth*/
+       model.addAttribute("error1", "悬赏发布成功！");
+       model.addAttribute("username",user.getUsername());
+       model.addAttribute("email",user.getEmail());
+       model.addAttribute("createtime",user.getCreateTime());
+       if (user.getType()==0){
+           model.addAttribute("type","普通用户");
+       }else {
+           model.addAttribute("type","管理员");
+       }
+       if (user.getType()==1){
+           return "/site/adminmanage";
+       }else {
+           return "/site/usermanage";
+       }
    }
     /*上传表单必须用post.....model用于向页面返回数据*/
     /*上传论文时同时需要输入fatherid，content ,是否需要添加作者字段*/
@@ -264,6 +288,14 @@ public class UserController {
         paperOfClassService.uploadpaper(paper);
         paperRepository.save(paper);                                                /*每次上传论文存储信息进数据库的同时也存储进elasticsearth*/
         model.addAttribute("error", "上传成功！");
+        model.addAttribute("username",user.getUsername());
+        model.addAttribute("email",user.getEmail());
+        model.addAttribute("createtime",user.getCreateTime());
+        if (user.getType()==0){
+            model.addAttribute("type","普通用户");
+        }else {
+            model.addAttribute("type","管理员");
+        }
         if (user.getType()==1){
             return "/site/adminmanage";
         }else {
@@ -348,6 +380,14 @@ public class UserController {
         User user = hostHolder.getUser();
         userService.updatepassword(user.getId(),password);
         model.addAttribute("passwordMsg","密码更改成功！");
+        model.addAttribute("username",user.getUsername());
+        model.addAttribute("email",user.getEmail());
+        model.addAttribute("createtime",user.getCreateTime());
+        if (user.getType()==0){
+            model.addAttribute("type","普通用户");
+        }else {
+            model.addAttribute("type","管理员");
+        }
         if (user.getType()==1){
             return "/site/adminmanage";
         }else {
