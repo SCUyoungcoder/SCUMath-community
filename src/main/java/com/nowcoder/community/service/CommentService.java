@@ -17,6 +17,12 @@ public class CommentService {
     public List<Comment> selectcommentByEntity(int entitytype,int entityid){
         return commentMapper.selectByEntity(entitytype,entityid);
     }
+    public List<Comment> selectByUserid(int userid){
+        return commentMapper.selectByUserid(userid);
+    }
+    public List<Comment> selectcommentByEntityandtargit(int entitytype,int entityid,int targetid){
+        return commentMapper.selectByEntityandtargitid(entitytype,entityid,targetid);
+    }
     public List<Comment> selectcommentByTarget(int targetid){
         return commentMapper.selectByTargetid(targetid);
     }

@@ -187,6 +187,7 @@
                     <textarea placeholder="请输入你的观点!" name="content"></textarea>
                     <input type="hidden" name="entitytype" value="0">
                     <input type="hidden" name="entityid" th:value="${paper.id}">
+                    <input type="hidden" name="targetid" th:value="${paper.userid}">
                     <button type="submit" >回复</button>
                 </form>
             </div>

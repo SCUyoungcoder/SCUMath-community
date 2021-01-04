@@ -17,10 +17,20 @@
         from comment
         where id = #{id}
     </select>
+    <select id="selectByUserid" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where user_id = #{userid}
+    </select>
     <select id="selectByEntity" resultType="Comment">
         select <include refid="selectFields"></include>
         from comment
         where entity_type = #{entitytype} and entity_id = #{entityid}
+    </select>
+    <select id="selectByEntityandtargitid" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where entity_type = #{entitytype} and entity_id = #{entityid} and target_id != #{targetid}
     </select>
     <select id="selectByTargetid" resultType="Comment">
         select <include refid="selectFields"></include>
