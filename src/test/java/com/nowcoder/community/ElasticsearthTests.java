@@ -55,7 +55,7 @@ public class ElasticsearthTests {
     }
     @Test
     public void esinsertList(){
-        paperRepository.saveAll(paperMapper.selecyByUserid(112));
+        paperRepository.saveAll(paperMapper.selecyByUserid(110));
         paperRepository.saveAll(paperMapper.selecyByUserid(111));
     }
     @Test
@@ -69,7 +69,7 @@ public class ElasticsearthTests {
         paperRepository.deleteById(2);
 
         /*删除所有数据*/
-        /*paperRepository.deleteAll();*/
+        paperRepository.deleteAll();
     }
     @Test
     public void searchByRepository(){

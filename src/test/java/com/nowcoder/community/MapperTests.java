@@ -28,6 +28,11 @@ public class MapperTests {
     @Autowired
     private ClassificationMapper classificationMapper;
     @Test
+    public void xxx(){
+        User user = userMapper.selectById(111);
+        System.out.println(user);
+    }
+    @Test
     public void selectallclass(){
         List<Classification> classes = classificationMapper.selectAll();
         for (Classification class1:classes){
@@ -59,7 +64,7 @@ public class MapperTests {
         comment.setUserid(3);
         comment.setEntitytype(4);
         comment.setEntityid(5);
-        comment.setTargetid(6);
+        /*comment.setTargetid(6);*/
         comment.setContent("dsad545");
         comment.setStatus(7);
         comment.setCreatetime(dayy);

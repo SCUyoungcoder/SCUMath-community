@@ -3,7 +3,7 @@
 <!doctype html>
 <!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>数学视界</title>
+  <title>注册结果</title>
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
   <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
@@ -13,65 +13,59 @@
 </head><body id="front" class="with-cu-identity">
   
 <div class="flex-wrap-footer">
-    <header ><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
-      <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
-      <!-- start desktop header -->
-      <div class="columns is-vcentered is-hidden-mobile" id="cu-identity">
-        <div class="column" id="cu-logo">
-         <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
-        <a href="http://scu.edu.cn/"><img src="./img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
-        <a href="http://scu.edu.cn/"><img src="./img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
-        </div>
-        <!-- timeboxed column --><!-- /end timeboxed column -->
+  <header th:fragment="header"><!--复用header，在另一个header上调用th:replace="index::header"覆盖原有header的内容-->
+    <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
+    <!-- start desktop header -->
+    <div class="column" style="background-color: #222222">
+      <div style="list-style: none; line-height: 2;">
+        <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
+        <a href="http://scu.edu.cn/"><img src="../img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
+        <a href="http://scu.edu.cn/"><img src="../img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
+      </div>
+      <!-- timeboxed column --><!-- /end timeboxed column -->
 
-        <!--<div class="column" id="support-ack">
-          <a >本网页为内部网页仅用于四川大学<br>数学学院师生交流学习<br></a>
-        </div>-->
+      <!--<div class="column" id="support-ack">
+        <a >本网页为内部网页仅用于四川大学<br>数学学院师生交流学习<br></a>
+      </div>-->
+    </div>
+
+    <div id="header" class="is-hidden-mobile">
+      <h1 style="font-size:30px"><a th:href="@{../index}">数学视界</a>><u th:utext="${classname}"></u>注册结果</h1>
+      <div class="login">
+        <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
+        <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
+        <a th:href="@{/mymsg}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->消息</a>
+        <a th:href="@{/logout}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->退出</a>
+
       </div>
 
-      <div id="header" class="is-hidden-mobile">
-        <h1>数学视界</h1>
-        <div class="login">
-
-              <a th:href="@{/login}">登录</a>       <!---->
-
-        </div>
-        
-  <div class="search-block level-right">
-    <form class="level-item mini-search" method="GET" action="https://arxiv.org/search">        <!--_-->
-      <div class="field has-addons">
-        <div class="control">
-          <input class="input is-small" type="text" name="query" placeholder="搜索..." aria-label="Search term or terms">
-          <p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>              <!---->
-        </div>
-        <div class="control">
-          <div class="select is-small">
-            <select name="searchtype" aria-label="Field to search">
-              <option value="all" selected="selected">所有文件</option>
-              <option value="title">Title</option>                                                          <!--更改下拉菜单项-->
-              <option value="author">Author</option>
-              <option value="abstract">Abstract</option>
-              <option value="comments">Comments</option>
-              <option value="journal_ref">Journal reference</option>
-              <option value="acm_class">ACM classification</option>
-              <option value="msc_class">MSC classification</option>
-              <option value="report_num">Report number</option>
-              
-              <option value="doi">DOI</option>
-              <option value="orcid">ORCID</option>
-              
-              <option value="help">Help pages</option>
-              <option value="full_text">Full text</option>
-            </select>
+      <div class="search-block level-right">
+        <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
+          <div class="field has-addons">
+            <div class="control">
+              <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+              <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
+            </div>
+            <div class="control">
+              <div >
+                <select name="fieldname" aria-label="Field to search">
+                  <option value="title" selected="selected">名字</option>
+                  <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
+                </select>
+              </div>
+            </div>
+            <div class="control">
+              <div >
+                <select name="sortname" aria-label="Field to search">
+                  <option value="createtime" selected="selected">上传时间</option>
+                  <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+                </select>
+              </div>
+            </div>
+            <button class="button is-small is-cul-darker">搜索</button>
           </div>
-        </div>
-        <input type="hidden" name="source" value="header">
-        <button class="button is-small is-cul-darker">搜索</button>
+        </form>
       </div>
-    </form>
-  </div>
-       
-     </div><!-- /end desktop header -->
 
       <div class="mobile-header">                         <!--手机界面-->
         <div class="columns is-mobile" >

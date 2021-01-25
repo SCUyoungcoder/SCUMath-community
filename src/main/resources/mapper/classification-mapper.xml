@@ -21,6 +21,11 @@
         where id = #{id}<!--#字段表明引用方法的参数int id-->
     </select>
 
+    <select id="selectBySearchname" resultType="Classification">
+        select <include refid="selectFields"></include>
+        from classification
+        where searchname = #{searchname}
+    </select>
     <select id="selectByName" resultType="Classification">
         select <include refid="selectFields"></include>
         from classification

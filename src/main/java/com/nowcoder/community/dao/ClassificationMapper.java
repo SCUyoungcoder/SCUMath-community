@@ -9,6 +9,7 @@ import java.util.List;
 public interface ClassificationMapper {
     Classification selectById(int id);
     Classification selectByName(String name);
+    Classification selectBySearchname(String searchname);
     List<Classification> selectAll();
     int insertClassification(Classification classification);
     int deleteByName(String name);

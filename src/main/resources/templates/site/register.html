@@ -1,14 +1,17 @@
 <!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
 <!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" >-->
+
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" >-->
 <!doctype html>
 <!-- saved from url=(0039)file:///C:/Users/sleep/Desktop/123.html -->
-<html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>数学视界</title>
-  <link rel="icon" type="image/x-icon" href="./img/sculogo.png"/>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+<html xmlns:th="www.thymeleaf.org" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>注册</title>
+  <link rel="icon" type="image/x-icon" th:href="@{/img/sculogo.png}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumath.css}">
   <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/browse_search.css}">
-  <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/scumathcat.css}">
+  <link rel="stylesheet" th:href="@{/css/scumathstyle.css}">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <script>
     function check(){
 	if(document.getElementById("password").value!=
@@ -22,34 +25,35 @@
 	}
 }
   </script>
+  <!-- Pendo -->
+  <!--运行前调用预处理-->
+
 </head><body id="front" class="with-cu-identity">
-  
+
 <div class="flex-wrap-footer">
-    <header>
-      <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
-      <!-- start desktop header -->
-      <div class="columns is-vcentered is-hidden-mobile" style="padding: 0px; margin: 0px; height: 73px;" id="cu-identity">
-        <div class="column" style="padding-top: 11  px;" id="cu-logo" >
-         <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
-        <a href="http://scu.edu.cn/"><img src="./img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
-        <a href="http://scu.edu.cn/"><img src="./img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
-        </div>
-
-        <!-- timeboxed column --><!-- /end timeboxed column -->
-
-        <!--<div class="column" id="support-ack">
-          <a >本网页为内部网页仅用于四川大学<br>数学学院师生交流学习<br></a>
-        </div>-->
+  <header>
+    <!--<a href="https://arxiv.org/#content" class="is-sr-only">Skip to main content</a>-->
+    <!-- start desktop header -->
+    <div class="columns is-vcentered is-hidden-mobile" style="padding: 0px; margin: 0px; height: 73px;" id="cu-identity">
+      <div class="column" style="padding-top: 0px; padding-left: 12px;" id="cu-logo" >
+        <!--<a href="https://www.cornell.edu/"><img src="./123_files/cornell-reduced-white-SMALL.svg" alt="Sichuan University"></a>-->
+        <a href="http://scu.edu.cn/"><img src="../img/sculogo.png" style="width: 50px;height: 50px;" alt="Sichuan University"></a>
+        <a href="http://scu.edu.cn/"><img src="../img/scuname.png" style="width: 120px;height: 50px;" alt="Sichuan University"></a>
       </div>
 
-       <div id="header" class="is-hidden-mobile" style="height: 58px;padding-top: 20px; overflow: hidden;">
-        <h1 style="font-size: 40px;"><a th:href="@{index}">数学视界</a>>注册</h1>
-        <div class="login">
+      <!-- timeboxed column --><!-- /end timeboxed column -->
 
-  
-  </div>
-       
-     </div><!-- /end desktop header -->
+      <!--<div class="column" id="support-ack">
+        <a >本网页为内部网页仅用于四川大学<br>数学学院师生交流学习<br></a>
+      </div>-->
+    </div>
+
+    <div id="header" class="is-hidden-mobile" style="height: 92px;padding-top: 7px;overflow: hidden;">
+      <h1 style="font-size: 30px;"><a th:href="@{../index}">数学视界</a>>注册</h1>
+      <div class="login">
+
+
+      </div>
 
       <div class="mobile-header" >                         <!--手机界面-->
         <div class="columns is-mobile">
@@ -69,22 +73,12 @@
         <!-- Display status and error messages -->
                       
 
-<h1>注册川大数学视界</h1>
+<b style="font-size:20px">注册川大数学视界</b>
 
-
-
-
-
-<p><b>You should only register with arXiv once:</b> 
-arXiv associates papers that you have submitted with your user account. 
-We must retain the information you submit for registration indefinitely in order to preserve the scholarly record, support academic integrity, and prevent abuse of our systems.
-If you register twice, with different accounts, your submission history will be inaccurate.</p>
-<br>
 <form th:action="@{/register}" method="post" enctype="multipart/form-data" accept="us-ascii,utf8" onsubmit="return check()">
 <div class="widget" >
-  <div class="widgetTitle">Email:</div>
-  <p>You <b>must</b> be able to receive mail at this address to register. We take <a href="https://arxiv.org/help/email-protection">strong measures</a> to protect your email address from viruses 
-  and spam. Do not register with an e-mail address that belongs to someone else: if we discover that you've done so, we will suspend your account.</p>
+  <div class="widgetTitle">邮箱:</div>
+  <br>
   <div class="widgetElement">
 <div>
 <!--<label for="email"></label>-->
@@ -100,7 +94,7 @@ If you register twice, with different accounts, your submission history will be 
 
 <div class="widget" id="username" >
   <div class="widgetTitle">
-    Username:
+    用户名:
   </div>
   <br>
 
@@ -123,7 +117,7 @@ If you register twice, with different accounts, your submission history will be 
 
 <div class="widget" >
   <div class="widgetTitle">
-    Password:
+    密码:
   </div>
   <br>
   <div class="widgetElement">
@@ -132,13 +126,13 @@ If you register twice, with different accounts, your submission history will be 
         <tr>
           <td align="left">
             <div class="widgetSubtitle">
-              Enter Password
+              输入密码
             </div>
           </td>
 
           <td align="left">
             <div class="widgetSubtitle">
-              Re-enter Password
+              重复密码
             </div>
           </td>
         </tr>
