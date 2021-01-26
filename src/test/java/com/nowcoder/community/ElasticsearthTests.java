@@ -55,7 +55,7 @@ public class ElasticsearthTests {
     }
     @Test
     public void esinsertList(){
-        paperRepository.saveAll(paperMapper.selecyByUserid(110));
+        paperRepository.saveAll(paperMapper.selecyByUserid(113));/* 这里Userid必须是云数据库里已有的，否则会报错 */
         paperRepository.saveAll(paperMapper.selecyByUserid(111));
     }
     @Test

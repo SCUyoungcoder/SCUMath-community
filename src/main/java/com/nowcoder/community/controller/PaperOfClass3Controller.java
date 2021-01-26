@@ -38,7 +38,7 @@ public class PaperOfClass3Controller {
 
     //paperofclass?classname=XXX  6.6课选用GET方式传参，参数通过
     @RequestMapping(path = "/paperofclass", method = RequestMethod.GET)
-    public String searchpaperofclass(String classname, Page page, Model model) {//此处前端的classname参数的形式是String
+    public String searchpaperofclass(String classname,Model model,Page page) {//此处前端的classname参数的形式是String
         //搜索论文(6.6课22：56开始介绍查询的controller)
         org.springframework.data.domain.Page<Paper> searchResult =
                 elasticsearchClassService.searchPaperByClass(classname,page.getCurrent() - 1 ,page.getLimit());
@@ -46,29 +46,32 @@ public class PaperOfClass3Controller {
         List<Map<String,Object>> papers = new ArrayList<>();//声明聚合的结果——一个集合，里面封装的Map，命名为papers，这是我最终实例化的结果
         if(searchResult != null){
             for (Paper paper : searchResult){//遍历，每次都会得到一个paper（论文）
-                if( paper.getStatus()==0){
+                //if( paper.getStatus()==0){
                     Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
                     /*显示用户名*/
                     paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
                     map.put("paper",paper);
                     //如果还有啥需要往里放的还可以添加，写好相应的service，然后继续map.put()即可
                     papers.add(map);//得到聚合数据map后，装进集合里
-                }
-                /*下面这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
+                //}
+                /*备注：Map<String,Object> map这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
             }
         }
         /*System.out.println(papers);*/
         model.addAttribute("papers",papers);//得到的最终数据要传给模板/页面
         model.addAttribute("classname",classificationService.GetNameBySearchname(classname).getName());//希望返回的页面上也带上刚刚的classname参数信息
-        //分页信息
-        page.setPath("/paperofclass?classname=" + classname);//路径
-        page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
 
-        System.out.print(papers);
-        System.out.print(page);
+        //分页信息
+        page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
+        page.setPath("/paperofclass?classname=" + classname);//路径
+
+        System.out.print(papers);//测试用
+        System.out.print(page.getRows());
         return "/paperofclass";//返回第二级网页
     }
 
+
+    //第三级页面——论文详情页
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
     public String PaperDerail(int id,Page page,Model model){
         Paper paper = paperOfClassService.selectPaperById(id);

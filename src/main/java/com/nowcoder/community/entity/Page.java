@@ -1,7 +1,7 @@
 package com.nowcoder.community.entity;
 
 /**
- * 封装分页相关的信息.
+ * 封装分页相关的信息.   （1.30课 1：00：58开始）
  */
 public class Page {
 
@@ -12,14 +12,14 @@ public class Page {
     // 数据总数(用于计算总页数)
     private int rows;
     // 查询路径(用于复用分页链接)
-    private String path;
+    private String path; //点击“上一页；下一页”这些，都是链接，返回给页面，方便使用
 
     public int getCurrent() {
         return current;
     }
 
     public void setCurrent(int current) {
-        if (current >= 1) {
+        if (current >= 1) {   //避免用户输入零或负数的情况
             this.current = current;
         }
     }
@@ -58,7 +58,7 @@ public class Page {
      * @return
      */
     public int getOffset() {
-        // current * limit - limit
+        // current * limit - limit 通过当前页来算当前页的起始行
         return (current - 1) * limit;
     }
 
@@ -68,7 +68,7 @@ public class Page {
      * @return
      */
     public int getTotal() {
-        // rows / limit [+1]
+        // rows / limit [+1]  //显示页码范围——边界判断
         if (rows % limit == 0) {
             return rows / limit;
         } else {
@@ -77,13 +77,13 @@ public class Page {
     }
 
     /**
-     * 获取起始页码
+     * 获取起始页码（就是底下那个框框条，如果有10个分页并不完全展示出来，显示当前页的前后两页）
      *
      * @return
      */
     public int getFrom() {
         int from = current - 2;
-        return from < 1 ? 1 : from;
+        return from < 1 ? 1 : from;//如果减完发现小于1，那就定为1（最小页码为1）
     }
 
     /**
@@ -94,7 +94,7 @@ public class Page {
     public int getTo() {
         int to = current + 2;
         int total = getTotal();
-        return to > total ? total : to;
+        return to > total ? total : to;//最大页码为total
     }
 
 }
