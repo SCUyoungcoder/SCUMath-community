@@ -103,29 +103,28 @@
             <div>
                 <!-- 论文列表 -->
                 <ul class="list-unstyled mt-4">
-                    <li class="media pb-3 pt-3 mb-3 border-bottom"><!--//遍历map:${papers}"-->
+                    <li class="media pb-3 pt-3 mb-3 border-bottom"><!--论文详情页，一篇paper由PaperOfClass3Controller加入model"-->
                         <!--//不需要论文头像【删去此行原本的代码】-->
                         <div class="media-body">            <!--<b th:if="${cct.targetname}" th:utext="${cct.targetname}"></b>-->
-                            <h6  class="mt-0 mb-3">
-                                <!--//论文标题（需要做动态处理），另外标题应该能链接到具体论文详情页面上，地址设为/paper/detail/（论文的id）-->
-                                <a th:if="${paper.status}==0" th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
-
-                            </h6>
-                            <h1><b th:if="${paper.status}==2" th:utext="${paper.title}"></b></h1>
+                            <h2  class="mt-0 mb-3">
+                                <!--//普通论文（status==0）标题，另外点击标题为下载论文链接-->
+                                <a th:if="${paper.status}==0" th:href="@{|${paper.filepath}|}" th:utext="${paper.title}">普通论文标题</a>
+                            </h2>
+                            <h2>
+                                <!--//悬赏问题（status==2）标题，无下载链接-->
+                                <b th:if="${paper.status}==2" th:utext="${paper.title}">悬赏问题标题</b>
+                            </h2>
                             <div class="mb-3"><!--论文简介-->
                                 <b th:if="${paper.status}==0">摘要：</b>
                                 <b th:if="${paper.status}==2">问题、悬赏描述:</b>
-                                <h th:utext="${paper.content}"></h>
+                                <h th:utext="${paper.content}">简介内容</h>
                             </div>
-                            <b>类别：</b>
+                            <b>类别：</b><!--论文所属标签-->
                             <h class="mb-3" th:each="fathername:${fathernames}">
-                                <h th:utext="${fathername}"></h>
+                                <h th:utext="${fathername}">标签</h>
                             </h>
-                            <div  class="text-muted font-size-12">
-                                <u  class="mr-3" th:utext="${username}"> </u>发布于<h th:text="${#dates.format(paper.createtime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</h>
-                                <!--<ul  class="d-inline float-right" style="float:rigth">
-                                    <li class="d-inline ml-2">下载次数: <i th:text="${paper.downloadcount}"></i></li>
-                                </ul>-->
+                            <div  class="text-muted font-size-12"><!--其他详情-->
+                                <u  class="mr-3" th:utext="${username}">论文上传者</u>发布于<h th:text="${#dates.format(paper.createtime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</h>
                                 <h th:if="${paper.status}==0" style="float:right">下载次数：<h th:text="${paper.downloadcount}"></h></h>
                             </div>
                         </div>
@@ -140,24 +139,30 @@
                 <!--<div  style="float:right">评论</div>-->
                 <ul>
                     <li th:each="comment:${comments}">
+                        <!--每份comment含id; username; content; createtime; commentcomments(每份commentcomment含id; userid; username; content; createtime; targetname)-->
                         <br>
                         <div>
-                            <b style="" th:utext="${comment.username}"></b>
+                            <b style="" th:utext="${comment.username}">评论者名称</b>
                         </div>
-                        <div th:utext="${comment.content}"></div>
+                        <div th:utext="${comment.content}">评论</div>
                         <div><span>发布于<h th:utext="${#dates.format(comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></h></span></div>
                         <ul>
                             <li th:each="cct:${comment.commentcomments}">
                                 <br>
-
-                                    <b th:utext="${cct.username}"></b><h th:if="${cct.targetname}">回复</h><b th:if="${cct.targetname}" th:utext="${cct.targetname}"></b>
-                                    <h th:utext="${cct.content}"></h>
-
+                                <span th:if="${cct.type == 0}"><!--主评论-->
+                                    <b th:utext="${cct.username}">对上述评论comment作评论的评论者名称</b>：
+                                </span>
+                                <span th:if="${cct.type== 1}"><!--次评论-->
+                                    <b th:utext="${cct.username}">评论者名称</b>回复
+                                    <b th:utext="${cct.targetname}">如果是针对具体的人回复，则显示被针对回复者的名称</b>：
+                                </span>
+                                <h th:utext="${cct.content}">评论具体内容</h>
                                 <!--<div th:utext="${cct.content}"></div>-->
                                 <div style="float:right">
                                     <form method="POST" th:action="@{|/add/${paper.id}|}">
                                         <textarea th:placeholder="|回复${cct.username}|" name="content"></textarea>
-                                        <input type="hidden" name="entitytype" value="1">
+                                        <input type="hidden" name="entitytype" value="1"><!--次评论-->
+                                        <input type="hidden" name="type" value="1">
                                         <input type="hidden" name="entityid" th:value="${comment.id}">
                                         <input type="hidden" name="targetid" th:value="${cct.userid}">
                                         <button type="submit" >回复</button>
@@ -165,34 +170,29 @@
                                 </div>
                                 <br>
                                 <span><h th:utext="${#dates.format(cct.createtime,'yyyy-MM-dd HH:mm:ss')}"></h></span>
-
-
-
                                 <div style="border-bottom:1px solid #CCC"></div>
                             </li>
                         </ul>
                         <form method="POST" th:action="@{|/add/${paper.id}|}">
                             <textarea placeholder="请输入你的观点!" name="content"></textarea>
-                            <input type="hidden" name="entitytype" value="1">
+                            <input type="hidden" name="entitytype" value="1"><!--主评论-->
+                            <input type="hidden" name="type" value="0">
                             <input type="hidden" name="entityid" th:value="${comment.id}">
+                            <input type="hidden" name="targetid" th:value="${comment.userid}">
                             <button type="submit" >回复</button>
                         </form>
                         <div style="border-bottom:1px solid #CCC"></div>
                     </li>
                 </ul>
                 <form method="POST" th:action="@{|/add/${paper.id}|}">
-                    <textarea placeholder="请输入你的观点!" name="content"></textarea>
-                    <input type="hidden" name="entitytype" value="0">
+                    <textarea placeholder="在这里畅所欲言你的看法吧!" name="content"></textarea>
+                    <input type="hidden" name="entitytype" value="0"><!--对论文的评论-->
                     <input type="hidden" name="entityid" th:value="${paper.id}">
                     <input type="hidden" name="targetid" th:value="${paper.userid}">
                     <button type="submit" >回复</button>
                 </form>
             </div>
-
-
         </div>
-
-
     </main>
 
     <footer style="clear: both;">

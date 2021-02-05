@@ -12,6 +12,7 @@ public class Comment {
     private int status;
     private Date createtime;
     private int type;
+    private int table;
 
     public int getType() {
         return type;
@@ -19,6 +20,14 @@ public class Comment {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getTable() {
+        return table;
+    }
+
+    public void setTable(int table) {
+        this.table = table;
     }
 
     public int getId() {
@@ -97,6 +106,7 @@ public class Comment {
                 ", status=" + status +
                 ", createtime=" + createtime +
                 ", type=" + type +
+                ", table=" + table +
                 '}';
     }
 }

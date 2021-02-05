@@ -14,9 +14,10 @@ public class CommentService {
     private CommentMapper commentMapper;
 
 
-    public List<Comment> selectcommentByEntity(int entitytype,int entityid){
-        return commentMapper.selectByEntity(entitytype,entityid);
+    public List<Comment> selectcommentByEntity(int entitytype,int entityid,int status){
+        return commentMapper.selectByEntity(entitytype,entityid,status);
     }
+
     public List<Comment> selectByUserid(int userid){
         return commentMapper.selectByUserid(userid);
     }
@@ -27,6 +28,11 @@ public class CommentService {
         return commentMapper.selectByTargetid(targetid);
     }
     public Comment selectcommentById(int id){return commentMapper.selectById(id);}
+
+    public List<Comment> findcommentByTable(int status, int table){ //公告，由用户群组标签查
+        return commentMapper.selectCommentsByTable(status,table);
+    }
+
     public int addComment(Comment comment){
         if (comment == null){
             throw new IllegalArgumentException("参数不能为空！");
