@@ -28,7 +28,7 @@
                 </div>
 
                 <div id="header" class="is-hidden-mobile">
-                    <h1 style="font-size: 30px;"><a th:href="@{../index}">数学视界</a>><u th:utext="${classname}"></u>评论</h1>
+                    <h1 style="font-size: 30px;"><a th:href="@{../index}">数学视界</a>><u th:utext="${classname}"></u>公告</h1>
                     <div class="login">
                         <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
                         <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
@@ -87,40 +87,23 @@
             </div>
             <div class="message-general">
                 <!--<div>
-                    <h2>回复我的：</h2>
+                    <h2>系统通知：</h2>
                 </div>-->
-                <div th:each="message:${messages}">
-                    <span th:if="${message.comment.entitytype == 0}"><!--论文的评论-->
-                        <b th:utext="${message.username}">谁</b><h>在我<h th:if="${message.status}==0">上传的</h><h th:if="${message.status}==2">发布的</h>
-                            </h><a th:href="@{|/detail?id=${message.paperid}|}" th:utext="${message.papername}">某论文或问题标题</a><h>中发表了评论：</h>
-                        <h th:utext="${message.comment.content}">评论内容</h>
-                        <div style="float:right ">
-                            <form method="POST" action="/addinmsg"><!--这个回复就成为了主评论-->
-                                <textarea style="height: 37px;" th:placeholder="|回复${message.username}|" name="content"></textarea>
-                                <input type="hidden" name="entitytype" value="1">
-                                <input type="hidden" name="type" value="0">
-                                <input type="hidden" name="entityid" th:value="${message.comment.getId()}">
-                                <input type="hidden" name="targetid" th:value="${message.comment.getUserid()}">
-                                <button type="submit" >回复</button>
-                            </form>
-                        </div>
+                <div th:each="notice:${notices}">
+                    <span th:if="${notice.table == 111}"><!--发送给全体用户的通知-->
+                        <b>致全体用户：</b>
+                        <h th:utext="${notice.comment.content}">通知内容</h>
                     </span>
-                    <span th:if="${message.comment.entitytype == 1}"><!--评论的回复-->
-                        <b th:utext="${message.username}">谁</b><h>在</h><a th:href="@{|/detail?id=${message.paperid}|}" th:utext="${message.papername}">某论文或问题</a><h>中回复您：</h>
-                        <h th:utext="${message.comment.content}">回复的内容</h>
-                        <div style="float:right ">
-                            <form method="POST" action="/addinmsg"><!--这个回复就成为了次评论-->
-                                <textarea style="height: 37px;" th:placeholder="|回复${message.username}|" name="content"></textarea>
-                                <input type="hidden" name="entitytype" value="1">
-                                <input type="hidden" name="type" value="1">
-                                <input type="hidden" name="entityid" th:value="${message.comment.getEntityid()}">
-                                <input type="hidden" name="targetid" th:value="${message.comment.getUserid()}">
-                                <button type="submit" >回复</button>
-                            </form>
-                        </div>
+                    <span th:if="${notice.table == 1}"><!--发送给超级管理员的通知-->
+                        致亲爱的管理员用户：
+                        <h th:utext="${notice.comment.content}">通知内容</h>
+                    </span>
+                    <span th:if="${notice.table == 0}"><!--发送给普通用户的回复-->
+                        致亲爱的用户：
+                        <h th:utext="${notice.comment.content}">通知内容</h>
                     </span>
                     <br>
-                    <h th:utext="${#dates.format(message.comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></h>
+                    <h th:utext="${#dates.format(notice.comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></h>
                     <!--<button style="float:right">回复</button>-->
                     <div style="border-bottom:1px solid #CCC"></div>
                 </div>

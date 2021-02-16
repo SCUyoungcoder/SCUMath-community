@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//第二级 对应科目标签的论文展示页
+
 @Controller
 public class PaperOfClass3Controller {
     @Autowired
@@ -32,7 +32,7 @@ public class PaperOfClass3Controller {
     @Autowired
     private ElasticsearchClassService elasticsearchClassService;//基于ES搜索引擎的查询service
 
-
+//第二级 对应科目标签的论文展示页
     //【POST用法，现已弃用】需要第一级的前端表单<method="post" action="/paperofclass"> 传给此页面名为“classname”的参数【已弃用】
     //【POST用法，现已弃用】此方法下行要获取“科目标签”，只要直接声明参数，与表单名称（classname）一致，即可传过来【已弃用】
 
@@ -65,34 +65,34 @@ public class PaperOfClass3Controller {
         page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
         page.setPath("/paperofclass?classname=" + classname);//路径
 
-        System.out.print(papers);//测试用
+        //System.out.print(papers);//测试用
         System.out.print(page.getRows());
         return "/paperofclass";//返回第二级网页
     }
-
 
     //第三级页面——论文详情页
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
     public String PaperDerail(int id,Page page,Model model){
         Paper paper = paperOfClassService.selectPaperById(id);
-        List<Comment> papercomments = commentService.selectcommentByEntity(0,id);
+        List<Comment> papercomments = commentService.selectcommentByEntity(0,id,0);//status=评论，entitytype=论文
         List<Map<String,Object>> coms = new ArrayList<>();
         if (papercomments!=null) {
             for (Comment papercomment : papercomments) {
                 Map<String,Object> map = new HashMap<>();
-                List<Comment> commentcomments =commentService.selectcommentByEntity(1,papercomment.getId());
+                List<Comment> commentcomments =commentService.selectcommentByEntity(1,papercomment.getId(),0);//status=评论，entitytype=评论
                 if (commentcomments!=null){
                     List<Map<String,Object>> ccs = new ArrayList<>();
                     for (Comment commentcomment:commentcomments){
                         Map<String,Object> cc = new HashMap<>();
-                        if (commentcomment.getTargetid()!=0){       /*上传评论时，如果没有targetid数据库默认置0*/
-                            cc.put("targetname",userService.findUserById(commentcomment.getTargetid()).getUsername());
+                        if (commentcomment.getTargetid()!=0){       /*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*/
+                            cc.put("targetname",userService.findUserById(commentcomment.getTargetid()).getUsername());//由targetid拿到其targetname
                         }
                         else {
                             cc.put("targetname",null);
                         }
                         cc.put("id",commentcomment.getId());
                         cc.put("userid",commentcomment.getUserid());
+                        cc.put("type",commentcomment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
                         cc.put("username",userService.findUserById(commentcomment.getUserid()).getUsername());
                         cc.put("content",":"+commentcomment.getContent());
                         cc.put("createtime",commentcomment.getCreatetime());
@@ -105,6 +105,7 @@ public class PaperOfClass3Controller {
                 }
                 map.put("id",papercomment.getId());
                 map.put("username",userService.findUserById(papercomment.getUserid()).getUsername());
+                map.put("userid",papercomment.getUserid());
                 map.put("content",papercomment.getContent());
                 map.put("createtime",papercomment.getCreatetime());
                 coms.add(map);

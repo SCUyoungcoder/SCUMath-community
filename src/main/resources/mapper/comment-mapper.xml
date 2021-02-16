@@ -7,10 +7,10 @@
     <!--papermapper路径-->
     <!--每一个对应于papermapper的一个-->
     <sql id="insertFields">
-        user_id, entity_type, entity_id, target_id, content, status, create_time, type
+        user_id, entity_type, entity_id, target_id, content, status, create_time, type, notice_table
     </sql><!--定义标签-->
     <sql id="selectFields">
-        id, user_id, entity_type, entity_id, target_id, content, status, create_time, type
+        id, user_id, entity_type, entity_id, target_id, content, status, create_time, type, notice_table
     </sql>
     <select id="selectById" resultType="Comment">
         select <include refid="selectFields"></include>
@@ -25,26 +25,32 @@
     <select id="selectByEntity" resultType="Comment">
         select <include refid="selectFields"></include>
         from comment
-        where entity_type = #{entitytype} and entity_id = #{entityid}
+        where entity_type = #{entitytype} and entity_id = #{entityid} and status = #{status}
+        order by create_time asc<!--按照时间正序排列，先评论的在前-->
     </select>
     <select id="selectByEntityandtargitid" resultType="Comment">
         select <include refid="selectFields"></include>
         from comment
-        where entity_type = #{entitytype} and entity_id = #{entityid} and target_id != #{targetid}
+        where entity_type = #{entitytype} and entity_id = #{entityid} and target_id != #{targetid} and status = #{status}
+        order by create_time asc<!--按照时间正序排列，先评论的在前-->
     </select>
     <select id="selectByTargetid" resultType="Comment">
         select <include refid="selectFields"></include>
         from comment
-        where target_id = #{targetid}
+        where status = 0 and target_id = #{targetid}
+        order by create_time asc<!--按照时间正序排列，先评论的在前-->
     </select>
-    <select id="selectByType" resultType="Comment">
+
+    <select id="selectCommentsByTable" resultType="Comment">
         select <include refid="selectFields"></include>
         from comment
-        where type = #{type}
+        where notice_table = #{table} and status = #{status}
+        order by create_time desc<!--按照时间倒序排列，后通知的在前-->
     </select>
+
     <insert id="insertComment" parameterType="Comment" keyProperty="id">
         insert into comment (<include refid="insertFields"></include>)
-        values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{content},#{status},#{createtime},#{type})
+        values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{content},#{status},#{createtime},#{type},#{table})
     </insert>
     <delete id="deleteById">
         delete from comment where id = #{id}

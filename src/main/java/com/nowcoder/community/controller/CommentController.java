@@ -38,6 +38,7 @@ public class CommentController {
         commentService.addComment(comment);
         return "redirect:/detail?id="+paperid;
     }
+
     @LoginRequired
     @RequestMapping(path = "/addinmsg",method = RequestMethod.POST)
     public String addInMsg(Comment comment){
@@ -47,30 +48,13 @@ public class CommentController {
         commentService.addComment(comment);
         return "redirect:/mymsg";
     }
+
     @LoginRequired                                                     /*评论全为空，是否需要考虑*/
     @RequestMapping(path = "/mymsg",method = RequestMethod.GET)
     public String getmymsg(Model model){
         User user = hostHolder.getUser();
-        List<Map<String,Object>> coms = new ArrayList<>();
-        List<Comment> comments1 = commentService.selectcommentByTarget(user.getId());
-        List<Comment> midcomments = commentService.selectByUserid(user.getId());
-        List<Comment> comments2 = new ArrayList<>();
-        for (Comment c:midcomments){
-            List<Comment> cs = commentService.selectcommentByEntityandtargit(1,c.getId(),user.getId());
-            comments2.addAll(cs);
-        }
-        List<Comment> comments = new ArrayList<>();
-        for (Comment c1:comments1){
-            for (Comment c2:comments2){
-                if (c1.getId()>c2.getId()){
-                    comments.add(c2);
-                }
-                else {
-                    break;
-                }
-            }
-            comments.add(c1);
-        }
+        List<Map<String,Object>> messages = new ArrayList<>();//消息页面所需要的全部消息组合messages,每个message需要username在paperid|papername中发表了comment
+        List<Comment> comments = commentService.selectcommentByTarget(user.getId());//从表中取 所有发给当前用户的评论
         Collections.reverse(comments);
         for (Comment comment:comments){
             Map<String,Object> cc=new HashMap<>();
@@ -84,12 +68,36 @@ public class CommentController {
             System.out.println(paperid);
             cc.put("paperid" ,paperid);
             cc.put("papername",paperOfClassService.selectPaperById(paperid).getTitle());
+            cc.put("status",paperOfClassService.selectPaperById(paperid).getStatus());
             cc.put("comment",comment);
             cc.put("username",userService.findUserById(comment.getUserid()).getUsername());
-            coms.add(cc);
+            messages.add(cc);
         }
-        model.addAttribute("comments",coms);
+        model.addAttribute("messages",messages);
         return "/site/msg";
+    }
+
+    @LoginRequired                                                     /*通知全为空，是否需要考虑*/
+    @RequestMapping(path = "/mynotice",method = RequestMethod.GET)
+    public String getmynotice(Model model){
+        User user = hostHolder.getUser();
+        List<Map<String,Object>> notices = new ArrayList<>();//消息页面所需要的全部消息组合messages,每个message需要username在paperid|papername中发表了comment
+        List<Comment> noticesOfAll = commentService.findcommentByTable(1,111);//从表中取 所有发给用户的公告
+        List<Comment> noticesOfSpecial = commentService.findcommentByTable(1,user.getType());//从表中取 所有发给当前用户类型（0：普通用户；1：超级管理员）的公告
+        for(Comment noticeAll:noticesOfAll){
+            Map<String,Object> nAll=new HashMap<>();
+            nAll.put("table",111);
+            nAll.put("comment",noticeAll);
+            notices.add(nAll);
+        }
+        for(Comment noticeSpecial:noticesOfSpecial){
+            Map<String,Object> nSpe=new HashMap<>();
+            nSpe.put("table",user.getType());
+            nSpe.put("comment",noticeSpecial);
+            notices.add(nSpe);
+        }
+        model.addAttribute("notices",notices);
+        return "/site/notice";
     }
     /*@RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody

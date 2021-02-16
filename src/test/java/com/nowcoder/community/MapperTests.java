@@ -76,7 +76,7 @@ public class MapperTests {
     public void selectcomment(){
         Comment comment;
         /*comment = commentMapper.selectByEntity(4,5);*/
-        System.out.println(commentMapper.selectByEntity(4,5));
+        System.out.println(commentMapper.selectByEntity(0,18,0));
     }
     @Test
     public void deletecomment(){
