@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>博客编辑-爆爆社区</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
+</head>
+<body style="background: #f2f2f2;">
+<div th:replace="common/header::header(activeUrl='blog')"></div>
+
+
+<main role="main" class="container mt-3 p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12 blog-main">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">编辑博客</h4>
+
+                <form class="needs-validation" th:action="@{/blog/edit}" method="post">
+                    <!-- 隐藏域 -->
+                    <input type="hidden" name="bid" th:value="${blog.getBid()}">
+                    <div class="row">
+                        <div class="col-md-10 mb-3">
+                            <label for="firstName">博客标题</label>
+                            <input th:value="${blog.getTitle()}" type="text" name="title" class="form-control" id="firstName"  required>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <label for="country">标签</label>
+                            <select name="classificationId" class="custom-select d-block w-100" id="country">
+                                <option
+                                        th:each="classification:${classificationList}"
+                                        th:selected="${blog.getCategoryId()==classification.getId()}"
+                                        th:value="${classification.getId()}"
+                                        th:text="${classification.getName()}"
+                                ></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <p>博客详情</p>
+                            <div id="blog-content">
+                                <textarea required name="content" id="content" style="display:none;" rows="3"
+                                          class="form-control" th:text="${blog.getContent()}"> </textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">修改博客</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+
+<script th:src="@{/editormd/editormd.js}"></script>
+<script type="text/javascript">
+    var testEditor;
+    $(function () {
+        testEditor = editormd("blog-content", {
+            width: "100%",
+            height: 500,
+            syncScrolling: "single",
+            path: "/editormd/lib/",
+            saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
+            // [TOCM]  [TOC] 自动生成目录
+            tocDropdown: false,
+            tocStartLevel: 1,     // Parse beginning of H2, Default value 1
+            emoji: true,
+            tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+            flowChart: true,             // 开启流程图支持，默认关闭
+            sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
+            //图片上传
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "/blog/write/file/upload",
+            onload: function () {
+                console.log('onload', this);
+            },
+            /*指定需要显示的功能按钮*/
+            toolbarIcons: function () {
+                return ["undo", "redo", "|",
+                    "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+                    "list-ul", "list-ol", "hr", "|",
+                    "link", "reference-link", "image",
+                    "code-block", "table", "datetime", "emoji", "html-entities", "|",
+                    "search", "watch", "preview", "fullscreen"]
+            },
+            onfullscreen: function () {
+                console.log("onfullscreen");
+                document.getElementsByClassName("navbar")[0].style.display = "none";
+            },
+            onfullscreenExit: function () {
+                console.log("onfullscreenExit");
+                document.getElementsByClassName("navbar")[0].style.display = "";
+            }
+        });
+    });
+</script>
+
+</body>
+</html></html>

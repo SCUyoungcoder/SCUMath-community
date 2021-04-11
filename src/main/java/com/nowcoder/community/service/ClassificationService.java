@@ -12,6 +12,7 @@ public class ClassificationService {
     @Autowired
     private ClassificationMapper classificationMapper;
 
+    public Classification GetByClassificationId(int id ){return classificationMapper.selectById(id);}
     public List<Classification> AllClassifications() {
         return classificationMapper.selectAll();
     }
