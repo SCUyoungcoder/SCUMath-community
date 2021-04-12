@@ -17,7 +17,7 @@
 <body style="background: #f2f2f2;">
 
 <!-- 导航栏 -->
-<div th:replace="common/header::header(activeUrl='blog')"></div>
+<!--<div th:replace="common/header::header(activeUrl='blog')"></div>-->
 
 <main role="main" class="container mt-3 p-3 bg-white rounded">
     <div class="row">
@@ -40,8 +40,8 @@
         </span>
                     <!--自己可以删除编辑文章 当然管理员也可以-->
                 <div class="float-right"
-                     th:if="${(session.loginUser.getUid()==blog.getAuthorId())||session.loginUser.getRoleId()==1}">
-                    <a style="color:red" th:href="@{'/blog/delete/'+${session.loginUser.getUid()}+'/'+${blog.getBid()}}"
+                     th:if="${loginUser != null&&((loginUser.getId()==blog.getAuthorId())||loginUser.getType()==1)}">
+                    <a style="color:red" th:href="@{'/blog/delete/'+${loginUser.getId()}+'/'+${blog.getBid()}}"
                        onclick="if(!confirm('确定删除吗?')) return false;">
                         <svg class="bi bi-x-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                              xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +54,7 @@
                         </svg>
                         删除</a>
 
-                    <a style="color:#24b75d" th:href="@{'/blog/edit/'+${session.loginUser.getUid()}+'/'+${blog.getBid()}}">
+                    <a style="color:#24b75d" th:href="@{'/blog/edit/'+${loginUser.getId()}+'/'+${blog.getBid()}}">
                         <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16"
                              fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
@@ -74,43 +74,104 @@
             </div>
 
             <div class="col-md-12 blog-main" style="margin-top: 20px;">
-                <!--想要保存评论 必须拿到对应的qid 否则都不知道存哪里-->
-                <form th:action="@{'/blog/comment/'+${blog.getBid()}}" method="post">
-                    <input hidden name="UserId" th:value="${session.loginUser.getUid()}">
-                    <input hidden name="UserName" th:value="${session.loginUser.getUsername()}">
-                    <input hidden name="UserAvatar" th:value="${session.loginUser.getAvatar()}">
-                    <input hidden name="topicId" th:value="${blog.getBid()}">
+                <!--想要保存评论 必须拿到对应的bid 否则都不知道存哪里-->
+                <form th:action="@{'/comment/blog/'+${blog.getBid()}}" method="post">
+                    <input type="hidden" name="entityType" value="3">
+                    <input type="hidden" name="entityId" th:value="${blog.getBid()}">
                     <div class="form-group">
                         <textarea style="border-radius: 10px" name="content" rows="3" required
                                   class="form-control"></textarea>
                     </div>
-                    <input type="submit" class="btn btn-block btn-primary float-right" value="提交评论">
+                    <input type="submit" class="btn btn-block btn-primary " value="提交评论">
                 </form>
                 <div class="col-md-12 blog-main" style="margin-top: 20px">
                     <hr>
                 </div>
-            </div>
-            <div th:if="${comments.size()==0}" class="col-md-12 blog-main" style="margin-top: 50px">
-                <div class="my-3 p-3 bg-white rounded shadow-sm">
-                    <h6 class="pb-2 mb-0 text-center">emmm... 这里暂时还没有评论....</h6>
-                </div>
-            </div>
-            <div th:if="${comments.size()!=0}" class="col-md-12 blog-main" style="margin-top: 50px">
-                <div class="my-3 p-3 bg-white rounded shadow-sm">
-                    <h6 class="border-bottom border-gray pb-2 mb-0"><span style="color:red;">[[${comments.size()}]]</span>个回复</h6>
 
-                    <div th:each="comment:${comments}" class="media text-muted pt-3">
-                        <img th:src="${comment.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px "
-                             width="32"
-                             height="32">
-                        <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                            <strong class="d-block text-gray-dark" th:text="${comment.getUserName()}"></strong>
-                            <span th:text="${comment.getContent()}"></span>
-                            <span th:text="${#dates.format(comment.getGmtCreate(),'yyyy-MM-dd HH:mm:ss')}"
-                                  class="badge badge-light float-right"></span>
-                        </p>
-                    </div>
+                <!-- 回帖列表 -->
+
+                <div class="col-md-12 blog-main" >
+                    <hr>
                 </div>
+                <div class="col-md-12 blog-main" style="margin-top: 20px">
+                    <!--取消ul左侧缩进 -->
+                    <ul class="list-unstyled">
+                        <li class="my-3 p-3 bg-white rounded shadow-sm" th:each="cvo:${comments}">
+
+                            <div class="media-body">
+                                <div>
+                                    <span class="font-size-12 text-success" th:utext="${cvo.user.username}"></span>:
+                                    <span class="mt-2" th:utext="${cvo.comment.content}">
+
+                                </span>
+                                    <span class="badge badge-secondary float-right floor">
+									<i th:text="${page.offset + cvoStat.count}">1</i>#
+								</span>
+                                </div>
+                                <div class="text-muted font-size-12">
+                                    <span class="font-size-9 text-muted"> <b  th:text="${#dates.format(cvo.comment.createTime,'yyyy-MM-dd HH:mm:ss')}"></b></span>
+                                    <ul class="d-inline float-right">
+
+                                        <li class="d-inline ml-2">|</li>
+                                        <li class="d-inline ml-2"><a href="#" class="btn-light">回复(<i th:text="${cvo.replyCount}">2</i>)</a></li>
+                                    </ul>
+                                </div>
+                                <!-- 回复列表 -->
+                                <ul class=" font-size-12 text-muted" style="list-style-type: none">
+
+                                    <li class=" mb-7 " th:each="rvo:${cvo.replys}">
+                                        <div>
+										<span th:if="${rvo.target==null}">
+											<b class="text-info" th:text="${rvo.user.username}"></b>:&nbsp;&nbsp;
+										</span>
+                                            <span th:if="${rvo.target!=null}">
+											<i class="text-info" th:text="${rvo.user.username}"></i> 回复
+											<b class="text-info" th:text="${rvo.target.username}"></b>:&nbsp;&nbsp;
+										</span>
+                                            <span th:utext="${rvo.reply.content}"></span>
+                                        </div>
+                                        <div>
+                                            <span class="font-size-9 text-muted" th:text="${#dates.format(rvo.reply.createTime,'yyyy-MM-dd HH:mm:ss')}"></span>
+                                            <ul class="d-inline float-right">
+                                                <!--                                            <li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>-->
+                                                <li class="d-inline ml-2">|</li>
+                                                <li class="d-inline ml-2"><a th:href="|#huifu-${rvoStat.count}|" data-toggle="collapse" class="text-primary">回复</a></li>
+                                            </ul>
+                                            <div th:id="|huifu-${rvoStat.count}|" class="mt-4 collapse">
+                                                <form method="post" th:action="@{|/comment/blog/${blog.bid}|}">
+                                                    <div>
+                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|"/>
+                                                        <input type="hidden" name="entityType" value="2">
+                                                        <input type="hidden" name="entityId" th:value="${cvo.comment.cid}">
+                                                        <input type="hidden" name="targetId" th:value="${rvo.user.id}">
+                                                    </div>
+                                                    <div class="text-right mt-2">
+                                                        <button type="submit" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <!-- 回复输入框 -->
+                                    <li class="pb-3 pt-3">
+                                        <form method="post" th:action="@{|/comment/blog/${blog.bid}|}">
+                                            <div>
+                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点"/>
+                                                <input type="hidden" name="entityType" value="2">
+                                                <input type="hidden" name="entityId" th:value="${cvo.comment.cid}">
+                                            </div>
+                                            <div class="pt-3 text-right">
+                                                <button type="submit" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
+                                            </div>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
 
 
@@ -118,10 +179,10 @@
     </div>
 </main>
 
-<div th:replace="common/footer::footer"></div>
+<!--<div th:replace="common/footer::footer"></div>-->
 <a class="to-top">返回顶部</a>
-<th:block th:replace="common/footer::script"></th:block>
-
+<!--<th:block th:replace="common/footer::script"></th:block>-->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" th:href="@{/editormd/css/editormd.preview.css}"/>
 <script th:src="@{/editormd/lib/marked.min.js}"></script>
 <script th:src="@{/editormd/lib/prettify.min.js}"></script>

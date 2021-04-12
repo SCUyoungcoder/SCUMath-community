@@ -1,17 +1,24 @@
 package com.nowcoder.community.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.nowcoder.community.entity.Picture;
 import com.nowcoder.community.util.CommunityUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.Date;
 
 @Service
 public class UploadPicService {
+    @Autowired
+    PictureService pictureService;
+
     public JSONObject uploadImgFile(HttpServletRequest request, String filePath, MultipartFile file){
 
+        Picture pic = new Picture();
         // 获取完整的文件名
         String trueFileName = file.getOriginalFilename();
         // 获取文件后缀名
@@ -21,8 +28,14 @@ public class UploadPicService {
         fileName = System.currentTimeMillis()+"_"+ fileName;
         //String fileName = trueFileName;
         // 获取项目地址
-        String itemPath = getItemPath(request)+"blog/getPic/";
+        String itemPath = getItemPath(request)+"blog/UsingTheComplexLinkGetThePicForPicManage/";
 
+        //图片信息存入数据库
+        pic.setName(trueFileName);
+        pic.setSaveName(fileName);
+        pic.setFatherType(0);
+        pic.setCreateTime(new Date(System.currentTimeMillis()));
+        int newpic = pictureService.InsertPicture(pic);
 
         // 判断当前要上传的路径是否存在
         File targetFile = new File(filePath, fileName);

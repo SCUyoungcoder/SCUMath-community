@@ -109,14 +109,26 @@
         </trim>
     </insert>
 
-
+    <select id="selectAll" resultType="Blog">
+        select
+        <include refid="Base_Column_List"/>
+        from blog
+        order by id desc
+    </select>
     <select id="selectByBid" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from blog
         where bid=#{bid,jdbcType=VARCHAR}
     </select>
+    <select id="selectBySort" resultType="Blog">
+        select
+        <include refid="Base_Column_List"/>
+        from blog
+        where sort=#{sort,jdbcType=INTEGER}
+        order by id desc
+    </select>
     <update id="updateViews">
-        update paper set views = #{count} where id = #{id}
+        update blog set views = #{count} where id = #{id}
     </update>
 </mapper>

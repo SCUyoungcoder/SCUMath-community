@@ -18,6 +18,10 @@ public class CommentService {
         return commentMapper.selectByEntity(entitytype,entityid,status);
     }
 
+    public int findCommentCount(int entityType,int entityId){
+        return commentMapper.selectCountByEntity(entityType,entityId);
+    }
+
     public List<Comment> selectByUserid(int userid){
         return commentMapper.selectByUserid(userid);
     }

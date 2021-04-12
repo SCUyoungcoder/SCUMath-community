@@ -1,8 +1,10 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Blog;
 import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.BlogService;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.PaperOfClassService;
 import com.nowcoder.community.service.UserService;
@@ -24,9 +26,44 @@ public class CommentController {
     @Autowired
     private UserService userService;
     @Autowired
+    private BlogService blogService;
+    @Autowired
     private PaperOfClassService paperOfClassService;
     @Autowired
     private HostHolder hostHolder;
+
+    @LoginRequired
+    @RequestMapping(path = "/comment/blog/{bid}")
+    public String addBlogComment(@PathVariable("bid") String bid, Comment comment) {
+        comment.setUserid(hostHolder.getUser().getId());
+        //1论文 2问答 3博客
+//        comment.setTopicCategory(2);
+        comment.setStatus(0);
+        //comment.setCid(CommunityUtil.generateUUID());
+        comment.setCreatetime(new Date());
+        commentService.addComment(comment);
+
+        Blog blog = blogService.SelectByBid(bid);
+        // 触发评论事件
+        /*Event event = new Event()
+                .setTopic(TOPIC_COMMENT)
+                .setUserId(hostHolder.getUser().getUid())
+                .setEntityType(comment.getEntityType())
+                .setEntityId(comment.getEntityId())
+                .setEntityUserId(blog.getAuthorId())
+                .setData("bid", bid);
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            Blog target = blogService.findOneByBid(comment.getEntityId());
+            event.setEntityUserId(target.getAuthorId());
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+            Comment target = commentService.findCommentByCid(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        }
+        eventProducer.fireEvent(event);*/
+
+        //重定向到问题详情页
+        return "redirect:/blog/read/" + bid;
+    }
 
     @LoginRequired
     @RequestMapping(path = "/add/{paperid}", method = RequestMethod.POST)

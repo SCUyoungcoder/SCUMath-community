@@ -32,7 +32,7 @@
       <div id="header" class="is-hidden-mobile">
         <h1>数学视界</h1>
         <div class="login">
-          <a th:href="@{/blog}" >  <!--th:text="${manageMsg}"-->博客</a>
+          <a th:href="@{/blog/list}" >  <!--th:text="${manageMsg}"-->博客</a>
           <a th:href="@{/login}" th:if="${loginUser==null}"> <!--th:text="${loginMsg}"-->登录</a>       <!---->
           <a th:href="@{/user/manage}" th:if="${loginUser!=null}" th:utext="${loginUser.username}"> <!--th:text="${logoutMsg}"-->管理</a>
           <a th:href="@{/mymsg}" th:if="${loginUser!=null}">  <!--th:text="${manageMsg}"-->消息</a>

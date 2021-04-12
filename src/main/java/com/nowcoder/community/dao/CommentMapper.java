@@ -8,6 +8,7 @@ import java.util.List;
 @Mapper
 public interface CommentMapper {
     Comment selectById(int id);
+    int selectCountByEntity(int entityType,int entityId);
     List<Comment> selectByEntity(int entitytype,int entityid,int status);
     List<Comment> selectByEntityandtargitid(int entitytype,int entityid,int targetid);
     List<Comment> selectByTargetid(int targetid);

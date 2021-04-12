@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.PictureMapper">
+    <sql id="selectFields">
+        id,name,save_name,father_id,father_type,create_time
+    </sql>
+
+    <insert id="insertPicture" parameterType="Picture" keyProperty="id">
+        insert into picture (name, save_name, father_type, create_time)
+        values(#{name},#{saveName},#{fatherType},#{createTime})
+    </insert>
+    <update id="updateFather">
+        update picture set father_id = #{fatherid},father_type = #{fathertype} where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete from picture where id = #{id}
+    </delete>
+
+    <delete id="deleteByFather">
+        delete from picture where father_id = #{fatherid} and father_type = #{father_type}
+    </delete>
+
+    <select id="selectBySaveName" resultType="Picture">
+        select <include refid="selectFields"></include>
+        from picture
+        where save_name = #{savename}
+    </select>
+    <select id="selectByType" resultType="Picture">
+        select <include refid="selectFields"></include>
+        from picture
+        where father_type = #{fathertype}
+    </select>
+</mapper>

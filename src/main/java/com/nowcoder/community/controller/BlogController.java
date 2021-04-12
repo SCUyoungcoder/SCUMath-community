@@ -2,13 +2,11 @@ package com.nowcoder.community.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.LoginRequired;
-import com.nowcoder.community.entity.Blog;
-import com.nowcoder.community.entity.Classification;
-import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.BlogService;
-import com.nowcoder.community.service.ClassificationService;
-import com.nowcoder.community.service.UploadPicService;
+import com.nowcoder.community.entity.*;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import com.nowcoder.community.vo.BlogWriteForm;
@@ -27,8 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Controller
@@ -40,16 +37,19 @@ public class BlogController {
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
-    BlogService blogService;
-
+    private BlogService blogService;
     @Autowired
-    ClassificationService classificationService;
-
+    private PictureService pictureService;
     @Autowired
-    HostHolder hostHolder;
-
+    private ClassificationService classificationService;
     @Autowired
-    UploadPicService uploadPic;
+    private HostHolder hostHolder;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UploadPicService uploadPic;
 
     @LoginRequired
     @RequestMapping(path = "/write",method = RequestMethod.GET)
@@ -59,6 +59,17 @@ public class BlogController {
         model.addAttribute("classificationList",classificationList);
         model.addAttribute("user",user);
         return "blog/write";
+    }
+    @RequestMapping(path = "/list",method = RequestMethod.GET)
+    public String showList(Model model,
+                           @RequestParam(defaultValue = "1") int page,
+                           @RequestParam(defaultValue = "10") int limit){
+        PageHelper.startPage(page,limit);
+        PageInfo<Blog> info = new PageInfo<>(blogService.SelectAll());
+        List<Classification> classifications = classificationService.AllClassifications();
+        model.addAttribute("info", info);
+        model.addAttribute("categoryList",classifications);
+        return "blog/list";
     }
     @LoginRequired
     @RequestMapping(path = "/write",method = RequestMethod.POST)
@@ -83,19 +94,79 @@ public class BlogController {
         blog.setGmtCreate(new Date(System.currentTimeMillis()));
         blog.setGmtUpdate(new Date(System.currentTimeMillis()));
         blogService.InsertBlog(blog);
+        String[] findPicName = blogWriteForm.getContent().split("/blog/UsingTheComplexLinkGetThePicForPicManage/");
+        for(int i = 1;i<findPicName.length;i++){
+            String newPic = findPicName[i].split("\\)")[0];
+            Picture findSql = pictureService.SelectBySaveName(newPic);
+            if (findSql!=null){
+                pictureService.UpdateFather(findSql.getId(),blog.getId(),1);
+            }
+        }
 
         return "redirect:/blog/read/" + bid;
 
     }
     @RequestMapping(value = "/read/{bid}",method = RequestMethod.GET)
     public String read(Model model,@PathVariable("bid") String bid){
-        Blog blog = blogService.SelcetByBid(bid);
+        Blog blog = blogService.SelectByBid(bid);
         User user = hostHolder.getUser();
-        if (user.getId()!=blog.getAuthorId()){
+        if (user!=null){
+            if (user.getId()!=blog.getAuthorId()){
+                blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
+            }
+        }
+        else {
             blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
         }
+        List<Comment> blogComments = commentService.selectcommentByEntity(2,blog.getId(),0);//status=评论，entitytype=论文
+        List<Map<String,Object>> coms = new ArrayList<>();
+        if (blogComments!=null) {
+            for (Comment blogComment : blogComments) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("comment",blogComment);
+                map.put("user",userService.findUserById(blogComment.getUserid()));
+                List<Comment> commentComments =commentService.selectcommentByEntity(1,blogComment.getId(),0);//status=评论，entitytype=评论
+                List<Map<String,Object>> ccs = new ArrayList<>();
+                if (commentComments!=null){
 
+                    for (Comment commentComment:commentComments){
+                        Map<String,Object> cc = new HashMap<>();
+                        cc.put("reply",commentComment);
+                        cc.put("user",userService.findUserById(commentComment.getUserid()));
+                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        cc.put("target",target);
+                        /*if (commentComment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
+                            cc.put("targetname",userService.findUserById(commentComment.getTargetid()).getUsername());//由targetid拿到其targetname
+                        }
+                        else {
+                            cc.put("targetname",null);
+                        }
+                        cc.put("id",commentComment.getId());
+                        cc.put("userid",commentComment.getUserid());
+                        cc.put("type",commentComment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
+                        cc.put("username",userService.findUserById(commentComment.getUserid()).getUsername());
+                        cc.put("content",":"+commentComment.getContent());
+                        cc.put("createtime",commentComment.getCreatetime());*/
+                        ccs.add(cc);
+                    }
 
+                }
+                map.put("replys",ccs);
+                int replyCount = commentService.findCommentCount(1, blogComment.getId());
+                map.put("replyCount", replyCount);
+                /*else {
+                    map.put("replys",null);                *//*是否需要*//*
+                }*/
+                /*map.put("id",blogComment.getId());
+                map.put("username",userService.findUserById(blogComment.getUserid()).getUsername());
+                map.put("userid",blogComment.getUserid());
+                map.put("content",blogComment.getContent());
+                map.put("createtime",blogComment.getCreatetime());*/
+                coms.add(map);
+            }
+        }
+        model.addAttribute("comments",coms);
+        model.addAttribute("blog",blog);
         return "blog/read";
     }
 
@@ -114,7 +185,7 @@ public class BlogController {
 
     //返回图片，参考url：https://blog.csdn.net/meiqi0538/article/details/79862213/?utm_term=java%E8%BF%94%E5%9B%9E%E5%9B%BE%E7%89%87%E7%BB%99%E5%89%8D%E7%AB%AF&utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduweb~default-1-79862213&spm=3001.4430
     @LoginRequired
-    @RequestMapping(value = "/getPic/{picname}",method = RequestMethod.GET)
+    @RequestMapping(value = "/UsingTheComplexLinkGetThePicForPicManage/{picname}",method = RequestMethod.GET)
     public void returnPic(HttpServletResponse response,@PathVariable("picname") String picname){
         String filePath = uploadPicPath + "/"+picname;
         //创建一个文件对象，对应的文件就是python把词云图片生成后的路径以及对应的文件名
