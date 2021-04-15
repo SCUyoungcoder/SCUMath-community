@@ -2,16 +2,16 @@ package com.nowcoder.community.entity;
 
 import java.util.Date;
 
-public class Blog {
+public class Question {
     /**
      * 自增id
      */
     private int id;
 
     /**
-     * 博客id
+     * 问题id
      */
-    private String bid;
+    private String qid;
 
     /**
      * 博客标题
@@ -86,12 +86,12 @@ public class Blog {
         this.id = id;
     }
 
-    public String getBid() {
-        return bid;
+    public String getQid() {
+        return qid;
     }
 
-    public void setBid(String bid) {
-        this.bid = bid;
+    public void setQid(String qid) {
+        this.qid = qid;
     }
 
     public String getTitle() {
@@ -186,7 +186,7 @@ public class Blog {
     public String toString() {
         return "Blog{" +
                 "id=" + id +
-                ", bid='" + bid + '\'' +
+                ", qid='" + qid + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", sort=" + sort +

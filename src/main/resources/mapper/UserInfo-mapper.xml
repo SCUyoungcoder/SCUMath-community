@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.UserinfoMapper">
+  <resultMap id="BaseResultMap" type="com.nowcoder.community.entity.Userinfo">
+    <!--@mbg.generated-->
+
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="user_id" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="realname" jdbcType="VARCHAR" property="realname" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="wechat" jdbcType="VARCHAR" property="wechat" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="work" jdbcType="VARCHAR" property="work" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="hobby" jdbcType="VARCHAR" property="hobby" />
+    <result column="intro" jdbcType="VARCHAR" property="intro" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id , user_id, nickname, realname, qq, wechat, email, phone, work, address, hobby, intro
+  </sql>
+  <insert id="insert" parameterType="com.nowcoder.community.entity.Userinfo">
+    <!--@mbg.generated-->
+    insert into user_info (user_id, nickname, realname,
+      qq, wechat, email, 
+      phone, work, address,
+      hobby, intro)
+    values (#{userid,jdbcType=INTEGER}, #{nickname,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR},
+      #{qq,jdbcType=VARCHAR}, #{wechat,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{work,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{hobby,jdbcType=VARCHAR}, #{intro,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.nowcoder.community.entity.Userinfo">
+    <!--@mbg.generated-->
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userid != null and userid != ''">
+        userid,
+      </if>
+      <if test="nickname != null and nickname != ''">
+        nickname,
+      </if>
+      <if test="realname != null and realname != ''">
+        realname,
+      </if>
+      <if test="qq != null and qq != ''">
+        qq,
+      </if>
+      <if test="wechat != null and wechat != ''">
+        wechat,
+      </if>
+      <if test="email != null and email != ''">
+        email,
+      </if>
+      <if test="phone != null and phone != ''">
+        phone,
+      </if>
+      <if test="work != null and work != ''">
+        `work`,
+      </if>
+      <if test="address != null and address != ''">
+        address,
+      </if>
+      <if test="hobby != null and hobby != ''">
+        hobby,
+      </if>
+      <if test="intro != null and intro != ''">
+        intro,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userid != null and userid != ''">
+        #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="nickname != null and nickname != ''">
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null and realname != ''">
+        #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null and qq != ''">
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null and wechat != ''">
+        #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone != ''">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="work != null and work != ''">
+        #{work,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null and address != ''">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="hobby != null and hobby != ''">
+        #{hobby,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null and intro != ''">
+        #{intro,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectInfoByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from user_info
+    where user_id=#{userid}
+</select>
+<update id="updateByUserid" parameterType="com.nowcoder.community.entity.Userinfo">
+      update user_info
+    <set>
+      <if test="nickname != null and nickname != ''">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null and realname != ''">
+        realname = #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null and qq != ''">
+        `qq` = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null and wechat != ''">
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone != ''">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="work != null and work != ''">
+        work = #{work,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null and address != ''">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="hobby != null and hobby != ''">
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null and intro != ''">
+        intro = #{intro,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userid,jdbcType=VARCHAR}
+</update>
+</mapper>

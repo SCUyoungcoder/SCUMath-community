@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>博客</title>
+    <title>提问</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
 
 </head>
 <body style="background: rgb(247,248,249);">
 
-<!--<div th:replace="common/header::header(activeUrl='blog')"></div>-->
+<!--<div th:replace="common/header::header(activeUrl='question')"></div>-->
 
 <main role="main" class="container">
     <div class="row">
@@ -21,18 +21,18 @@
                     累计：
                     <span th:text="${info.getTotal()}"></span>
                     <span class="float-right" th:if="${!#strings.isEmpty(thisCategoryName)}">
-                        <a th:href="@{/blog}">全部</a>
+                        <a th:href="@{/question}">全部</a>
                         /
                         <span th:text="${thisCategoryName}"></span>
                     </span>
                 </h6>
-<!--                博客列表-->
+<!--                提问列表-->
                 <!--<ul class="list-unstyled">
                     <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="blog:${info.getList()}">
                         <div class="media-body">
                             <h5 class="mt-0 mb-3">
                                 &lt;!&ndash;标题 且根据id号 查询数据 跳转到指定的页面&ndash;&gt;
-                                <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"></a>
+                                <a th:href="@{'/blog/read/'+${blog.getQid()}}" th:text="${blog.getTitle()}"></a>
                             </h5>
                             <h6 class="mt-0 mb-3">
                                 <h th:utext="${blog.getContent()}"></h>
@@ -43,12 +43,15 @@
                         </div>
                     </li>
                 </ul>-->
-                <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
+                <div th:each="question:${info.getList()}" class="media text-muted pt-3">
 
                     <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${blog.getAuthorId()}}" th:text="${blog.getAuthorName()}"></a>
+                        <span th:text="${question.getStatus()==0?'未解决':'已解决'}"
+                              th:class="${question.getStatus()==0?'  badge badge-warning ':'  badge badge-info '}"></span>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${question.getAuthorId()}}" th:text="${question.getAuthorName()}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
-                        <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"
+
+                        <a th:href="@{'/question/read/'+${question.getQid()}}" th:text="${question.getTitle()}"
                            class="text-dark font-weight-bold text-decoration-none d-block"></a>
                         <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
@@ -57,9 +60,9 @@
                                 d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
                                 p-id="644"></path></svg>
                         <!--浏览量-->
-                        [[${blog.getViews()}]]
+                        [[${question.getViews()}]]
                         </span>
-                        <span th:text="${#dates.format(blog.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"
+                        <span th:text="${#dates.format(question.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"
                               class="badge badge-light float-right" ></span>
                     </p>
 
@@ -69,20 +72,20 @@
                     <ul class="pagination justify-content-center pagination-sm">
                         <!--往前翻 如果没有前一页 则禁用-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:href="@{'/blog/list?page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:href="@{'/question/list?page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
                         </li>
 
                         <div th:each="page:${info.getNavigatepageNums()}">
                             <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
-                                <a class="page-link" th:href="@{'/blog/list?page='+${page}+'&limit=10'}"
+                                <a class="page-link" th:href="@{'/question/list?page='+${page}+'&limit=10'}"
                                    th:text="${page}">
                                 </a>
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
                             <a class="page-link"
-                               th:href="@{'/blog/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                               th:href="@{'/question/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -92,13 +95,13 @@
 
             <div class="my-3 rounded">
                 <p class="mb-0">
-                    <a th:href="@{/blog/write}" class="btn btn-primary btn-sm btn-block"
-                       style="color: white">发布博客</a>
+                    <a th:href="@{/question/write}" class="btn btn-primary btn-sm btn-block"
+                       style="color: white">发布提问</a>
                 </p>
             </div>
             <div class="p-4 my-3 bg-white rounded">
                 <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                <a th:href="@{'/question/category?cid='+${category.getId()}+'&page=1&limit=10'}"
                    th:each="category:${categoryList}" th:text="${category.getName()}"
                    class="badge badge-pill badge-primary mr-1"></a>
             </div>

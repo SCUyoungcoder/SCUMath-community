@@ -30,4 +30,5 @@ public class UserService {
         password=CommunityUtil.md5(password+salt);
         return userMapper.updatePassword(id,password,salt);
     }
+
 }

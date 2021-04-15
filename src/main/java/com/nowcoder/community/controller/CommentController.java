@@ -38,12 +38,13 @@ public class CommentController {
         comment.setUserid(hostHolder.getUser().getId());
         //1论文 2问答 3博客
 //        comment.setTopicCategory(2);
+        //comment.setEntitytype(2);
         comment.setStatus(0);
         //comment.setCid(CommunityUtil.generateUUID());
         comment.setCreatetime(new Date());
         commentService.addComment(comment);
 
-        Blog blog = blogService.SelectByBid(bid);
+        //Blog blog = blogService.SelectByBid(bid);
         // 触发评论事件
         /*Event event = new Event()
                 .setTopic(TOPIC_COMMENT)
@@ -63,6 +64,39 @@ public class CommentController {
 
         //重定向到问题详情页
         return "redirect:/blog/read/" + bid;
+    }
+    @LoginRequired
+    @RequestMapping(path = "/comment/question/{qid}")
+    public String addQuestionComment(@PathVariable("qid") String qid, Comment comment) {
+        comment.setUserid(hostHolder.getUser().getId());
+        //1论文 2问答 3博客
+//        comment.setTopicCategory(2);
+        //comment.setEntitytype(2);
+        comment.setStatus(0);
+        //comment.setCid(CommunityUtil.generateUUID());
+        comment.setCreatetime(new Date());
+        commentService.addComment(comment);
+
+        //Blog blog = blogService.SelectByBid(bid);
+        // 触发评论事件
+        /*Event event = new Event()
+                .setTopic(TOPIC_COMMENT)
+                .setUserId(hostHolder.getUser().getUid())
+                .setEntityType(comment.getEntityType())
+                .setEntityId(comment.getEntityId())
+                .setEntityUserId(blog.getAuthorId())
+                .setData("bid", bid);
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            Blog target = blogService.findOneByBid(comment.getEntityId());
+            event.setEntityUserId(target.getAuthorId());
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+            Comment target = commentService.findCommentByCid(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        }
+        eventProducer.fireEvent(event);*/
+
+        //重定向到问题详情页
+        return "redirect:/question/read/" + qid;
     }
 
     @LoginRequired

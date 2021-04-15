@@ -10,12 +10,15 @@ import java.util.List;
 @Service
 public class PictureService {
     @Autowired
-    PictureMapper pictureMapper;
+    private PictureMapper pictureMapper;
 
     public int InsertPicture(Picture picture){return pictureMapper.insertPicture(picture);}
 
     public int UpdateFather(int id,int fatherId,int fatherType){
         return pictureMapper.updateFather(id,fatherId,fatherType);
+    }
+    public int UpdateFahterTypeByFather(int newtype,int fatherid,int oldtype){
+        return pictureMapper.updateFahterTypeByFather(newtype,fatherid,oldtype);
     }
     public int DeleteByFather(int fatherId,int fatherType){
         return pictureMapper.deleteByFather(fatherId,fatherType);
@@ -31,4 +34,7 @@ public class PictureService {
         return pictureMapper.selectByType(fatherType);
     }
 
+    public List<Picture> SelectByFather(int fatherid,int fathertype){
+        return pictureMapper.selectByFather(fatherid,fathertype);
+    }
 }

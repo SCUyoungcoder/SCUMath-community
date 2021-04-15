@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>更新资料</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type = "text/css" th:href="@{/css/global.css}" />
+    <style>
+        .badge-warning {
+            color: #71716999;
+            background: #ffb700c4;
+        }
+
+        #table-title tr th {
+            border: none;
+        }
+    </style>
+</head>
+<body style="background: rgb(247,248,249);">
+
+<!--<div th:replace="common/header::header"></div>-->
+<main role="main" class="container">
+    <div class="row">
+        <div th:replace="user/index::userShowPanel"></div>
+        <div class="col-md-9 ">
+            <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <form class="needs-validation" novalidate=""
+                      th:action="@{'/user/update/'+${loginUser.getUid()}}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nickname">用户昵称</label>
+                            <input class="form-control" type="value" name="nickname" id="nickname" placeholder="请输入昵称……"
+                                   th:value="${userInfo.getNickname()}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="realname">真实姓名</label>
+                            <input class="form-control" type="text" th:value="${userInfo.getRealname()}" name="realname" id="realname"
+                                   placeholder="请输入您的真实姓名……">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="qq">QQ</label>
+                            <input class="form-control" type="text" name="qq" id="qq" placeholder="" th:value="${userInfo.getQq()}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="wx">WeChat</label>
+                            <input class="form-control" type="text" name="wechat" id="wx" placeholder="" th:value="${userInfo.getWechat()}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email">邮箱</label>
+                            <input  type="email" th:value="${userInfo.getEmail()}" name="email" class="form-control"
+                                   id="email" placeholder="">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="phone">手机</label>
+                            <input type="text" th:value="${userInfo.getPhone()}" name="phone" class="form-control"
+                                   id="phone" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="work">专业</label>
+                        <input type="text" th:value="${userInfo.getWork()}" name="work" class="form-control" id="work"
+                               placeholder="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address">地址</label>
+                        <input type="text" th:value="${userInfo.getAddress()}" name="address" class="form-control"
+                               id="address" placeholder="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="hobby">爱好(使用英文逗号隔开)</label>
+                        <input type="text" th:value="${userInfo.getHobby()}" name="hobby" class="form-control"
+                               id="hobby" placeholder="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>自我介绍</label>
+                        <textarea th:text="${userInfo.getIntro()}" type="text" name="intro"
+                                  class="form-control" placeholder="介绍一下自己吧……"></textarea>
+                    </div>
+
+                    <hr class="mb-4">
+
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"> 更新资料</button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</main>
+<!--<div th:replace="common/footer::footer"></div>-->
+<a class="to-top">返回顶部</a>
+<!--<th:block th:replace="common/footer::script"></th:block>-->
+
+</body>

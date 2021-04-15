@@ -6,10 +6,8 @@ import com.nowcoder.community.dao.elasticsearth.PaperRepository;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.Paper;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.ClassificationService;
-import com.nowcoder.community.service.ElasticsearchService;
-import com.nowcoder.community.service.PaperOfClassService;
-import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.entity.Userinfo;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,9 +40,13 @@ public class UserController {
     /*@Value("${server.servlet.context-path}")
     private String contextPath;*//*修改。。。*/
     @Autowired
+    private UserinfoService userinfoService;
+    @Autowired
     private ElasticsearchService elasticsearchService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
     @Autowired
     private PaperRepository paperRepository;
     @Autowired
@@ -52,7 +54,35 @@ public class UserController {
     @Autowired
     public ClassificationService classificationService;
     @Autowired
+    private BlogService blogService;
+    @Autowired
     private HostHolder hostHolder;
+
+//!!!!!!!!!!!!!先把qusetion做了再回来做这个
+/*    @LoginRequired
+    @RequestMapping(path = "/settingInfo",method = RequestMethod.GET)
+    public String settingInfo(Model model){
+
+    }
+    public void callbackInfo(String userid, Model model) {
+        //获取用户信息
+        Userinfo userInfo = userinfoService.selectInfoByUserId(userid);
+        model.addAttribute("userInfo", userInfo);
+        //如果兴趣栏不为空 也要回显
+        String hobby = userInfo.getHobby();
+        //不为null 也不为""时
+        if (hobby != null && !hobby.isEmpty()) {
+            String[] hobbies = hobby.split(",");
+            model.addAttribute("hobbies", hobbies);
+        }
+        //回显 问题数  博客数 回复数
+        int qcount = questionService.count(uid);
+        int bcount = blogService.count(uid);
+        int ccount = commentService.count(uid);
+        model.addAttribute("qcount", qcount);
+        model.addAttribute("bcount", bcount);
+        model.addAttribute("ccount", ccount);
+    }*/
 
     /*获取用户的类型，管理员返回不同界面。待处理*/
     @LoginRequired/*自定义注解，未登录用户做需要登录的操作时,用拦截器拦截*/

@@ -3,13 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
-<mapper namespace="com.nowcoder.community.dao.BlogMapper">
+<mapper namespace="com.nowcoder.community.dao.QuestionMapper">
 
-    <resultMap id="BaseResultMap" type="com.nowcoder.community.entity.Blog">
+    <resultMap id="BaseResultMap" type="com.nowcoder.community.entity.Question">
         <!--@mbg.generated-->
         <!--@Table kuangstudy.ks_blog-->
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="bid" jdbcType="VARCHAR" property="bid" />
+        <result column="qid" jdbcType="VARCHAR" property="qid" />
         <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="content" jdbcType="LONGVARCHAR" property="content" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
@@ -25,16 +25,16 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, bid, title, content, sort, status,views, author_id, author_name, author_avatar, category_id,
+        id, qid, title, content, sort, status,views, author_id, author_name, author_avatar, category_id,
         category_name, gmt_create, gmt_update
     </sql>
 
-    <insert id="insertBlog" keyColumn="id" keyProperty="id" parameterType="com.nowcoder.community.entity.Blog" useGeneratedKeys="true">
+    <insert id="insertQuestion" keyColumn="id" keyProperty="id" parameterType="com.nowcoder.community.entity.Question" useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into blog
+        insert into question
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="bid != null and bid != ''">
-                bid,
+            <if test="qid != null and qid != ''">
+                qid,
             </if>
             <if test="title != null and title != ''">
                 title,
@@ -74,8 +74,8 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="bid != null and bid != ''">
-                #{bid,jdbcType=VARCHAR},
+            <if test="qid != null and qid != ''">
+                #{qid,jdbcType=VARCHAR},
             </if>
             <if test="title != null and title != ''">
                 #{title,jdbcType=VARCHAR},
@@ -116,44 +116,44 @@
         </trim>
     </insert>
 
-    <select id="selectAllByStatus" resultType="Blog">
+    <select id="selectAllByStatus" resultType="Question">
         select
         <include refid="Base_Column_List"/>
-        from blog
+        from question
         where status = #{status,jdbcType=INTEGER}
         order by id desc
     </select>
-    <select id="selectByBid" resultMap="BaseResultMap">
+    <select id="selectByQid" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from blog
-        where bid=#{bid,jdbcType=VARCHAR}
+        from question
+        where qid=#{qid,jdbcType=VARCHAR}
     </select>
-    <select id="selectBySort" resultType="Blog">
+    <select id="selectBySort" resultType="Question">
         select
         <include refid="Base_Column_List"/>
-        from blog
+        from question
         where sort=#{sort,jdbcType=INTEGER}
         order by id desc
     </select>
-    <select id="selectByCategory" resultType="Blog">
+    <select id="selectByCategory" resultType="Question">
         select <include refid="Base_Column_List"/>
-        from blog
+        from question
         where category_id = #{categoryId ,jdbcType=INTEGER}
         order by id desc
     </select>
     <update id="updateViews">
-        update blog set views = #{count} where id = #{id}
+        update question set views = #{count} where id = #{id}
     </update>
-    <update id="updateBlog">
-        update blog set title = #{title} ,content = #{content} ,
+    <update id="updateQuestion">
+        update question set title = #{title} ,content = #{content} ,
         category_id =#{categoryId}, category_name = #{categoryName}
-        where bid = #{bid}
+        where qid = #{qid}
     </update>
     <update id="updateStatus">
-        update blog set status = #{status} where id = #{id}
+        update question set status = #{status} where id = #{id}
     </update>
-    <delete id="deleteBlogById">
-        delete from blog where id = #{id}
+    <delete id="deleteQuestionById">
+        delete from question where id = #{id}
     </delete>
 </mapper>

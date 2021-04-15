@@ -16,7 +16,7 @@ public class UploadPicService {
     @Autowired
     PictureService pictureService;
 
-    public JSONObject uploadImgFile(HttpServletRequest request, String filePath, MultipartFile file){
+    public JSONObject uploadImgFile(HttpServletRequest request,String filePath, MultipartFile file){
 
         Picture pic = new Picture();
         // 获取完整的文件名
@@ -49,7 +49,6 @@ public class UploadPicService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         JSONObject res = new JSONObject();
         // 图片上传后地址
         res.put("url", itemPath+fileName); ///图片地址和上传后的文件名

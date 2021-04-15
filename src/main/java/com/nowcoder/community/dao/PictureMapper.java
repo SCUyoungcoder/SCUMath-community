@@ -15,4 +15,6 @@ public interface PictureMapper {
     //List<Picture> selectByFather(int fatherid,int fathertype);
     Picture selectBySaveName(String savename);
     List<Picture> selectByType(int fathertype);
+    List<Picture> selectByFather(int fatherid,int fathertype);
+    int updateFahterTypeByFather(int newtype,int fatherid,int oldtype);
 }

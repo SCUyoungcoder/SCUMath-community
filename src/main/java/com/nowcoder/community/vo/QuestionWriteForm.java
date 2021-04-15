@@ -3,7 +3,7 @@ package com.nowcoder.community.vo;
 /*
 博客表单vo
  */
-public class BlogWriteForm {
+public class QuestionWriteForm {
 
     private String title;
 

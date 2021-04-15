@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>博客详情</title>
+    <title>提问详情</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" type = "text/css" th:href="@{/css/global.css}" />
     <style>
@@ -18,18 +18,18 @@
 <body style="background:rgb(247,248,249);">
 
 <!-- 导航栏 -->
-<!--<div th:replace="common/header::header(activeUrl='blog')"></div>-->
+<!--<div th:replace="common/header::header(activeUrl='question')"></div>-->
 
 <main role="main" class="container mt-3 p-3 bg-white rounded">
     <div class="row">
         <div class="col-md-12 blog-main">
             <div class="blog-post">
-                <h2 class="blog-post-title" th:text="${blog.getTitle()}"></h2>
+                <h2 class="blog-post-title" th:text="${question.getTitle()}"></h2>
                 <p class="blog-post-meta">
-                    <span th:text="${#dates.format(blog.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"></span>
+                    <span th:text="${#dates.format(question.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"></span>
                     by
                     <a style="color:#71716999;background: #ffb700c4" class="badge badge-danger"
-                       th:text="${blog.getAuthorName()}" th:href="@{|/user/info/${blog.authorId}|}"></a>
+                       th:text="${question.getAuthorName()}" th:href="@{|/user/info/${question.authorId}|}"></a>
                     <span>
                     <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
                          xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
@@ -37,13 +37,13 @@
                             p-id="643"></path><path
                             d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
                             p-id="644"></path></svg>
-                        [[${blog.getViews()}]]
+                        [[${question.getViews()}]]
         </span>
                     <!--自己可以删除编辑文章 当然管理员也可以-->
                 <div class="float-right"
-                     th:if="${loginUser != null&&((loginUser.getId()==blog.getAuthorId())||loginUser.getType()==1)}">
-                    <input type="hidden" id="bid" th:value="${blog.getBid()}">
-                    <a style="color:red" th:href="@{'/blog/delete/'+${blog.getBid()}}"
+                     th:if="${loginUser != null&&((loginUser.getId()==question.getAuthorId())||loginUser.getType()==1)}">
+                    <input type="hidden" id="qid" th:value="${question.getQid()}">
+                    <a style="color:red" th:href="@{'/question/delete/'+${question.getQid()}}"
                        onclick="if(!confirm('确定删除吗?')) return false;">
                         <svg class="bi bi-x-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                              xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +56,7 @@
                         </svg>
                         删除</a>
 
-                    <a style="color:#24b75d" th:href="@{'/blog/edit/'+${blog.getBid()}}">
+                    <a style="color:#24b75d" th:href="@{'/question/edit/'+${question.getQid()}}">
                         <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16"
                              fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
@@ -65,13 +65,13 @@
                         </svg>
                         编辑</a>
 
-                    <button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&blog.getStatus() == 1}">通过</button>
+                    <button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&question.getStatus() == 1}">通过</button>
                 </div>
                 </p>
             </div>
             <hr style="margin-top: 18px">
             <div id="doc-content">
-                <textarea style="display:none;" placeholder="markdown" th:text="${blog.getContent()}"></textarea>
+                <textarea style="display:none;" placeholder="markdown" th:text="${question.getContent()}"></textarea>
             </div>
             <div class="col-md-12 blog-main" style="margin-top: 20px">
                 <hr>
@@ -82,10 +82,10 @@
 
 
             <div class="col-md-12 blog-main" style="margin-top: 20px;">
-                <!--想要保存评论 必须拿到对应的bid 否则都不知道存哪里-->
-                <form th:action="@{'/comment/blog/'+${blog.getBid()}}" method="post">
-                    <input type="hidden" name="entitytype" value="2">
-                    <input type="hidden" name="entityid" th:value="${blog.getId()}">
+                <!--想要保存评论 必须拿到对应的qid 否则都不知道存哪里-->
+                <form th:action="@{'/comment/question/'+${question.getQid()}}" method="post">
+                    <input type="hidden" name="entitytype" value="3">
+                    <input type="hidden" name="entityid" th:value="${question.getId()}">
                     <div class="form-group">
                         <textarea style="border-radius: 10px" name="content" rows="3" required
                                   class="form-control"></textarea>
@@ -146,7 +146,7 @@
                                                 <li class="d-inline ml-2"><a th:href="|#huifu-${cvo.comment.id}-${rvoStat.count}|" data-toggle="collapse" class="text-primary">回复</a></li>
                                             </ul>
                                             <div th:id="|huifu-${cvo.comment.id}-${rvoStat.count}|" class="mt-4 collapse">
-                                                <form method="post" th:action="@{|/comment/blog/${blog.bid}|}">
+                                                <form method="post" th:action="@{|/comment/question/${question.qid}|}">
                                                     <div>
                                                         <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|"/>
                                                         <input type="hidden" name="entitytype" value="1">
@@ -163,7 +163,7 @@
 
                                     <!-- 回复输入框 -->
                                     <li class="pb-3 pt-3">
-                                        <form method="post" th:action="@{|/comment/blog/${blog.bid}|}">
+                                        <form method="post" th:action="@{|/comment/question/${question.qid}|}">
                                             <div>
                                                 <input type="text" class="input-size" name="content" placeholder="请输入你的观点"/>
                                                 <input type="hidden" name="entitytype" value="1">
@@ -187,20 +187,20 @@
                 <ul class="pagination justify-content-center pagination-sm">
                     &lt;!&ndash;往前翻 如果没有前一页 则禁用&ndash;&gt;
                     <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                        <a class="page-link" th:href="@{'/blog?page='+${info.getPrePage()}+'&limit=10'}"
+                        <a class="page-link" th:href="@{'/question?page='+${info.getPrePage()}+'&limit=10'}"
                            tabindex="">Previous</a>
                     </li>
 
                     <div th:each="page:${info.getNavigatepageNums()}">
                         <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
-                            <a class="page-link" th:href="@{'/blog?page='+${page}+'&limit=10'}"
+                            <a class="page-link" th:href="@{'/question?page='+${page}+'&limit=10'}"
                                th:text="${page}">
                             </a>
                         </li>
                     </div>
                     <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
                         <a class="page-link"
-                           th:href="@{'/blog?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                           th:href="@{'/question?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                     </li>
                 </ul>
             </nav>-->
@@ -268,8 +268,8 @@
     // 审核通过
     function setPass() {
         $.post(
-            "/blog/pass",
-            {"bid":$("#bid").val()},
+            "/question/pass",
+            {"qid":$("#qid").val()},
             function(data) {
                 data = $.parseJSON(data);
                 if(data.code == 0) {

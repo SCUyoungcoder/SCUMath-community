@@ -17,6 +17,15 @@
         from comment
         where id = #{id}
     </select>
+    <select id="selectByEntityAndPage" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where status = #{status}
+        and entity_type = #{entityType}
+        and entity_id = #{entityId}
+        order by create_time asc
+        limit #{offset}, #{limit}
+    </select>
     <select id="selectCountByEntity" resultType="int">
         select count(id)
         from comment
@@ -54,13 +63,20 @@
         where notice_table = #{table} and status = #{status}
         order by create_time desc<!--按照时间倒序排列，后通知的在前-->
     </select>
+    <select id="countByEntity" resultType="int">
+        select count(id) from comment where entity_id = #{entityId} and entity_type = #{entityType}
+    </select>
 
     <insert id="insertComment" parameterType="Comment" keyProperty="id">
         insert into comment (<include refid="insertFields"></include>)
         values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{content},#{status},#{createtime},#{type},#{table})
     </insert>
+
     <delete id="deleteById">
         delete from comment where id = #{id}
+    </delete>
+    <delete id="deleteByEntity">
+        delete from comment where entity_id = #{entityId} and entity_type = #{entityType}
     </delete>
 
 </mapper>

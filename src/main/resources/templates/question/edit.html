@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>博客编辑</title>
+    <title>提问编辑</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
 </head>
@@ -15,15 +15,15 @@
     <div class="row">
         <div class="col-md-12 blog-main">
             <div class="col-md-12 order-md-1">
-                <h4 class="mb-3">编辑博客</h4>
+                <h4 class="mb-3">编辑提问</h4>
 
-                <form class="needs-validation" th:action="@{/blog/edit}" method="post">
+                <form class="needs-validation" th:action="@{/question/edit}" method="post">
                     <!-- 隐藏域 -->
-                    <input type="hidden" name="bid" th:value="${blog.getBid()}">
+                    <input type="hidden" name="qid" th:value="${question.getQid()}">
                     <div class="row">
                         <div class="col-md-10 mb-3">
-                            <label for="firstName">博客标题</label>
-                            <input th:value="${blog.getTitle()}" type="text" name="title" class="form-control" id="firstName"  required>
+                            <label for="firstName">提问标题</label>
+                            <input th:value="${question.getTitle()}" type="text" name="title" class="form-control" id="firstName"  required>
                         </div>
 
                         <div class="col-md-2 mb-3">
@@ -31,7 +31,7 @@
                             <select name="categoryId" class="custom-select d-block w-100" id="country">
                                 <option
                                         th:each="category:${categoryList}"
-                                        th:selected="${blog.getCategoryId()==category.getId()}"
+                                        th:selected="${question.getCategoryId()==category.getId()}"
                                         th:value="${category.getId()}"
                                         th:text="${category.getName()}"
                                 ></option>
@@ -39,16 +39,16 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p>博客详情</p>
+                            <p>提问详情</p>
                             <div id="blog-content">
                                 <textarea required name="content" id="content" style="display:none;" rows="3"
-                                          class="form-control" th:text="${blog.getContent()}"> </textarea>
+                                          class="form-control" th:text="${question.getContent()}"> </textarea>
                             </div>
                         </div>
 
                     </div>
 
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">修改博客</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">修改提问</button>
                 </form>
             </div>
         </div>
@@ -82,7 +82,7 @@
             //图片上传
             imageUpload: true,
             imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-            imageUploadURL: "/blog/upFile",
+            imageUploadURL: "/question/upFile",
             onload: function () {
                 console.log('onload', this);
             },
