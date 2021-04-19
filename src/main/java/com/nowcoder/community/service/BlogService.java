@@ -21,7 +21,8 @@ public class BlogService {
     public Blog SelectByBid(String bid){return blogMapper.selectByBid(bid);}
 
     public List<Blog> SelectBySort(int sort){return blogMapper.selectBySort(sort);}
-
+    public List<Blog> SelectByAuthorId(int userId){return blogMapper.selectByAuthorId(userId);}
     public List<Blog> SelectAllByStatus(int status){return blogMapper.selectAllByStatus(status);}
     public List<Blog> SelectByCategoryId(int categoryId){return blogMapper.selectByCategory(categoryId);}
+    public int CountByAutherId(int autherid){return blogMapper.countByAuthorId(autherid);}
 }

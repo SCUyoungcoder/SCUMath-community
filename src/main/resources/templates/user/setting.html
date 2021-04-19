@@ -26,7 +26,7 @@
         <div class="col-md-9 ">
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <form class="needs-validation" novalidate=""
-                      th:action="@{'/user/update/'+${loginUser.getUid()}}" method="post">
+                      th:action="@{'/user/updateInfo/'}" method="post">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="nickname">用户昵称</label>
@@ -76,7 +76,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="hobby">爱好(使用英文逗号隔开)</label>
+                        <label for="hobby">爱好</label>
                         <input type="text" th:value="${userInfo.getHobby()}" name="hobby" class="form-control"
                                id="hobby" placeholder="">
                     </div>

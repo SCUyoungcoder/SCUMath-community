@@ -43,6 +43,18 @@ public class ElasticsearchClassService {
         paperRepository.deleteById(id);
     }
 
+
+    public List<Paper> searchPaperOnlyByClass(String classname){
+        Pageable pageable = new PageRequest(0,1000);
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status","0")))//构造查询条件——classname，在fatherid里面查;且status==0的论文
+                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
+                .withPageable(pageable)
+                .build();
+        return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
+    }
     //提供一个搜索方法，返回Page，里面封装的是Paper的实体
     //Page是Spring提供的一种类型  ； 分页条件：*current当前页码，从0开始。limit每页最大多少条数据*/
     public Page<Paper> searchPaperByClass(String classname,int current,int limit){

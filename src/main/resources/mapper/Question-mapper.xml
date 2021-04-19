@@ -136,6 +136,15 @@
         where sort=#{sort,jdbcType=INTEGER}
         order by id desc
     </select>
+    <select id="selectByAuthorId" resultType="Question">
+        select <include refid="Base_Column_List"/>
+        from question
+        where author_id = #{userId}
+        order by id desc
+    </select>
+    <select id="countByAuthorId" resultType="int">
+        select count(id) from question where author_id = #{id}
+    </select>
     <select id="selectByCategory" resultType="Question">
         select <include refid="Base_Column_List"/>
         from question

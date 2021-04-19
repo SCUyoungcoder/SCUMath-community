@@ -5,7 +5,7 @@
     <!--@mbg.generated-->
 
     <result column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="user_id" />
+    <result column="userid" jdbcType="INTEGER" property="user_id" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="realname" jdbcType="VARCHAR" property="realname" />
     <result column="qq" jdbcType="VARCHAR" property="qq" />
@@ -106,7 +106,7 @@
       </if>
     </trim>
   </insert>
-  <select id="selectInfoByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectInfoByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from user_info
@@ -140,7 +140,7 @@
         address = #{address,jdbcType=VARCHAR},
       </if>
       <if test="hobby != null and hobby != ''">
-        wechat = #{wechat,jdbcType=VARCHAR},
+        hobby = #{hobby,jdbcType=VARCHAR},
       </if>
       <if test="intro != null and intro != ''">
         intro = #{intro,jdbcType=VARCHAR},

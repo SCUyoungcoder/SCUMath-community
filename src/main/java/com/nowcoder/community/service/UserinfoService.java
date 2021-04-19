@@ -18,7 +18,7 @@ public class UserinfoService {
         return userinfoMapper.insertSelective(record);
     }
 
-    public Userinfo selectInfoByUserId(String userid) {
+    public Userinfo selectInfoByUserId(int userid) {
         return userinfoMapper.selectInfoByUserId(userid);
     }
 

@@ -1,12 +1,11 @@
 package com.nowcoder.community.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.dao.elasticsearth.PaperRepository;
-import com.nowcoder.community.entity.Page;
-import com.nowcoder.community.entity.Paper;
-import com.nowcoder.community.entity.User;
-import com.nowcoder.community.entity.Userinfo;
+import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +46,11 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
+    private AttentionService attentionService;
+    @Autowired
     private CommentService commentService;
+    @Autowired
+    QuestionService questionService;
     @Autowired
     private PaperRepository paperRepository;
     @Autowired
@@ -58,32 +62,134 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
-//!!!!!!!!!!!!!先把qusetion做了再回来做这个
-/*    @LoginRequired
+    @LoginRequired
+    @RequestMapping(path = "/attention/{label}/{id}",method = RequestMethod.GET)
+    public String userLike(@PathVariable String label,@PathVariable int id,
+                           @RequestParam(value = "page", defaultValue = "1") int page,
+                           @RequestParam(value = "limit", defaultValue = "10") int limit){
+        User user = hostHolder.getUser();
+        int relation = attentionService.FindById(user.getId(),id);
+        if (relation==0 ){
+            attentionService.InsertAttention(user.getId(),id);
+        }
+        else {
+            attentionService.DeleteById(user.getId(),id);
+        }
+        return "redirect:/user/"+label+"/"+id+"?page="+page+"&limit="+limit;
+        //return "redirect:/user/blog/"+user.getId();
+    }
+    @LoginRequired
     @RequestMapping(path = "/settingInfo",method = RequestMethod.GET)
     public String settingInfo(Model model){
+        User user = hostHolder.getUser();
+        callbackInfo(user.getId(), model);
+        model.addAttribute("user", user);
+        int followeeCount = attentionService.CountAttentionByUserId(user.getId());
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(user.getId());
+        model.addAttribute("followerCount", followerCount);
+        //model.addAttribute("hasFollowed", false);
+       /* // 关注数量
+        long followeeCount = followService.findFolloweeCount(uid, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+        // 粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, uid);
+        model.addAttribute("followerCount", followerCount);
+        // 是否已关注
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getUid(), ENTITY_TYPE_USER, uid);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);*/
+        return "user/setting";
 
     }
-    public void callbackInfo(String userid, Model model) {
+    public void callbackInfo(int userId, Model model) {
         //获取用户信息
-        Userinfo userInfo = userinfoService.selectInfoByUserId(userid);
+        Userinfo userInfo = userinfoService.selectInfoByUserId(userId);
         model.addAttribute("userInfo", userInfo);
-        //如果兴趣栏不为空 也要回显
-        String hobby = userInfo.getHobby();
+        //如果专业不为空 也要回显
+        String major = userInfo.getWork();
         //不为null 也不为""时
-        if (hobby != null && !hobby.isEmpty()) {
-            String[] hobbies = hobby.split(",");
-            model.addAttribute("hobbies", hobbies);
+        if (major != null && !major.isEmpty()) {
+            model.addAttribute("major", major);
         }
         //回显 问题数  博客数 回复数
-        int qcount = questionService.count(uid);
-        int bcount = blogService.count(uid);
-        int ccount = commentService.count(uid);
+        int qcount = questionService.CountByAuthorId(userId);
+        int bcount = blogService.CountByAutherId(userId);
+        int ccount = paperOfClassService.CountByAutherId(userId);
         model.addAttribute("qcount", qcount);
         model.addAttribute("bcount", bcount);
         model.addAttribute("ccount", ccount);
-    }*/
+    }
+    @LoginRequired
+    @RequestMapping(path = "/updateInfo",method = RequestMethod.POST)
+    public String updateInfo(Userinfo userinfo){
+        User user = hostHolder.getUser();
+        userinfo.setUserid(user.getId());
+        userinfoService.updateByUserid(userinfo);
+        return "redirect:/user/blog/"+user.getId();
+    }
+    @RequestMapping(path = "/blog/{id}",method = RequestMethod.GET)
+    public String userBlog(@PathVariable int id, Model model,
+                           @RequestParam(value = "page", defaultValue = "1") int page,
+                           @RequestParam(value = "limit", defaultValue = "10") int limit){
+        User user = userService.findUserById(id);
+        if (user==null){
+            throw new RuntimeException("该用户不存在!");
+        }
+        model.addAttribute("user", user);
+        callbackInfo(id, model);
+        PageHelper.startPage(page, limit);
+        PageInfo<Blog> info = new PageInfo<>(blogService.SelectByAuthorId(id));
+        model.addAttribute("info", info);
+        int followeeCount = attentionService.CountAttentionByUserId(user.getId());
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(user.getId());
+        model.addAttribute("followerCount", followerCount);
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            if(attentionService.FindById(hostHolder.getUser().getId(), id)!=0){
+                hasFollowed = true;
+            }
+        }
+        model.addAttribute("label2",page);
+        model.addAttribute("label","blog");
+        model.addAttribute("hasFollowed", hasFollowed);
+        return "user/index";
+    }
+    @RequestMapping(path = "/question/{id}",method = RequestMethod.GET)
+    public String userQuestion(@PathVariable int id, Model model,
+                           @RequestParam(value = "page", defaultValue = "1") int page,
+                           @RequestParam(value = "limit", defaultValue = "10") int limit){
+        User user = userService.findUserById(id);
+        if (user==null){
+            throw new RuntimeException("该用户不存在!");
+        }
+        model.addAttribute("user", user);
+        callbackInfo(id, model);
+        PageHelper.startPage(page, limit);
+        PageInfo<Question> info = new PageInfo<>(questionService.SelectByAuthorId(id));
+        model.addAttribute("info", info);
+        int followeeCount = attentionService.CountAttentionByUserId(user.getId());
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(user.getId());
+        model.addAttribute("followerCount", followerCount);
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            if(attentionService.FindById(hostHolder.getUser().getId(), id)!=0){
+                hasFollowed = true;
+            }
+        }
+        model.addAttribute("label2",page);
+        model.addAttribute("label","question");
+        model.addAttribute("hasFollowed", hasFollowed);
+        return "user/index";
+    }
 
+
+
+//！！！！！！！！！！！！！！！！！！！！！！！！！！！！！前期工作分界线
     /*获取用户的类型，管理员返回不同界面。待处理*/
     @LoginRequired/*自定义注解，未登录用户做需要登录的操作时,用拦截器拦截*/
     @RequestMapping(path = "/manage", method = RequestMethod.GET)/*用户管理员个人信息管理均在这里。。。待完善*/

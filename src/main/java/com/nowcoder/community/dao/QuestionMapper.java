@@ -17,4 +17,6 @@ public interface QuestionMapper {
     List<Question> selectBySort(int sort);
     List<Question> selectAllByStatus(int status);
     List<Question> selectByCategory(int categoryId);
+    List<Question> selectByAuthorId(int userId);
+    int countByAuthorId(int id);
 }

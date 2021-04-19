@@ -26,6 +26,7 @@ public class PaperOfClassService {
     /*public int updateHeader(int userId, String headerUrl) {
         return userMapper.updateHeader(userId, headerUrl);*//*上传文件例子*/
     /*将paper信息存到数据库*/
+    public List<Paper> selectPaperOnlyByStatus(int status){return paperMapper.selectOnlyByStatus(status);}
     public int updatastatus(Paper paper){return paperMapper.updatePaperstatus(paper);}
     public void uploadpaper(Paper paper){         /*不需要返回消息*/
         /*if (paper == null){
@@ -51,4 +52,5 @@ public class PaperOfClassService {
         return paperMapper.
     }*/
 //【看完第六章视频后考虑是否有用】
+    public int CountByAutherId(int autherid){return paperMapper.countByAuthorId(autherid);}
 }

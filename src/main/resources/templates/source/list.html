@@ -46,20 +46,16 @@
                 <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${blog.getAuthorId()}}" th:text="${blog.getAuthorName()}"></a>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${blog.getUserid()}}" th:text="${blog.getFilepath()}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
-                        <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"
+                        <a th:href="@{'/detail?id='+${blog.getId()}}" th:text="${blog.getTitle()}"
                            class="text-dark font-weight-bold text-decoration-none d-block"></a>
-                        <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                             xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
-                                d="M513.1 187c-324 0-448.7 320-448.7 320s127 327.3 448.7 327.3S961.8 507 961.8 507 837.1 187 513.1 187z m0 522.5c-110.5 0-200.1-89.6-200.1-200.1s89.6-200.1 200.1-200.1 200.1 89.6 200.1 200.1-89.6 200.1-200.1 200.1z"
-                                p-id="643"></path><path
-                                d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
-                                p-id="644"></path></svg>
+
                         <!--浏览量-->
-                        [[${blog.getViews()}]]
+                        <li class="d-inline ml-2">下载次数 <i th:text="${blog.getDownloadcount()}"></i></li>
+
                         </span>
-                        <span th:text="${#dates.format(blog.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"
+                        <span th:text="${#dates.format(blog.getCreatetime(),'yyyy-MM-dd HH:mm:ss')}"
                               class="badge badge-light float-right" ></span>
                     </div>
 
@@ -69,20 +65,27 @@
                     <ul class="pagination justify-content-center pagination-sm">
                         <!--往前翻 如果没有前一页 则禁用-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:href="@{'/blog/list?page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:if="${category!='a'}" th:href="@{'/paper/list?category='+${category}+'&page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                            <a class="page-link" th:if="${category=='a'}" th:href="@{'/paper/list?page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
                         </li>
 
                         <div th:each="page:${info.getNavigatepageNums()}">
-                            <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
-                                <a class="page-link" th:href="@{'/blog/list?page='+${page}+'&limit=10'}"
+                            <li class="page-item"  th:classappend="${page}==${info.getPageNum()}?'active':''">
+                                <a class="page-link" th:if="${category!='a'}" th:href="@{'/paper/list?category='+${category}+'&page='+${page}+'&limit=10'}"
+                                   th:text="${page}">
+                                </a>
+                                <a class="page-link" th:if="${category=='a'}" th:href="@{'/paper/list?page='+${page}+'&limit=10'}"
                                    th:text="${page}">
                                 </a>
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link"
-                               th:href="@{'/blog/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${category!='a'}"
+                               th:href="@{'/paper/list?category='+${category}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${category=='a'}"
+                               th:href="@{'/paper/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -93,12 +96,12 @@
             <div class="my-3 rounded">
                 <p class="mb-0">
                     <a th:href="@{/blog/write}" class="btn btn-primary btn-sm btn-block"
-                       style="color: white">发布博客</a>
+                       style="color: white">上传论文</a>
                 </p>
             </div>
             <div class="p-4 my-3 bg-white rounded">
                 <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                <a th:href="@{'/paper/list?category='+${category.getSearchname()}}"
                    th:each="category:${categoryList}" th:text="${category.getName()}"
                    class="badge badge-pill badge-primary mr-1"></a>
             </div>

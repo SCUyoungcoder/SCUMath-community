@@ -21,7 +21,8 @@ public class QuestionService {
     public Question SelectByQid(String qid){return questionMapper.selectByQid(qid);}
 
     public List<Question> SelectBySort(int sort){return questionMapper.selectBySort(sort);}
-
+    public List<Question> SelectByAuthorId(int userId){return questionMapper.selectByAuthorId(userId);}
     public List<Question> SelectAllByStatus(int status){return questionMapper.selectAllByStatus(status);}
     public List<Question> SelectByCategoryId(int categoryId){return questionMapper.selectByCategory(categoryId);}
+    public int CountByAuthorId(int authorid){return questionMapper.countByAuthorId(authorid);}
 }

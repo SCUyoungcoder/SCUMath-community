@@ -4,9 +4,9 @@ public class Userinfo {
     /**
      * 用户id
      */
-    private String id;
+    private int id;
 
-    private String userid;
+    private int userid;
     /**
      * 用户昵称
      */
@@ -57,19 +57,19 @@ public class Userinfo {
      */
     private String intro;
 
-    public String getUserid() {
+    public int getUserid() {
         return userid;
     }
 
-    public void setUserid(String userid) {
+    public void setUserid(int userid) {
         this.userid = userid;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

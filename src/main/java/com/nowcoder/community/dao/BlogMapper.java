@@ -16,4 +16,6 @@ public interface BlogMapper {
     List<Blog> selectBySort(int sort);
     List<Blog> selectAllByStatus(int status);
     List<Blog> selectByCategory(int categoryId);
+    List<Blog> selectByAuthorId(int userId);
+    int countByAuthorId(int id);
 }

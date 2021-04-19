@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
-<mapper namespace="com.nowcoder.community.dao.PaperMapper">
+<mapper namespace="com.nowcoder.community.dao.SourceMapper">
     <!--papermapper路径-->
     <!--每一个对应于papermapper的一个-->
     <sql id="insertFields">
@@ -19,68 +19,68 @@
     <sql id="selectFields">
         id, username, password, salt, email, type, status, activation_code, create_time
     </sql>-->
-    <select id="selectById" resultType="Paper">
+    <select id="selectById" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where id = #{id}<!--#字段表明引用方法的参数int id-->
     </select>
 
 
-    <select id="selectByFatherid" resultType="Paper">
+    <select id="selectByFatherid" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where father_id = #{fatherid}
     </select>
-    <select id="selectOnlyByStatus" resultType="Paper">
+    <select id="selectOnlyByStatus" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where status = #{status}
         order by id desc
     </select>
     <!--查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径-->
-    <select id="selecyByUserid" resultType="Paper">
+    <select id="selecyByUserid" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where user_id = #{userid}
     </select>
-    <select id="selectByStatus" resultType="Paper">
+    <select id="selectByStatus" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where status = #{status}
         order by id asc
         limit #{offset},#{limit}
     </select>
-    <select id="selectByTitle" resultType="Paper">
+    <select id="selectByTitle" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where title = #{title}
     </select>
-    <select id="selectByFulltitle" resultType="Paper">
+    <select id="selectByFulltitle" resultType="Source">
         select <include refid="selectFields"></include>
-        from paper
+        from source
         where title = #{title}
     </select>
     <select id="countByAuthorId" resultType="int">
-        select count(id) from paper where user_id = #{id}
+        select count(id) from source where user_id = #{id}
     </select>
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
-    <insert id="insertPaper" parameterType="Paper" keyProperty="id">
-        insert into paper (<include refid="insertFields"></include>)
+    <insert id="insertSource" parameterType="Source" keyProperty="id">
+        insert into source (<include refid="insertFields"></include>)
         values(#{fatherid}, #{userid}, #{title}, #{content}, #{filepath}, #{status}, #{createtime}, #{downloadcount})
     </insert>
     <delete id="delectById">
-        delete from paper where id = #{id}
+        delete from source where id = #{id}
     </delete>
     <!--update标签-->
-    <update id="updatePaperstatus">
-        update paper set content = #{content},father_id = #{fatherid},status = #{status} where id = #{id}
+    <update id="updateSourcestatus">
+        update source set content = #{content},father_id = #{fatherid},status = #{status} where id = #{id}
     </update>
     <update id="updateDownloadcount">
-        update paper set download_count = #{downloadcount} where id = #{id}
+        update source set download_count = #{downloadcount} where id = #{id}
     </update>
     <select id="countstatus" resultType="int">
         select count(id)
-        from paper
+        from source
         where status = #{status}
     </select>
 

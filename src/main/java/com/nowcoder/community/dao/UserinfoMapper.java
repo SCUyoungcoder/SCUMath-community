@@ -21,7 +21,7 @@ public interface UserinfoMapper {
      */
     int insertSelective(Userinfo record);
 
-    Userinfo selectInfoByUserId(String userid);
+    Userinfo selectInfoByUserId(int userid);
 
     void updateByUserid(Userinfo userInfo);
 }

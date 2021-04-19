@@ -142,6 +142,15 @@
         where category_id = #{categoryId ,jdbcType=INTEGER}
         order by id desc
     </select>
+    <select id="selectByAuthorId" resultType="Blog">
+        select <include refid="Base_Column_List"/>
+        from blog
+        where author_id = #{userId}
+        order by id desc
+    </select>
+    <select id="countByAuthorId" resultType="int">
+        select count(id) from blog where author_id = #{id}
+    </select>
     <update id="updateViews">
         update blog set views = #{count} where id = #{id}
     </update>
