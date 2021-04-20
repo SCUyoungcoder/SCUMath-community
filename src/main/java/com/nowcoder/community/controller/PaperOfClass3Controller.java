@@ -2,9 +2,12 @@ package com.nowcoder.community.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
+import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +25,8 @@ import java.util.Map;
 
 @Controller
 public class PaperOfClass3Controller {
+    @Value("${community.path.upload}")
+    private String uploadPath;
     @Autowired
     private CommentService commentService;
     @Autowired
@@ -29,6 +35,8 @@ public class PaperOfClass3Controller {
     private PaperOfClassService paperOfClassService;//一个可能并没有什么用的【待去掉】
     @Autowired
     private UserService userService;
+    @Autowired
+    private HostHolder hostHolder;
     @Autowired
     private ElasticsearchClassService elasticsearchClassService;//基于ES搜索引擎的查询service
 
@@ -68,6 +76,49 @@ public class PaperOfClass3Controller {
         //System.out.print(papers);//测试用
         System.out.print(page.getRows());
         return "/paperofclass";//返回第二级网页
+    }
+    @LoginRequired
+    @RequestMapping(path = "/paper/write",method = RequestMethod.GET)
+    public String uploadPaper(Model model){
+        User user = hostHolder.getUser();
+        List<Classification> classificationList = classificationService.AllClassifications();
+        model.addAttribute("classificationList",classificationList);
+        model.addAttribute("user",user);
+        return "paper/write";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/paper/delete/{id}",method = RequestMethod.GET)
+    public String deletePaper(@PathVariable("id") int id){
+        Paper paper = paperOfClassService.selectPaperById(id);
+        User user = hostHolder.getUser();
+        if (paper == null){
+            return "error/404";
+        }
+        if (paper.getUserid() == user.getId() || user.getType() == 1){
+            paperOfClassService.delectPaperById(paper.getId());
+            elasticsearchClassService.deletepaper(paper.getId());
+            List<Comment> delectComents = commentService.selectcommentByEntity(0,paper.getId(),0);
+            if (delectComents!=null){
+                for (Comment dc:delectComents){
+                    commentService.DeleteByEntity(dc.getId(),1);
+                    commentService.DeleteById(dc.getId());
+                }
+            }
+            String fileName = paper.getFilepath().split("http://localhost:8080/user/file/")[1];
+            System.out.println(fileName);
+            if (fileName!=null){
+                String path = uploadPath+"/"+fileName;
+                File file = new File(path);
+                if (!file.isDirectory()){
+                    file.delete();
+                }
+            }
+
+            return "redirect:/paper/list";
+        }
+        else {
+            return "error/404";
+        }
     }
     @RequestMapping(path = "/paper/list",method = RequestMethod.GET)
     public String paperList(Model model,
@@ -130,10 +181,9 @@ public class PaperOfClass3Controller {
             info.setPrePage(page-1);
             info.setNextPage(page+1);
             info.setPageNum(page);
-
+            model.addAttribute("thisCategoryName",classificationService.GetNameBySearchname(category).getName());
         }
         List<Paper> newPage = new ArrayList<>();
-        System.out.println(info.getList());
         if (info.getList()!=null){
             for (Paper p:info.getList()){
                 User user=userService.findUserById(p.getUserid());
@@ -149,7 +199,6 @@ public class PaperOfClass3Controller {
 
         info.setList(newPage);
         List<Classification> classifications = classificationService.AllClassifications();
-        System.out.println(classifications);
         model.addAttribute("category",category);
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
@@ -157,13 +206,13 @@ public class PaperOfClass3Controller {
     }
 
 
-    //第三级页面——论文详情页
+    //第三级页面——论文详情页//******************已重构
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
     public String PaperDerail(int id,Page page,Model model){
         Paper paper = paperOfClassService.selectPaperById(id);
         List<Comment> papercomments = commentService.selectcommentByEntity(0,id,0);//status=评论，entitytype=论文
         List<Map<String,Object>> coms = new ArrayList<>();
-        if (papercomments!=null) {
+        /*if (papercomments!=null) {
             for (Comment papercomment : papercomments) {
                 Map<String,Object> map = new HashMap<>();
                 List<Comment> commentcomments =commentService.selectcommentByEntity(1,papercomment.getId(),0);//status=评论，entitytype=评论
@@ -171,7 +220,7 @@ public class PaperOfClass3Controller {
                     List<Map<String,Object>> ccs = new ArrayList<>();
                     for (Comment commentcomment:commentcomments){
                         Map<String,Object> cc = new HashMap<>();
-                        if (commentcomment.getTargetid()!=0){       /*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*/
+                        if (commentcomment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
                             cc.put("targetname",userService.findUserById(commentcomment.getTargetid()).getUsername());//由targetid拿到其targetname
                         }
                         else {
@@ -188,13 +237,58 @@ public class PaperOfClass3Controller {
                     map.put("commentcomments",ccs);
                 }
                 else {
-                    map.put("commentcomments",null);                /*是否需要*/
+                    map.put("commentcomments",null);                *//*是否需要*//*
                 }
                 map.put("id",papercomment.getId());
                 map.put("username",userService.findUserById(papercomment.getUserid()).getUsername());
                 map.put("userid",papercomment.getUserid());
                 map.put("content",papercomment.getContent());
                 map.put("createtime",papercomment.getCreatetime());
+                coms.add(map);
+            }
+        }*/
+        if (papercomments!=null) {
+            for (Comment questionComment : papercomments) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("comment",questionComment);
+                map.put("user",userService.findUserById(questionComment.getUserid()));
+                List<Comment> commentComments =commentService.selectcommentByEntity(1,questionComment.getId(),0);//status=评论，entitytype=评论
+                List<Map<String,Object>> ccs = new ArrayList<>();
+                if (commentComments!=null){
+
+                    for (Comment commentComment:commentComments){
+                        Map<String,Object> cc = new HashMap<>();
+                        cc.put("reply",commentComment);
+                        cc.put("user",userService.findUserById(commentComment.getUserid()));
+                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        cc.put("target",target);
+                        /*if (commentComment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
+                            cc.put("targetname",userService.findUserById(commentComment.getTargetid()).getUsername());//由targetid拿到其targetname
+                        }
+                        else {
+                            cc.put("targetname",null);
+                        }
+                        cc.put("id",commentComment.getId());
+                        cc.put("userid",commentComment.getUserid());
+                        cc.put("type",commentComment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
+                        cc.put("username",userService.findUserById(commentComment.getUserid()).getUsername());
+                        cc.put("content",":"+commentComment.getContent());
+                        cc.put("createtime",commentComment.getCreatetime());*/
+                        ccs.add(cc);
+                    }
+
+                }
+                map.put("replys",ccs);
+                int replyCount = commentService.findCommentCount(1, questionComment.getId());
+                map.put("replyCount", replyCount);
+                /*else {
+                    map.put("replys",null);                *//*是否需要*//*
+                }*/
+                /*map.put("id",questionComment.getId());
+                map.put("username",userService.findUserById(questionComment.getUserid()).getUsername());
+                map.put("userid",questionComment.getUserid());
+                map.put("content",questionComment.getContent());
+                map.put("createtime",questionComment.getCreatetime());*/
                 coms.add(map);
             }
         }
@@ -206,10 +300,12 @@ public class PaperOfClass3Controller {
         if (paper.getStatus()== 0){
             paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf('.')));
         }
+
+        model.addAttribute("userid",paper.getUserid());
         model.addAttribute("username",userService.findUserById(paper.getUserid()).getUsername());
         model.addAttribute("paper",paper);
         model.addAttribute("fathernames",fathernames);
         model.addAttribute("comments",coms);
-        return "/level3";
+        return "/paper/read";
     }
 }

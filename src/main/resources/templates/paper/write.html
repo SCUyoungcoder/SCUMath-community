@@ -3,38 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>提问编辑</title>
+    <title>提问发布-爆爆社区</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
+    <style>
+        .nav-underline .nav-link {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            font-size: .875rem;
+            color: #6c757d;
+        }
+    </style>
 </head>
-<body style="background:rgb(247,248,249);">
-<div th:replace="common/header::header(activeUrl='question')"></div>
+<body style="background: #f2f2f2;">
 
+<!-- 导航栏 -->
+<div th:replace="common/header::header(activeUrl='question')"></div>
 
 <main role="main" class="container mt-3 p-3 bg-white rounded">
     <div class="row">
         <div class="col-md-12 blog-main">
             <div class="col-md-12 order-md-1">
-                <h4 class="mb-3">编辑提问</h4>
+                <h4 class="mb-3">上传论文</h4>
 
-                <form class="needs-validation" th:action="@{/question/edit}" method="post">
+                <form class="needs-validation" th:action="@{/question/write}" method="post">
                     <!-- 隐藏域 -->
-                    <input type="hidden" name="qid" th:value="${question.getQid()}">
+                    <input type="hidden" name="authorId" th:value="${user.getId()}">
+                    <input type="hidden" name="authorName" th:value="${user.getUsername()}">
+                    <!--<input type="hidden" name="authorAvatar" th:value="${session.loginUser.getAvatar()}">-->
+
                     <div class="row">
                         <div class="col-md-10 mb-3">
                             <label for="firstName">提问标题</label>
-                            <input th:value="${question.getTitle()}" type="text" name="title" class="form-control" id="firstName"  required>
+                            <input type="text" name="title" class="form-control" id="firstName" value="" required>
                         </div>
 
                         <div class="col-md-2 mb-3">
                             <label for="country">标签</label>
                             <select name="categoryId" class="custom-select d-block w-100" id="country">
-                                <option
-                                        th:each="category:${categoryList}"
-                                        th:selected="${question.getCategoryId()==category.getId()}"
-                                        th:value="${category.getId()}"
-                                        th:text="${category.getName()}"
-                                ></option>
+                                <option th:each="classification:${classificationList}"
+                                        th:value="${classification.getId()}" th:text="${classification.getName()}">
+                                </option>
                             </select>
                         </div>
 
@@ -42,13 +51,13 @@
                             <p>提问详情</p>
                             <div id="blog-content">
                                 <textarea required name="content" id="content" style="display:none;" rows="3"
-                                          class="form-control" th:text="${question.getContent()}"> </textarea>
+                                          class="form-control"> </textarea>
                             </div>
                         </div>
 
                     </div>
 
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">修改提问</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">发布提问</button>
                 </form>
             </div>
         </div>
@@ -67,9 +76,11 @@
             width: "100%",
             height: 500,
             syncScrolling: "single",
-            path: "/editormd/lib/",
+            path: "/editormd/lib/",  //对应的lib目录不要弄错
             saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
             // [TOCM]  [TOC] 自动生成目录
+            tocm: true,
+            tocContainer: "",
             tocDropdown: false,
             tocStartLevel: 1,     // Parse beginning of H2, Default value 1
             emoji: true,
@@ -105,4 +116,4 @@
 </script>
 
 </body>
-</html></html>
+</html>

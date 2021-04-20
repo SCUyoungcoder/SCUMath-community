@@ -42,6 +42,7 @@ public class PaperOfClassService {
     public List<Paper> selectpaperByStatus(int status,int offset,int limit){
         return paperMapper.selectByStatus(status,offset,limit);
     }
+    public int delectPaperById(int id){return paperMapper.delectById(id);}
     public int countstatus(int status){return paperMapper.countstatus(status);}
     /*public Page<Paper> selectpaperByStatus(int status , int current, int limit){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()

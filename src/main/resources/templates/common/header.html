@@ -8,7 +8,7 @@
     <div class="container">
         <!--标题-->
         <a class="navbar-brand">
-            爆爆社区
+            数学视界
         </a>
         <!--小屏幕下拉响应-->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07"
@@ -21,25 +21,25 @@
                 <li th:class="${activeUrl=='index.html'?'nav-item active':'nav-item'}">
                     <a class="nav-link" th:href="@{/index}">首页 </a>
                 </li>
-                <li th:class="${activeUrl=='question'?'nav-item active':'nav-item'}">
-                    <a class="nav-link" th:href="@{/question}">问答 </a>
-                </li>
                 <li th:class="${activeUrl=='blog'?'nav-item active':'nav-item'}">
-                    <a class="nav-link" th:href="@{/blog}">博客 </a>
+                    <a class="nav-link" th:href="@{/blog/list}">博客 </a>
                 </li>
-                <li th:class="${activeUrl=='download'?'nav-item active':'nav-item'}">
-                    <a class="nav-link" th:href="@{/download}">资源库 </a>
+                <li th:class="${activeUrl=='question'?'nav-item active':'nav-item'}">
+                    <a class="nav-link" th:href="@{/question/list}">问答 </a>
+                </li>
+                <li th:class="${activeUrl=='paper'?'nav-item active':'nav-item'}">
+                    <a class="nav-link" th:href="@{/paper/list}">论文 </a>
+                </li>
+                <li th:class="${activeUrl=='source'?'nav-item active':'nav-item'}">
+                    <a class="nav-link" th:href="@{/source/list}">资源 </a>
                 </li>
                 <li th:class="${activeUrl=='say'?'nav-item active':'nav-item'}">
                     <a class="nav-link" th:href="@{/say}">公告 </a>
                 </li>
-                <li th:class="${activeUrl=='invite'?'nav-item active':'nav-item'}">
-                    <a class="nav-link" th:href="@{/invite}">邀请码 </a>
-                </li>
             </ul>
             <!--如果未登录-->
-            <div sec:authorize="!isAuthenticated()">
-                <a class="btn btn-sm btn-primary" th:href="@{/toLogin}" role="button">
+            <div th:if="${loginUser==null}">
+                <a class="btn btn-sm btn-primary" th:href="@{/login}" role="button">
                     <svg class="bi bi-person-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                          xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
@@ -49,20 +49,20 @@
                 </a>
             </div>
             <!--如果已登录-->
-            <div sec:authorize="isAuthenticated()">
+            <div th:if="${loginUser!=null}">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
                         <a style="color: rgba(0,0,0,.5);text-decoration: none" class="nav-link dropdown-toggle" href="#"
                            id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
                            aria-expanded="false">
-                            <img th:src="${session.loginUser.getAvatar()}"
-                                 style="width: 30px;height:30px;border-radius: 50%;" alt="">
-                            <span sec:authentication="name"></span>
+                            <!--<img th:src="${session.loginUser.getAvatar()}"
+                                 style="width: 30px;height:30px;border-radius: 50%;" alt="">-->
+                            <span th:text="${loginUser.getUsername()}"></span>
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" th:href="@{'/user/'+${session.loginUser.getUid()}}">个人中心</a>
-                            <a class="dropdown-item" th:href="@{'/userinfo/setting/'+${session.loginUser.getUid()}}">更新资料</a>
-                            <a class="dropdown-item" th:href="@{'/user/update-avatar/'+${session.loginUser.getUid()}}">头像上传</a>
+                        <div  class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" th:href="@{'/user/blog/'+${loginUser.getId()}}">个人中心</a>
+                            <a class="dropdown-item" th:href="@{'/user/settingInfo'}">更新资料</a>
+                            <a th:if="${loginUser.getType()==1}" class="dropdown-item" th:href="@{'/user/update-avatar/'}">审批</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" th:href="@{/logout}">注销</a>
                         </div>

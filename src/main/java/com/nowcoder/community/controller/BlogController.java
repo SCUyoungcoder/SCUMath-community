@@ -79,6 +79,7 @@ public class BlogController {
         PageInfo<Blog> info = new PageInfo<>(blogService.SelectByCategoryId(cid));
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
+        model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
         model.addAttribute("categoryList",classifications);
         return "blog/list";
     }

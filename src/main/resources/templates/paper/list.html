@@ -9,7 +9,7 @@
 </head>
 <body style="background: rgb(247,248,249);">
 
-<!--<div th:replace="common/header::header(activeUrl='blog')"></div>-->
+<div th:replace="common/header::header(activeUrl='paper')"></div>
 
 <main role="main" class="container">
     <div class="row">
@@ -21,7 +21,7 @@
                     累计：
                     <span th:text="${info.getTotal()}"></span>
                     <span class="float-right" th:if="${!#strings.isEmpty(thisCategoryName)}">
-                        <a th:href="@{/blog}">全部</a>
+                        <a th:href="@{/paper/list}">全部</a>
                         /
                         <span th:text="${thisCategoryName}"></span>
                     </span>
@@ -109,9 +109,9 @@
     </div>
     </div>
 </main>
-<!--<div th:replace="common/footer::footer"></div>-->
+<div th:replace="common/footer::footer"></div>
 <a class="to-top">返回顶部</a>
-<!--<th:block th:replace="common/footer::script"></th:block>-->
+<th:block th:replace="common/footer::script"></th:block>
 
 </body>
 </html>

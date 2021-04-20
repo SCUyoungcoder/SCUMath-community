@@ -79,6 +79,7 @@ public class QuestionController {
         PageInfo<Question> info = new PageInfo<>(questionService.SelectByCategoryId(cid));
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
+        model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
         model.addAttribute("categoryList",classifications);
         return "question/list";
     }
@@ -112,7 +113,7 @@ public class QuestionController {
         question.setGmtCreate(new Date(System.currentTimeMillis()));
         question.setGmtUpdate(new Date(System.currentTimeMillis()));
         questionService.InsertQuestion(question);
-        String[] findPicName = questionWriteForm.getContent().split("/question/UsingTheComplexLinkGetThePicForPicManage/");
+        String[] findPicName = questionWriteForm.getContent().split("/blog/UsingTheComplexLinkGetThePicForPicManage/");
         for(int i = 1;i<findPicName.length;i++){
             String newPic = findPicName[i].split("\\)")[0];
             Picture findSql = pictureService.SelectBySaveName(newPic);
@@ -281,15 +282,15 @@ public class QuestionController {
     }
 
     //返回图片，参考url：https://question.csdn.net/meiqi0538/article/details/79862213/?utm_term=java%E8%BF%94%E5%9B%9E%E5%9B%BE%E7%89%87%E7%BB%99%E5%89%8D%E7%AB%AF&utm_medium=distribute.pc_aggpage_search_result.none-task-question-2~all~sobaiduweb~default-1-79862213&spm=3001.4430
-    @LoginRequired
+    /*@LoginRequired
     @RequestMapping(value = "/UsingTheComplexLinkGetThePicForPicManage/{picname}",method = RequestMethod.GET)
     public void returnPic(HttpServletResponse response,@PathVariable("picname") String picname){
         String filePath = uploadPicPath + "/"+picname;
         //创建一个文件对象，对应的文件就是python把词云图片生成后的路径以及对应的文件名
         File file = new File(filePath);
         //使用字节流读取本地图片
-        /*ServletOutputStream out=null;
-        BufferedInputStream buf=null;*/
+        *//*ServletOutputStream out=null;
+        BufferedInputStream buf=null;*//*
         //response.setContentType("image/png");
         try {
             //使用输入读取缓冲流读取一个文件输入流
@@ -311,11 +312,11 @@ public class QuestionController {
         }
 
         //传输结束后，删除文件，可以不删除，在生成的图片中回对此进行覆盖
-/*        File file1 = new File("E:\\Java\\eclipse_code\\NLP\\WebContent\\source\\wordcloud.png");
+*//*        File file1 = new File("E:\\Java\\eclipse_code\\NLP\\WebContent\\source\\wordcloud.png");
         file1.delete();
-        System.out.println("文件删除！");*/
+        System.out.println("文件删除！");*//*
 
-    }
+    }*/
     @LoginRequired
     @RequestMapping(path = "/delete/{qid}" ,method = RequestMethod.GET)
     public String delete(@PathVariable("qid") String qid){
@@ -333,15 +334,12 @@ public class QuestionController {
                     commentService.DeleteById(dc.getId());
                 }
             }
-            List<Picture> pictures = pictureService.SelectByFather(question.getId(),1);
+            List<Picture> pictures = pictureService.SelectByFather(question.getId(),2);
             if (pictures!=null){
                 for (Picture pic:pictures){
                     String path = uploadPicPath+"/"+pic.getSaveName();
                     File file = new File(path);
-                    System.out.println(file);
-                    System.out.println(path);
                     if (!file.isDirectory()){
-                        System.out.println("正在删除");
                         file.delete();
                     }
                 }
