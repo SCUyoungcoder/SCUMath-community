@@ -129,6 +129,17 @@
         from question
         where qid=#{qid,jdbcType=VARCHAR}
     </select>
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from question
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByIdAndCreateTime" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from question
+        where id = #{id,jdbcType=INTEGER} and gmt_create = #{gmtCreate,jdbcType=TIMESTAMP} and status = 0
+    </select>
     <select id="selectBySort" resultType="Question">
         select
         <include refid="Base_Column_List"/>

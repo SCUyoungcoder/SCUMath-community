@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>博客发布-爆爆社区</title>
+    <title>博客发布</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
     <style>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="col-md-2 mb-3">
-                            <label for="country">标签</label>
+                            <label for="country">博客类别</label>
                             <select name="categoryId" class="custom-select d-block w-100" id="country">
                                 <option th:each="classification:${classificationList}"
                                         th:value="${classification.getId()}" th:text="${classification.getName()}">
@@ -48,7 +48,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p>博客详情</p>
+                            <p>博客内容</p>
                             <div id="blog-content">
                                 <textarea required name="content" id="content" style="display:none;" rows="3"
                                           class="form-control"> </textarea>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>提问详情</title>
+    <title>论文介绍</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" type = "text/css" th:href="@{/css/global.css}" />
     <style>
@@ -18,18 +18,19 @@
 <body style="background:rgb(247,248,249);">
 
 <!-- 导航栏 -->
-<div th:replace="common/header::header(activeUrl='question')"></div>
+<div th:replace="common/header::header(activeUrl='paper')"></div>
 
 <main role="main" class="container mt-3 p-3 bg-white rounded">
     <div class="row">
         <div class="col-md-12 blog-main">
             <div class="blog-post">
                 <h2 class="mt-0 mb-3">
-                <a th:if="${paper.status}==0" class="blog-post-title" th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
+                <a class="blog-post-title" th:href="@{|${paper.filepath}|}" th:utext="${paper.title}"></a>
                 </h2>
                     <div class="mb-3"><!--论文简介-->
-                    <b th:if="${paper.status}==0">摘要：</b>
-                    <b th:if="${paper.status}==2">资源描述:</b>
+                        <b>摘要:</b>
+                    <!--<b th:if="${paper.status}==0">摘要：</b>
+                    <b th:if="${paper.status}==2">资源描述:</b>-->
                     <h th:utext="${paper.content}">简介内容</h>
                     <br>
                     <b>类别：</b><!--论文所属标签-->
@@ -40,7 +41,7 @@
 
                 <p class="blog-post-meta">
                     <!--<span th:text="${#dates.format(question.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"></span>-->
-                    <h th:text="${#dates.format(paper.createtime,'yyyy-MM-dd HH:mm:ss')}"></h>
+                    <h th:text="${#dates.format(paper.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"></h>
                     by
                     <a style="color:#71716999;background: #ffb700c4" class="badge badge-danger"
                        th:text="${username}" th:href="@{|/user/info/${userid}|}"></a>
@@ -50,7 +51,7 @@
                     <!--自己可以删除编辑文章 当然管理员也可以-->
                 <div class="float-right"
                      th:if="${loginUser != null&&((loginUser.getId()==userid)||loginUser.getType()==1)}">
-                    <input type="hidden" id="qid" th:value="${paper.id}">
+                    <input type="hidden" id="pid" th:value="${paper.id}">
                     <a style="color:red" th:href="@{'/paper/delete/'+${paper.id}}"
                        onclick="if(!confirm('确定删除吗?')) return false;">
                         <svg class="bi bi-x-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
@@ -126,7 +127,7 @@
 								</span>
                                 </div>
                                 <div class="text-muted font-size-12">
-                                    <span class="font-size-9 text-muted"> <b  th:text="${#dates.format(cvo.comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></b></span>
+                                    <span class="font-size-9 text-muted"> <b  th:text="${#dates.format(cvo.comment.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"></b></span>
                                     <ul class="d-inline float-right">
 
                                         <li class="d-inline ml-2">|</li>
@@ -148,7 +149,7 @@
                                             <span th:utext="${rvo.reply.content}"></span>
                                         </div>
                                         <div>
-                                            <span class="font-size-9 text-muted" th:text="${#dates.format(rvo.reply.createtime,'yyyy-MM-dd HH:mm:ss')}"></span>
+                                            <span class="font-size-9 text-muted" th:text="${#dates.format(rvo.reply.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"></span>
                                             <ul class="d-inline float-right">
                                                 <!--                                            <li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>-->
                                                 <li class="d-inline ml-2">|</li>
@@ -157,7 +158,7 @@
                                             <div th:id="|huifu-${cvo.comment.id}-${rvoStat.count}|" class="mt-4 collapse">
                                                 <form method="post" th:action="@{|/add/${paper.id}|}">
                                                     <div>
-                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|"/>
+                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|" required/>
                                                         <input type="hidden" name="entitytype" value="1">
                                                         <input type="hidden" name="type" value="1">
                                                         <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
@@ -175,7 +176,7 @@
                                     <li class="pb-3 pt-3">
                                         <form method="post" th:action="@{|/add/${paper.id}|}">
                                             <div>
-                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点"/>
+                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点" required/>
                                                 <input type="hidden" name="entitytype" value="1">
                                                 <input type="hidden" name="type" value="0">
                                                 <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
@@ -243,32 +244,7 @@
 <div th:replace="common/footer::footer"></div>
 <a class="to-top">返回顶部</a>
 <th:block th:replace="common/footer::script"></th:block>
-<link rel="stylesheet" th:href="@{/editormd/css/editormd.preview.css}"/>
-<script th:src="@{/editormd/lib/marked.min.js}"></script>
-<script th:src="@{/editormd/lib/prettify.min.js}"></script>
-<script th:src="@{/editormd/lib/raphael.min.js}"></script>
-<script th:src="@{/editormd/lib/underscore.min.js}"></script>
-<script th:src="@{/editormd/lib/sequence-diagram.min.js}"></script>
-<script th:src="@{/editormd/lib/flowchart.min.js}"></script>
-<script th:src="@{/editormd/lib/jquery.flowchart.min.js}"></script>
-<script th:src="@{/editormd/editormd.js}"></script>
-
 <script type="text/javascript">
-    var testEditor;
-    $(
-        function () {
-            testEditor = editormd.markdownToHTML("doc-content", {//注意：这里是上面DIV的id
-                htmlDecode: "style,script,iframe",
-                emoji: true,
-                taskList: true,
-                tocm: true,
-                tex: true, // 默认不解析
-                flowChart: true, // 默认不解析
-                sequenceDiagram: true, // 默认不解析
-                codeFold: true
-            });
-        }
-    );
     $(function(){
         $("#passBtn").click(setPass);
     });
@@ -276,8 +252,8 @@
     // 审核通过
     function setPass() {
         $.post(
-            "/question/pass",
-            {"qid":$("#qid").val()},
+            "/paper/pass",
+            {"pid":$("#pid").val()},
             function(data) {
                 data = $.parseJSON(data);
                 if(data.code == 0) {

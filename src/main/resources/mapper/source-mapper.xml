@@ -12,17 +12,10 @@
     <sql id="selectFields">
         id, father_id, user_id, title, content, file_path, status, create_time,download_count
     </sql>
-    <!--<sql id="insertFields">
-        username, password, salt, email, type, status, activation_code,  create_time
-    </sql>
-
-    <sql id="selectFields">
-        id, username, password, salt, email, type, status, activation_code, create_time
-    </sql>-->
-    <select id="selectById" resultType="Source">
+    <!--<select id="selectById" resultType="Source">
         select <include refid="selectFields"></include>
         from source
-        where id = #{id}<!--#字段表明引用方法的参数int id-->
+        where id = #{id}&lt;!&ndash;#字段表明引用方法的参数int id&ndash;&gt;
     </select>
 
 
@@ -37,7 +30,7 @@
         where status = #{status}
         order by id desc
     </select>
-    <!--查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径-->
+    &lt;!&ndash;查询标签，id要对应usermapper中的方法名。返回类型User，本来应该写上路径的但application.properties中配置了默认路径&ndash;&gt;
     <select id="selecyByUserid" resultType="Source">
         select <include refid="selectFields"></include>
         from source
@@ -63,7 +56,7 @@
     <select id="countByAuthorId" resultType="int">
         select count(id) from source where user_id = #{id}
     </select>
-    <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
+    &lt;!&ndash;insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）&ndash;&gt;
     <insert id="insertSource" parameterType="Source" keyProperty="id">
         insert into source (<include refid="insertFields"></include>)
         values(#{fatherid}, #{userid}, #{title}, #{content}, #{filepath}, #{status}, #{createtime}, #{downloadcount})
@@ -71,7 +64,7 @@
     <delete id="delectById">
         delete from source where id = #{id}
     </delete>
-    <!--update标签-->
+    &lt;!&ndash;update标签&ndash;&gt;
     <update id="updateSourcestatus">
         update source set content = #{content},father_id = #{fatherid},status = #{status} where id = #{id}
     </update>
@@ -82,7 +75,7 @@
         select count(id)
         from source
         where status = #{status}
-    </select>
+    </select>-->
 
 
 </mapper>

@@ -9,7 +9,7 @@
 </head>
 <body style="background: rgb(247,248,249);">
 
-<div th:replace="common/header::header(activeUrl='paper')"></div>
+<div th:replace="common/header::header(activeUrl='comment')"></div>
 
 <main role="main" class="container">
     <div class="row">
@@ -43,69 +43,47 @@
                         </div>
                     </li>
                 </ul>-->
-                <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
+                <div th:each="comment:${mapList}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${blog.getUserid()}}" th:text="${blog.getFilepath()}"></a>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-left" th:href="@{'/user/blog/'+${comment.userId}}" th:text="${comment.userName}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
-                        <a th:href="@{'/detail?id='+${blog.getId()}}" th:text="${blog.getTitle()}"
+                        <span th:text="${comment.category}"></span>
+                        <a th:href="@{${comment.url}}" th:text="${comment.title}"
                            class="text-dark font-weight-bold text-decoration-none d-block"></a>
-
+                        <span>中回复你：</span>
                         <!--浏览量-->
-                        <li class="d-inline ml-2">下载次数 <i th:text="${blog.getDownloadcount()}"></i></li>
-
-                        </span>
-                        <span th:text="${#dates.format(blog.getGmtcreate(),'yyyy-MM-dd HH:mm:ss')}"
+                        <span th:text = "${comment.content}"></span>
+                        <span th:text="${#dates.format(comment.time,'yyyy-MM-dd HH:mm:ss')}"
                               class="badge badge-light float-right" ></span>
                     </div>
 
                 </div>
                 <!--分页-->
-                <nav th:if="${checkLabel==null}" aria-label="Page navigation example" class="mt-4">
+                <nav aria-label="Page navigation example" class="mt-4">
                     <ul class="pagination justify-content-center pagination-sm">
                         <!--往前翻 如果没有前一页 则禁用-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:if="${category!='a'}" th:href="@{'/paper/list?category='+${category}+'&page='+${info.getPrePage()}+'&limit=10'}"
-                               tabindex="">Previous</a>
-                            <a class="page-link" th:if="${category=='a'}" th:href="@{'/paper/list?page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:href="@{'/comment/list?page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
                         </li>
-
                         <div th:each="page:${info.getNavigatepageNums()}">
                             <li class="page-item"  th:classappend="${page}==${info.getPageNum()}?'active':''">
-                                <a class="page-link" th:if="${category!='a'}" th:href="@{'/paper/list?category='+${category}+'&page='+${page}+'&limit=10'}"
+                                <a class="page-link" th:href="@{'/comment/list?page='+${page}+'&limit=10'}"
                                    th:text="${page}">
                                 </a>
-                                <a class="page-link" th:if="${category=='a'}" th:href="@{'/paper/list?page='+${page}+'&limit=10'}"
-                                   th:text="${page}">
-                                </a>
+
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:if="${category!='a'}"
-                               th:href="@{'/paper/list?category='+${category}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
-                            <a class="page-link" th:if="${category=='a'}"
-                               th:href="@{'/paper/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link"
+                               th:href="@{'/comment/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-        <aside th:if="${checkLabel==null}" class="col-md-3 blog-sidebar">
 
-            <div class="my-3 rounded">
-                <p class="mb-0">
-                    <a th:href="@{/paper/write}" class="btn btn-primary btn-sm btn-block"
-                       style="color: white">上传论文</a>
-                </p>
-            </div>
-            <div class="p-4 my-3 bg-white rounded">
-                <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/paper/list?category='+${category.getSearchname()}}"
-                   th:each="category:${categoryList}" th:text="${category.getName()}"
-                   class="badge badge-pill badge-primary mr-1"></a>
-            </div>
-        </aside>
     </div>
     </div>
 </main>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>用户中心</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type = "text/css" th:href="@{/css/global.css}" />
+    <style>
+        .badge-warning {
+            color: #71716999;
+            background: #ffb700c4;
+        }
+
+        #table-title tr th {
+            border: none;
+        }
+    </style>
+</head>
+<body style="background: rgb(247,248,249);">
+
+<div th:replace="common/header::header(activeUrl='user')"></div>
+<main role="main" class="container">
+    <div class="row">
+
+        <aside class="col-md-3 blog-sidebar" th:fragment="userShowPanel">
+
+            <div class="p-4 my-3 bg-white rounded">
+                <div class="mb-0">
+                    <div class="text-center">
+                        <span th:text="${user.username}"></span>
+                        <br>
+                        <small>
+                            <!--<span class="badge badge-primary">普通用户</span>-->
+                            <span th:if="${user.type==1}"
+                                    th:class="${user.type==1?'badge badge-success':''}"
+                                    th:text="${user.type==1?'管理员':''}">
+                            </span>
+                            <br th:if="${user.type==1}">
+                            <input type="hidden" id="entityId" th:value="${user.id}">
+
+                            <br>
+                            <span>关注 <a class="text-primary" th:href="@{|/user/follow/${user.id}|}" th:text="${followeeCount}">5</a> 人</span>
+                            <br>
+                            <span>粉丝 <a class="text-primary" th:href="@{|/user/fans/${user.id}|}" th:text="${followerCount}">123</a> 人</span>
+                        </small>
+                        <p class="text-center">
+                            <small th:text="${work}"></small>
+                        </p>
+                        <!--<p>
+                            <span th:each="hobby:${hobbies}"
+                                  th:text="${work}"
+                                  class="badge badge-light mr-1"></span>
+                        </p>-->
+                        <p>
+                        <table class="table">
+                            <thead id="table-title">
+                            <tr>
+                                <th scope="col">博客</th>
+                                <th scope="col">问答</th>
+                                <th scope="col">论文</th>
+                                <th scope="col">资源</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td th:text="${bcount}">0</td>
+                                <td th:text="${qcount}">0</td>
+                                <td th:text="${pcount}">0</td>
+                                <td th:text="${scount}">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <div class="col-md-9 blog-main">
+            <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <h6 class="border-bottom border-gray pb-2 mb-0">
+                    <nav class="nav nav-pills">
+                        <a th:class="${followLabel=='fans'?'nav-link active':'nav-link'}"
+                           th:href="@{'/user/fans/'+${user.id}+'?page=1&limit=10'}">
+                            <svg class="bi bi-receipt-cutoff" width="1em" height="1em" viewBox="0 0 16 16"
+                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                      d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+                                <path fill-rule="evenodd"
+                                      d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            粉丝
+                        </a>
+                        <a th:class="${followLabel=='follow'?'nav-link active':'nav-link'}"
+                           th:href="@{'/user/follow/'+${user.id}+'?page=1&limit=10'}">
+                            <svg class="bi bi-receipt-cutoff" width="1em" height="1em" viewBox="0 0 16 16"
+                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                      d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+                                <path fill-rule="evenodd"
+                                      d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            关注
+                        </a>
+                    </nav>
+                </h6>
+
+                <div th:each="user:${users}" class="media text-muted pt-3">
+                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <a th:href="@{'/user/blog/'+${user.userid}}" style="color:#71716999;background: #ffb700c4" class="badge badge-danger float-left"
+                              th:text="${user.username}"></a>
+                        <span class="text-dark font-weight-bold text-decoration-none d-block float-right"
+                           th:text="${user.userwork}"></span>
+                        <!--<a class="text-dark font-weight-bold text-decoration-none d-block"
+                           th:if="${label =='blog'}"
+                           th:href="@{'/'+${label}+'/read/'+blog.getBid()}"
+                           th:text="${blog.getTitle()}"></a>-->
+
+                    </p>
+                </div>
+                <!--分页-->
+                <nav aria-label="Page navigation example" class="mt-4">
+                    <ul class="pagination justify-content-center pagination-sm">
+                        <!--往前翻 如果没有前一页 则禁用-->
+                        <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/user/'+${followLabel}+'/'+${user.id}+'?page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                        </li>
+
+                        <div th:each="page:${info.getNavigatepageNums()}">
+                            <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
+                                <a class="page-link" th:href="@{'/user/'+${followLabel}+'/'+${user.id}+'?page='+${page}+'&limit=10'}"
+                                   th:text="${page}">
+                                </a>
+                            </li>
+                        </div>
+                        <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link"
+                               th:href="@{'/user/'+${followLabel}+'/'+${user.id}+'?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+</main>
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+
+<th:block th:replace="common/footer::script"></th:block>
+<script th:src="@{/js/profile.js}"></script>
+
+</body>
+</html>

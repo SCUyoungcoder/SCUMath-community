@@ -49,7 +49,18 @@ public class ElasticsearchClassService {
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status","0")))//构造查询条件——classname，在fatherid里面查;且status==0的论文
                 .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
+                .withPageable(pageable)
+                .build();
+        return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
+    }
+    public List<Paper> searchPaperByClassAndStatus(String classname,int status){
+        Pageable pageable = new PageRequest(0,1000);
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status",status)))
+                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
                 .withPageable(pageable)
                 .build();
@@ -64,7 +75,7 @@ public class ElasticsearchClassService {
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status","0")))//构造查询条件——classname，在fatherid里面查;且status==0的论文
                 .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
                 .withPageable(PageRequest.of(current,limit ))//分页展示【2021.1.15，在业务层Service不再做分页而是取到所有的查询数据，并将status==0的论文传给表现层controller】
                 .build();
@@ -105,10 +116,10 @@ public class ElasticsearchClassService {
                         post.setStatus(Integer.valueOf(status));
 
                         /*String createtime = hit.getSourceAsMap().get("createtime").toString();*/
-                        String createtime = String.valueOf(hit.getSourceAsMap().get("createtime"));
+                        String gmtcreate = String.valueOf(hit.getSourceAsMap().get("gmtcreate"));
                     /*ParsePosition pos = new ParsePosition(8);
                     Date createtime2 = formatter*/
-                        post.setCreatetime(new Date(Long.valueOf(createtime)));
+                        post.setGmtcreate(new Date(Long.valueOf(gmtcreate)));
 
                         String downloadcount = hit.getSourceAsMap().get("downloadcount").toString();
                         post.setDownloadcount(Integer.valueOf(downloadcount));

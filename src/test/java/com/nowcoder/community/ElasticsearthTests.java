@@ -156,7 +156,7 @@ public class ElasticsearthTests {
                     String createtime = String.valueOf(hit.getSourceAsMap().get("createtime"));
                     /*ParsePosition pos = new ParsePosition(8);
                     Date createtime2 = formatter*/
-                    post.setCreatetime(new Date(Long.valueOf(createtime)));
+                    post.setGmtcreate(new Date(Long.valueOf(createtime)));
 
                     String downloadcount = hit.getSourceAsMap().get("downloadcount").toString();
                     post.setDownloadcount(Integer.valueOf(downloadcount));

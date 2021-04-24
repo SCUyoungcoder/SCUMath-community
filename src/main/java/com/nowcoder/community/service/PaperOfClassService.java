@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import java.text.ParsePosition;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,23 +24,17 @@ public class PaperOfClassService {
 
     public Paper selectpaperByTitle(String title){ return paperMapper.selectByFulltitle(title);}
     public Paper selectPaperById(int id){return paperMapper.selectById(id);}
+    public Paper SelectByIdAndCreateTime(int id, Date gmtCreate){return paperMapper.selectByIdAndCreateTime(id,gmtCreate);}
     public int updateDownloadcount(int id,int downloadcount){return paperMapper.updateDownloadcount(id,downloadcount);}
     /*public int updateHeader(int userId, String headerUrl) {
         return userMapper.updateHeader(userId, headerUrl);*//*上传文件例子*/
     /*将paper信息存到数据库*/
     public List<Paper> selectPaperOnlyByStatus(int status){return paperMapper.selectOnlyByStatus(status);}
     public int updatastatus(Paper paper){return paperMapper.updatePaperstatus(paper);}
-    public void uploadpaper(Paper paper){         /*不需要返回消息*/
-        /*if (paper == null){
-            throw new IllegalArgumentException("参数不能为空！");
-        }
-        if (StringUtils.isBlank(paper.getTitle())){
-            map.put("titleMsg","论文题目不能为空");
-            return map;
-        }*/
-        paperMapper.insertPaper(paper);
-        /*return map;*//*上传论文部分，，，，待完成?*/
+    public int uploadpaper(Paper paper){
+        return paperMapper.insertPaper(paper);
     }
+    public Paper selectByFilepath(String filepath){return paperMapper.selectByFilepath(filepath);}
     public List<Paper> selectpaperByStatus(int status,int offset,int limit){
         return paperMapper.selectByStatus(status,offset,limit);
     }
@@ -53,5 +49,6 @@ public class PaperOfClassService {
         return paperMapper.
     }*/
 //【看完第六章视频后考虑是否有用】
-    public int CountByAutherId(int autherid){return paperMapper.countByAuthorId(autherid);}
+    public int CountByAutherIdAndStatus(int autherid,int status){return paperMapper.countByAuthorIdAndStatus(autherid,status);}
+    public List<Paper> SelectByAuthorIdAndStatus(int autherid,int status){return paperMapper.selectByAuthorIdAndStatus(autherid,status);}
 }

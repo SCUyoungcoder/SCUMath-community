@@ -4,6 +4,7 @@ package com.nowcoder.community.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
@@ -69,6 +70,7 @@ public class BlogController {
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
+        //model.addAttribute("checkLabel",0);
         return "blog/list";
     }
     @RequestMapping(path = "/category",method = RequestMethod.GET)
@@ -81,6 +83,7 @@ public class BlogController {
         model.addAttribute("info", info);
         model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
         model.addAttribute("categoryList",classifications);
+        //model.addAttribute("checkLabel",0);
         return "blog/list";
     }
     @LoginRequired
@@ -192,6 +195,9 @@ public class BlogController {
             model.addAttribute("blog",blog);
             List<Classification> classifications = classificationService.AllClassifications();
             model.addAttribute("categoryList",classifications);
+            if (blog.getStatus()==1 && user.getType()==1){
+                model.addAttribute("checkLabel",1);
+            }
             return "blog/edit";
         }else {
             return "error/404";
@@ -203,6 +209,9 @@ public class BlogController {
         Blog blog = blogService.SelectByBid(bid);
         User user = hostHolder.getUser();
         if (user!=null){
+            if (blog.getStatus()==1 && user.getType()==1){
+                model.addAttribute("checkLabel",1);
+            }
             if (user.getId()!=blog.getAuthorId()){
                 blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
             }
@@ -210,6 +219,7 @@ public class BlogController {
         else {
             blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
         }
+
         //List<Comment> blogComments = commentService.selectcommentByEntity(2,blog.getId(),0);//status=评论，entitytype=论文
 
         List<Comment> blogComments = commentService.selectByEntityAndPage(2,blog.getId(),0,page.getCurrent()-1,page.getLimit());
@@ -348,28 +358,25 @@ public class BlogController {
                 }
                 pictureService.DeleteByFather(blog.getId(),1);
             }
-            return "redirect:/blog/list";
+            if (blog.getStatus()==1 && user.getType()==1 ){
+                return "redirect:/user/approval/1";
+            }
+            else {
+                return "redirect:/blog/list";
+            }
         }
         else {
             return "error/404";
         }
     }
-    @LoginRequired
+    @AdminRequired
     @PostMapping(path = "/pass")
     @ResponseBody
     public String pass(String bid) {
-        System.out.println(bid);
-        User user = hostHolder.getUser();
+        /*System.out.println(bid);*/
         Blog blog = blogService.SelectByBid(bid);
-        if (user.getId()==blog.getAuthorId()||user.getType()==1){
-            blogService.UpdateStatus(blog.getId(),0);
-            return CommunityUtil.getJSONString(0);
-        }
-        else {
-            return CommunityUtil.getJSONString(1,"没有权限！");
-        }
-
-
+        blogService.UpdateStatus(blog.getId(),0);
+        return CommunityUtil.getJSONString(0);
     }
 
 

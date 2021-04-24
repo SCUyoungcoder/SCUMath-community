@@ -7,7 +7,7 @@
     <!--papermapper路径-->
     <!--每一个对应于papermapper的一个-->
     <sql id="insertFields">
-        user_id, entity_type, entity_id, target_id, content, status, create_time, type, notice_table
+        user_id, entity_type, entity_id, target_id, target_id2, content, status, create_time, type, notice_table
     </sql><!--定义标签-->
     <sql id="selectFields">
         id, user_id, entity_type, entity_id, target_id, content, status, create_time, type, notice_table
@@ -25,6 +25,12 @@
         and entity_id = #{entityId}
         order by create_time asc
         limit #{offset}, #{limit}
+    </select>
+    <select id="selectByTwoTarget" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where (target_id = #{userId} or target_id2 = #{userId} ) and user_id != #{userId}
+        order by create_time desc
     </select>
     <select id="selectCountByEntity" resultType="int">
         select count(id)
@@ -69,7 +75,7 @@
 
     <insert id="insertComment" parameterType="Comment" keyProperty="id">
         insert into comment (<include refid="insertFields"></include>)
-        values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{content},#{status},#{createtime},#{type},#{table})
+        values(#{userid}, #{entitytype}, #{entityid}, #{targetid}, #{targetid2}, #{content},#{status},#{createtime},#{type},#{table})
     </insert>
 
     <delete id="deleteById">

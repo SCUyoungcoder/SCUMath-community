@@ -50,7 +50,7 @@ public class UserController {
     @Autowired
     private CommentService commentService;
     @Autowired
-    QuestionService questionService;
+    private QuestionService questionService;
     @Autowired
     private PaperRepository paperRepository;
     @Autowired
@@ -62,6 +62,136 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @AdminRequired
+    @RequestMapping(path = "/fans/{userId}",method = RequestMethod.GET)
+    public String getFans(Model model,@PathVariable("userId") int userId,
+                          @RequestParam(defaultValue = "1" ) int page,
+                          @RequestParam(defaultValue = "10") int limit){
+        User loginUser = hostHolder.getUser();
+        if (loginUser.getId()!=userId){
+            return "redirect:/user/blog/"+userId;
+        }
+        Map<String,Object> userMap = new HashMap<>();
+        userMap.put("id",userId);
+        userMap.put("username",loginUser.getUsername());
+        userMap.put("type",loginUser.getType());
+        callbackInfo(userId, model);
+        PageHelper.startPage(page,limit);
+        PageInfo<Attention> info = new PageInfo<>(attentionService.SelectByFocusId(userId));
+        List<Map<String,Object>> users = new ArrayList<>();
+        for (Attention attention:info.getList()){
+            Map<String,Object> map = new HashMap<>();
+            User user = userService.findUserById(attention.getUserId());
+            Userinfo userinfo = userinfoService.selectInfoByUserId(attention.getUserId());
+            map.put("username",user.getUsername());
+            map.put("userwork",userinfo.getWork());
+            map.put("userid",attention.getUserId());
+            users.add(map);
+        }
+        model.addAttribute("work",userinfoService.selectInfoByUserId(userId).getWork());
+        model.addAttribute("user",userMap);
+        model.addAttribute("users",users);
+        model.addAttribute("info",info);
+        int followeeCount = attentionService.CountAttentionByUserId(userId);
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(userId);
+        model.addAttribute("followerCount", followerCount);
+        model.addAttribute("followLabel","fans");
+        return "user/flow";
+    }
+    @AdminRequired
+    @RequestMapping(path = "/follow/{userId}",method = RequestMethod.GET)
+    public String getFollow(Model model,@PathVariable("userId") int userId,
+                          @RequestParam(defaultValue = "1" ) int page,
+                          @RequestParam(defaultValue = "10") int limit){
+        User loginUser = hostHolder.getUser();
+        if (loginUser.getId()!=userId){
+            return "redirect:/user/blog/"+userId;
+        }
+        Map<String,Object> userMap = new HashMap<>();
+        userMap.put("id",userId);
+        userMap.put("username",loginUser.getUsername());
+        userMap.put("type",loginUser.getType());
+        callbackInfo(userId, model);
+        PageHelper.startPage(page,limit);
+        PageInfo<Attention> info = new PageInfo<>(attentionService.SelectByUserId(userId));
+        List<Map<String,Object>> users = new ArrayList<>();
+        for (Attention attention:info.getList()){
+            Map<String,Object> map = new HashMap<>();
+            User user = userService.findUserById(attention.getUserId());
+            Userinfo userinfo = userinfoService.selectInfoByUserId(attention.getUserId());
+            map.put("username",user.getUsername());
+            map.put("userwork",userinfo.getWork());
+            map.put("userid",attention.getUserId());
+            users.add(map);
+        }
+        model.addAttribute("work",userinfoService.selectInfoByUserId(userId).getWork());
+        model.addAttribute("user",userMap);
+        model.addAttribute("users",users);
+        model.addAttribute("info",info);
+        int followeeCount = attentionService.CountAttentionByUserId(userId);
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(userId);
+        model.addAttribute("followerCount", followerCount);
+        model.addAttribute("followLabel","follow");
+        return "user/flow";
+    }
+    @AdminRequired
+    @RequestMapping(path = "/approval/{checkLabel}",method = RequestMethod.GET)
+    public String approvalAll(Model model,@PathVariable int checkLabel//label 1234分别代表4种类型，0代表不审批
+                    /*@RequestParam(defaultValue = "1" ) int page,
+                    @RequestParam(defaultValue = "10") int limit*/){
+        PageHelper.startPage(1,100);
+        model.addAttribute("checkLabel",checkLabel);
+        switch (checkLabel){
+            case 1:
+                PageInfo<Blog> info1 = new PageInfo<>( blogService.SelectAllByStatus(1));
+                model.addAttribute("info",info1);
+                return "blog/list";
+            case 2:
+                PageInfo<Question> info2 = new PageInfo<>(questionService.SelectAllByStatus(1));
+                model.addAttribute("info",info2);
+                return "question/list";
+            case 3:
+                PageInfo<Paper> info3 = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(1));
+                List<Paper> newPage3 = new ArrayList<>();
+                if (info3.getList()!=null){
+                    for (Paper p:info3.getList()){
+                        User user=userService.findUserById(p.getUserid());
+                        if (user==null){
+                            //paperOfClassService.selectPaperOnlyByStatus(0);
+                            user=userService.findUserById(p.getUserid());
+                        }
+                        p.setFilepath(user.getUsername());
+                        //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
+                        newPage3.add(p);
+                    }
+                }
+
+                info3.setList(newPage3);
+                model.addAttribute("info",info3);
+                return "paper/list";
+            case 4:
+                PageInfo<Paper> info4 = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(3));
+                List<Paper> newPage4 = new ArrayList<>();
+                if (info4.getList()!=null){
+                    for (Paper p:info4.getList()){
+                        User user=userService.findUserById(p.getUserid());
+                        if (user==null){
+                            //paperOfClassService.selectPaperOnlyByStatus(0);
+                            user=userService.findUserById(p.getUserid());
+                        }
+                        p.setFilepath(user.getUsername());
+                        //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
+                        newPage4.add(p);
+                    }
+                }
+                info4.setList(newPage4);
+                model.addAttribute("info",info4);
+                return "source/list";
+        }
+        return "eror/404";
+    }
     @LoginRequired
     @RequestMapping(path = "/attention/{label}/{id}",method = RequestMethod.GET)
     public String userLike(@PathVariable String label,@PathVariable int id,
@@ -117,10 +247,13 @@ public class UserController {
         //回显 问题数  博客数 回复数
         int qcount = questionService.CountByAuthorId(userId);
         int bcount = blogService.CountByAutherId(userId);
-        int ccount = paperOfClassService.CountByAutherId(userId);
+        int pcount = paperOfClassService.CountByAutherIdAndStatus(userId,0);
+        int scount = paperOfClassService.CountByAutherIdAndStatus(userId,2);
+
         model.addAttribute("qcount", qcount);
         model.addAttribute("bcount", bcount);
-        model.addAttribute("ccount", ccount);
+        model.addAttribute("pcount", pcount);
+        model.addAttribute("scount", scount);
     }
     @LoginRequired
     @RequestMapping(path = "/updateInfo",method = RequestMethod.POST)
@@ -186,7 +319,90 @@ public class UserController {
         model.addAttribute("hasFollowed", hasFollowed);
         return "user/index";
     }
-
+    @RequestMapping(path = "/paper/{id}",method = RequestMethod.GET)
+    public String userPaper(@PathVariable int id, Model model,
+                            @RequestParam(value = "page", defaultValue = "1") int page,
+                            @RequestParam(value = "limit", defaultValue = "10") int limit){
+        User user = userService.findUserById(id);
+        if (user==null){
+            throw new RuntimeException("该用户不存在!");
+        }
+        model.addAttribute("user", user);
+        callbackInfo(id, model);
+        PageHelper.startPage(page, limit);
+        PageInfo<Paper> info = new PageInfo<>(paperOfClassService.SelectByAuthorIdAndStatus(id,0));
+        List<Paper> newPage = new ArrayList<>();
+        if (info.getList()!=null){
+            for (Paper p:info.getList()){
+                User user1=userService.findUserById(p.getUserid());
+                if (user1==null){
+                    //paperOfClassService.selectPaperOnlyByStatus(0);
+                    user1=userService.findUserById(p.getUserid());
+                }
+                p.setFilepath(user1.getUsername());
+                //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
+                newPage.add(p);
+            }
+        }
+        info.setList(newPage);
+        model.addAttribute("info", info);
+        int followeeCount = attentionService.CountAttentionByUserId(user.getId());
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(user.getId());
+        model.addAttribute("followerCount", followerCount);
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            if(attentionService.FindById(hostHolder.getUser().getId(), id)!=0){
+                hasFollowed = true;
+            }
+        }
+        model.addAttribute("label2",page);
+        model.addAttribute("label","paper");
+        model.addAttribute("hasFollowed", hasFollowed);
+        return "user/index";
+    }
+    @RequestMapping(path = "/source/{id}",method = RequestMethod.GET)
+    public String userSource(@PathVariable int id, Model model,
+                             @RequestParam(value = "page", defaultValue = "1") int page,
+                             @RequestParam(value = "limit", defaultValue = "10") int limit){
+        User user = userService.findUserById(id);
+        if (user==null){
+            throw new RuntimeException("该用户不存在!");
+        }
+        model.addAttribute("user", user);
+        callbackInfo(id, model);
+        PageHelper.startPage(page, limit);
+        PageInfo<Paper> info = new PageInfo<>(paperOfClassService.SelectByAuthorIdAndStatus(id,2));
+        List<Paper> newPage = new ArrayList<>();
+        if (info.getList()!=null){
+            for (Paper p:info.getList()){
+                User user1=userService.findUserById(p.getUserid());
+                if (user1==null){
+                    //paperOfClassService.selectPaperOnlyByStatus(0);
+                    user1=userService.findUserById(p.getUserid());
+                }
+                p.setFilepath(user1.getUsername());
+                //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
+                newPage.add(p);
+            }
+        }
+        info.setList(newPage);
+        model.addAttribute("info", info);
+        int followeeCount = attentionService.CountAttentionByUserId(user.getId());
+        model.addAttribute("followeeCount", followeeCount);
+        int followerCount = attentionService.CountAttentionByFocusId(user.getId());
+        model.addAttribute("followerCount", followerCount);
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            if(attentionService.FindById(hostHolder.getUser().getId(), id)!=0){
+                hasFollowed = true;
+            }
+        }
+        model.addAttribute("label2",page);
+        model.addAttribute("label","source");
+        model.addAttribute("hasFollowed", hasFollowed);
+        return "user/index";
+    }
 
 
 //！！！！！！！！！！！！！！！！！！！！！！！！！！！！！前期工作分界线
@@ -275,6 +491,7 @@ public class UserController {
             sortname = "createtime";
         }
         org.springframework.data.domain.Page<Paper> searchpapers = elasticsearchService.searchPaperByFieldname(keyword,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        System.out.println(searchpapers.toString());
         List<Map<String ,Object>> papers = new ArrayList<>();
         if (searchpapers !=null){
             for (Paper paper:searchpapers){
@@ -320,7 +537,7 @@ public class UserController {
    public String offerreward(Paper paper,Model model){
        User user = hostHolder.getUser();
        Date dayy=new Date();
-       paper.setCreatetime(dayy);
+       paper.setGmtcreate(dayy);
        paper.setUserid(user.getId());
        paper.setStatus(2);
        paperOfClassService.uploadpaper(paper);
@@ -410,7 +627,7 @@ public class UserController {
         paper.setFilepath(filepath);
         paper.setDownloadcount(0);
         Date dayy=new Date();
-        paper.setCreatetime(dayy);
+        paper.setGmtcreate(dayy);
         paper.setUserid(user.getId());
         if (user.getType() == 1){/*type为1即管理员*/
             paper.setStatus(0);
@@ -479,15 +696,23 @@ public class UserController {
 */
     @LoginRequired
     @RequestMapping(path = "/file/{fileName}", method = RequestMethod.GET)
-    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
+    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) throws UnsupportedEncodingException {
+        String sqlFilepath = domain+"/user/file/"+fileName;
+        Paper paper = paperOfClassService.selectByFilepath(sqlFilepath);
+        System.out.println(paper);
         // 文件后缀
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         //文件前缀
         String title = fileName.substring(0,fileName.lastIndexOf("."));
+        String paperName = paper.getTitle()+suffix;
         // 服务器存放路径
         fileName = uploadPath + "/" + fileName;
         // 设置类型为文件
         response.setContentType("application/octet-stream");
+
+        response.setHeader("Content-Disposition",
+                "attachment; filename=" + new String(paperName.getBytes("gb2312"),"ISO8859-1"));
+        //response.setCharacterEncoding("UTF-8");
         //response.setContentType("image/" + suffix);
         try (
                 FileInputStream fis = new FileInputStream(fileName);
@@ -498,11 +723,13 @@ public class UserController {
             while ((b = fis.read(buffer)) != -1) {
                 os.write(buffer, 0, b);
             }
+            os.close();
+            fis.close();
         } catch (IOException e) {
             logger.error("下载文件失败: " + e.getMessage());
         }
-        System.out.println(title);
-        Paper paper = paperOfClassService.selectpaperByTitle(title);
+        //System.out.println(title);
+
 
         paperOfClassService.updateDownloadcount(paper.getId(),paper.getDownloadcount()+1);
     }

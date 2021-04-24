@@ -7,22 +7,20 @@
     <!--papermapper路径-->
     <!--每一个对应于papermapper的一个-->
     <sql id="insertFields">
-        father_id, user_id, title, content, file_path, status, create_time,download_count
+        father_id, user_id, title, content, file_path, status, gmt_create,download_count
     </sql><!--定义标签-->
     <sql id="selectFields">
-        id, father_id, user_id, title, content, file_path, status, create_time,download_count
+        id, father_id, user_id, title, content, file_path, status, gmt_create,download_count
     </sql>
-    <!--<sql id="insertFields">
-        username, password, salt, email, type, status, activation_code,  create_time
-    </sql>
-
-    <sql id="selectFields">
-        id, username, password, salt, email, type, status, activation_code, create_time
-    </sql>-->
     <select id="selectById" resultType="Paper">
         select <include refid="selectFields"></include>
         from paper
         where id = #{id}<!--#字段表明引用方法的参数int id-->
+    </select>
+    <select id="selectByFilepath" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where file_path = #{filepath}
     </select>
 
 
@@ -43,6 +41,11 @@
         from paper
         where user_id = #{userid}
     </select>
+    <select id="selectByIdAndCreateTime" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where id = #{id} and gmt_create = #{gmtCreate} and (status = 0 or status = 2)
+    </select>
     <select id="selectByStatus" resultType="Paper">
         select <include refid="selectFields"></include>
         from paper
@@ -60,13 +63,19 @@
         from paper
         where title = #{title}
     </select>
-    <select id="countByAuthorId" resultType="int">
-        select count(id) from paper where user_id = #{id}
+    <select id="countByAuthorIdAndStatus" resultType="int">
+        select count(id) from paper where user_id = #{id} and status = #{status}
+    </select>
+    <select id="selectByAuthorIdAndStatus" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where user_id = #{id} and status = #{status}
+        order by id asc
     </select>
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
     <insert id="insertPaper" parameterType="Paper" keyProperty="id">
         insert into paper (<include refid="insertFields"></include>)
-        values(#{fatherid}, #{userid}, #{title}, #{content}, #{filepath}, #{status}, #{createtime}, #{downloadcount})
+        values(#{fatherid}, #{userid}, #{title}, #{content}, #{filepath}, #{status}, #{gmtcreate}, #{downloadcount})
     </insert>
     <delete id="delectById">
         delete from paper where id = #{id}

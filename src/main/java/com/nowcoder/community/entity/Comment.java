@@ -8,11 +8,20 @@ public class Comment {
     private int entitytype;
     private int entityid;
     private int targetid;
+    private int targetid2;
     private String content;
     private int status;
     private Date createtime;
     private int type;
     private int table;
+
+    public int getTargetid2() {
+        return targetid2;
+    }
+
+    public void setTargetid2(int targetid2) {
+        this.targetid2 = targetid2;
+    }
 
     public int getType() {
         return type;
@@ -102,6 +111,7 @@ public class Comment {
                 ", entitytype=" + entitytype +
                 ", entityid=" + entityid +
                 ", targetid=" + targetid +
+                ", targetid2=" + targetid2 +
                 ", content='" + content + '\'' +
                 ", status=" + status +
                 ", createtime=" + createtime +

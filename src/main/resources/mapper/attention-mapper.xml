@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nowcoder.community.dao.AttentionMapper">
 
+  <sql id="selectFields">
+    id,user_id,focus_id
+  </sql>
+
   <select id="countAttention" resultType="int">
     select count(id) from attention where focus_id=#{focusId}
   </select>
@@ -26,5 +30,30 @@
   from attention
   where user_id=#{userId} and focus_id = #{focusId}
 </select>
+  <select id="selectByFocusId" resultType="Attention">
+    select <include refid="selectFields"></include>
+    from attention
+    where focus_id = #{focusId}
+  </select>
+  <select id="selectByUserId" resultType="Attention">
+    select <include refid="selectFields"></include>
+    from attention
+    where user_id = #{userId}
+  </select>
+
+  <!--<select id="selectAllItemByUserIds" resultType="Itemindex">
+    select question.id,blog.id,paper.id,blog.gmt_create,question.gmt_create,paper.gmt_create
+    from blog,question,paper
+    where ${users}
+  </select>-->
+  <select id="selectAllItemByUserIds" resultType="Itemindex">
+    select id,gmt_create,title from blog
+    where (${authors}) and (status = 0)
+    union all select id,gmt_create,title from question
+    where (${authors}) and (status = 0)
+    union all select id,gmt_create,title from paper
+    where (${users}) and (status = 0 or status = 2)
+    order by gmt_create desc
+  </select>
 
 </mapper>

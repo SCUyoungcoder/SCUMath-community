@@ -5,6 +5,7 @@ import com.nowcoder.community.entity.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,6 +20,8 @@ public class QuestionService {
     public int InsertQuestion(Question question){return questionMapper.insertQuestion(question);}
 
     public Question SelectByQid(String qid){return questionMapper.selectByQid(qid);}
+    public Question SelectById(int id){return questionMapper.selectById(id);}
+    public Question SelectByIdAndCreateTime(int id, Date gmtCreate){return questionMapper.selectByIdAndCreateTime(id,gmtCreate);}
 
     public List<Question> SelectBySort(int sort){return questionMapper.selectBySort(sort);}
     public List<Question> SelectByAuthorId(int userId){return questionMapper.selectByAuthorId(userId);}

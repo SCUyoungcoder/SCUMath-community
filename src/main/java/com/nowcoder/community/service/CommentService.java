@@ -44,6 +44,7 @@ public class CommentService {
     public List<Comment> findcommentByTable(int status, int table) { //公告，由用户群组标签查
         return commentMapper.selectCommentsByTable(status, table);
     }
+    public List<Comment> SelectByTwoTarget(int userId){return commentMapper.selectByTwoTarget(userId);}
 
     public int CountByEntity(int entityId, int entityType) {
         return commentMapper.countByEntity(entityId, entityType);

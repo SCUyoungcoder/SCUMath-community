@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>论文发布</title>
+    <title>资源编辑</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
     <style>
@@ -18,63 +18,51 @@
 <body style="background: #f2f2f2;">
 
 <!-- 导航栏 -->
-<div th:replace="common/header::header(activeUrl='paper')"></div>
+<div th:replace="common/header::header(activeUrl='source')"></div>
 
 <main role="main" class="container mt-3 p-3 bg-white rounded">
     <div class="row">
         <div class="col-md-12 blog-main">
             <div class="col-md-12 order-md-1">
-                <h4 class="mb-3">上传论文</h4>
+                <h4 class="mb-3">编辑资源</h4>
+                <h2 class="mt-0 mb-3">
+                    <a class="blog-post-title" th:utext="${paper.title}" th:href="@{|/user/file/${paper.title}|}"></a>
+                </h2>
 
-                <form class="needs-validation" enctype="multipart/form-data" th:action="@{/paper/upload}" method="post">
+                <form class="needs-validation" enctype="multipart/form-data" th:action="@{/source/edit}" method="post">
                     <!-- 隐藏域 -->
                     <!--<input type="hidden" name="authorId" th:value="${user.getId()}">
                     <input type="hidden" name="authorName" th:value="${user.getUsername()}">-->
                     <!--<input type="hidden" name="authorAvatar" th:value="${session.loginUser.getAvatar()}">-->
 
-
                         <!--<div class="col-md-10 mb-3">
                             <label for="firstName">提问标题</label>
                             <input type="text" name="title" class="form-control" id="firstName" value="" required>
                         </div>-->
+                        <b class="label" >资源ID:</b>
+                        <input id="content2" name="id" class="input is-medium"
+                               required="" type="text" th:value="${paper.id}" readonly>
 
-                        <input type="file"
-                               id="paperfile" name="paperfile" lang="es" required="">
-                    <br>
+                        <br>
                         <b class="label" >选择类别:</b>
                         <!--<input id="fatherid" name="fatherid" class="input is-medium"
                             required="" type="text" value="">-->
-                        <a th:each="category:${classificationList}">
-                            <label><input type="checkbox" name="fatherid" th:value="${category.searchname}" th:utext="${category.name}"></label>
+                        <a th:each="fid:${fathers}">
+                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" checked></label>
                         </a>
-                        <!--<label><input type="checkbox" name="fatherid" value="logic">数理逻辑与数学基础</label>
-                        <label><input type="checkbox" name="fatherid" value="compute">计算数学</label>
-                        <label><input type="checkbox" name="fatherid" value="number">数论</label>
-                        <label><input type="checkbox" name="fatherid" value="algebra">代数</label>
-                        <label><input type="checkbox" name="fatherid" value="geometry">几何</label>
-                        <label><input type="checkbox" name="fatherid" value="topology">拓扑</label>
-                        <label><input type="checkbox" name="fatherid" value="analysis">数学分析</label>
-                        <label><input type="checkbox" name="fatherid" value="ODE">常微分方程</label>
-                        <label><input type="checkbox" name="fatherid" value="PDE">偏微分方程</label>
-                        <label><input type="checkbox" name="fatherid" value="dynamical">动力系统</label>
-                        <label><input type="checkbox" name="fatherid" value="functional">泛函分析</label>
-                        <label><input type="checkbox" name="fatherid" value="probability">概率论</label>
-                        <label><input type="checkbox" name="fatherid" value="statistics">统计学</label>
-                        <label><input type="checkbox" name="fatherid" value="opsearch">运筹学</label>
-                        <label><input type="checkbox" name="fatherid" value="combinatorial">组合数学</label>
-                        <label><input type="checkbox" name="fatherid" value="fuzzy">模糊数学</label>
-                        <label><input type="checkbox" name="fatherid" value="quantum">量子数学</label>
-                        <label><input type="checkbox" name="fatherid" value="applied">应用数学</label>-->
+                        <a th:each="fid:${otherfathers}">
+                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" ></label>
+                        </a>
                         <br>
-                        <b class="label" for="content">摘要:</b><br>
+                        <b class="label" for="content">内容:</b><br>
                         <!--<input id="content" name="content" class="input is-medium"
                                required="" type="text" value="">-->
                     <div class="form-group">
                         <textarea style="border-radius: 10px" id ="content" name="content" rows="3" required
-                                  class="form-control"></textarea>
+                                  class="form-control" th:text="${paper.content}"></textarea>
                     </div>
-                       <!-- <textarea style="width:50%;height:91px;" id="content" name="content" class="input is-medium"
-                                  required="" type="text" value=""></textarea>-->
+                       <!-- <textarea id="content1" name="content" class="input is-medium"
+                                  required="" type="text" th:text="${paper.content}"></textarea>-->
                         <!--<div class="col-md-2 mb-3">
                             <label for="country">标签</label>
                             <select name="categoryId" class="custom-select d-block w-100" id="country">
@@ -105,7 +93,6 @@
 <div th:replace="common/footer::footer"></div>
 <a class="to-top">返回顶部</a>
 <th:block th:replace="common/footer::script"></th:block>
-
 
 </body>
 </html>

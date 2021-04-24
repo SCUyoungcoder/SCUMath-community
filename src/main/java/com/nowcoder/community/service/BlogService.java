@@ -5,6 +5,7 @@ import com.nowcoder.community.entity.Blog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,6 +20,8 @@ public class BlogService {
     public int InsertBlog(Blog blog){return blogMapper.insertBlog(blog);}
 
     public Blog SelectByBid(String bid){return blogMapper.selectByBid(bid);}
+    public Blog SelectById(int id){return blogMapper.selectById(id);}
+    public Blog SelectByIdAndCreateTime(int id, Date gmtCreate){return blogMapper.selectByIdAndCreateTime(id,gmtCreate);}
 
     public List<Blog> SelectBySort(int sort){return blogMapper.selectBySort(sort);}
     public List<Blog> SelectByAuthorId(int userId){return blogMapper.selectByAuthorId(userId);}

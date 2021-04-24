@@ -69,6 +69,7 @@ public class QuestionController {
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
+        //model.addAttribute("checkLabel",0);
         return "question/list";
     }
     @RequestMapping(path = "/category",method = RequestMethod.GET)
@@ -81,6 +82,7 @@ public class QuestionController {
         model.addAttribute("info", info);
         model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
         model.addAttribute("categoryList",classifications);
+        //model.addAttribute("checkLabel",0);
         return "question/list";
     }
     @LoginRequired
@@ -192,6 +194,9 @@ public class QuestionController {
             model.addAttribute("question",question);
             List<Classification> classifications = classificationService.AllClassifications();
             model.addAttribute("categoryList",classifications);
+            if (question.getStatus()==1 && user.getType()==1){
+                model.addAttribute("checkLabel",2);
+            }
             return "question/edit";
         }else {
             return "error/404";
@@ -203,6 +208,9 @@ public class QuestionController {
         Question question = questionService.SelectByQid(qid);
         User user = hostHolder.getUser();
         if (user!=null){
+            if (question.getStatus()==1 && user.getType()==1){
+                model.addAttribute("checkLabel",2);
+            }
             if (user.getId()!=question.getAuthorId()){
                 questionService.UpdateViews(question.getId(),question.getViews() + 1);
             }
@@ -210,6 +218,7 @@ public class QuestionController {
         else {
             questionService.UpdateViews(question.getId(),question.getViews() + 1);
         }
+
         //List<Comment> questionComments = commentService.selectcommentByEntity(2,question.getId(),0);//status=评论，entitytype=论文
 
         List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
@@ -345,7 +354,12 @@ public class QuestionController {
                 }
                 pictureService.DeleteByFather(question.getId(),2);
             }
-            return "redirect:/question/list";
+            if (question.getStatus()==1 && user.getType()==1){
+                return "redirect:/user/approval/2";
+            }
+            else {
+                return "redirect:/question/list";
+            }
         }
         else {
             return "error/404";
@@ -358,7 +372,7 @@ public class QuestionController {
         System.out.println(qid);
         User user = hostHolder.getUser();
         Question question = questionService.SelectByQid(qid);
-        if (user.getId()==question.getAuthorId()||user.getType()==1){
+        if (user.getType()==1){
             questionService.UpdateStatus(question.getId(),0);
             return CommunityUtil.getJSONString(0);
         }

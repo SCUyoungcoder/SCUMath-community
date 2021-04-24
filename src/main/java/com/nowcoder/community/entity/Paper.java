@@ -38,7 +38,7 @@ public class Paper {
     private int status;
 
     @Field(type = FieldType.Date)
-    private Date createtime;
+    private Date gmtcreate;
 
     @Field(type = FieldType.Integer)
     private int downloadcount;
@@ -99,12 +99,12 @@ public class Paper {
         this.status = status;
     }
 
-    public Date getCreatetime() {
-        return createtime;
+    public Date getGmtcreate() {
+        return gmtcreate;
     }
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
+    public void setGmtcreate(Date gmtcreate) {
+        this.gmtcreate = gmtcreate;
     }
 
     public int getDownloadcount() {
@@ -117,16 +117,16 @@ public class Paper {
 
     @Override
     public String toString() {
-        return "paper{" +
+        return "Paper{" +
                 "id=" + id +
-                ", father_id=" + fatherid +
-                ", user_id='" + userid + '\'' +
+                ", fatherid='" + fatherid + '\'' +
+                ", userid=" + userid +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", file_path='" + filepath + '\'' +
+                ", filepath='" + filepath + '\'' +
                 ", status=" + status +
-                ", create_time=" + createtime +
-                ", download_count=" + downloadcount +
+                ", gmtcreate=" + gmtcreate +
+                ", downloadcount=" + downloadcount +
                 '}';
     }
 }

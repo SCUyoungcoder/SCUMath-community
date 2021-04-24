@@ -134,7 +134,7 @@ public class MapperTests {
         paper.setContent("dsadsadsa");
         paper.setFilepath("c:sdsadsa");/*试试斜杠能不能存储*/
         paper.setStatus(1);
-        paper.setCreatetime(dayy);
+        paper.setGmtcreate(dayy);
         paper.setDownloadcount(1);
         int rows = paperMapper.insertPaper(paper);
         System.out.println(rows);

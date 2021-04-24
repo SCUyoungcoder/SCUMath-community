@@ -148,7 +148,7 @@
                                             <div th:id="|huifu-${cvo.comment.id}-${rvoStat.count}|" class="mt-4 collapse">
                                                 <form method="post" th:action="@{|/comment/question/${question.qid}|}">
                                                     <div>
-                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|"/>
+                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|" required/>
                                                         <input type="hidden" name="entitytype" value="1">
                                                         <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
                                                         <input type="hidden" name="targetid" th:value="${rvo.user.id}">
@@ -165,7 +165,7 @@
                                     <li class="pb-3 pt-3">
                                         <form method="post" th:action="@{|/comment/question/${question.qid}|}">
                                             <div>
-                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点"/>
+                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点" required/>
                                                 <input type="hidden" name="entitytype" value="1">
                                                 <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
                                             </div>

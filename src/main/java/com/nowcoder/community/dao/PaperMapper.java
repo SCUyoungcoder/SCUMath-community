@@ -4,6 +4,7 @@ import com.nowcoder.community.entity.Paper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -16,11 +17,14 @@ public interface PaperMapper {
     /*Paper selectByTitle(String title);*/
     List<Paper> selectByTitle(String title);/*这里是否与elasticsearch搜索有关*/
     Paper selectByFulltitle(String title);
+    Paper selectByFilepath(String filepath);
+    Paper selectByIdAndCreateTime(int id , Date gmtCreate);
     List<Paper> selectByStatus(int status, int offset,int limit);
     int insertPaper(Paper paper);
     int delectById(int id);
     int updateDownloadcount(int id,int downloadcount);
     int updatePaperstatus(Paper paper);
     int countstatus(int status);
-    int countByAuthorId(int id);
+    int countByAuthorIdAndStatus(int id,int status);
+    List<Paper> selectByAuthorIdAndStatus(int id,int status);
 }

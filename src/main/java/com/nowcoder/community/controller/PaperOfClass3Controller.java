@@ -2,35 +2,38 @@ package com.nowcoder.community.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.dao.elasticsearth.PaperRepository;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
+import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
 public class PaperOfClass3Controller {
     @Value("${community.path.upload}")
     private String uploadPath;
+    @Value("${community.path.domain}")
+    private String domain;
     @Autowired
     private CommentService commentService;
     @Autowired
     private ClassificationService classificationService;
+    @Autowired
+    private PaperRepository paperRepository;
     @Autowired
     private PaperOfClassService paperOfClassService;//一个可能并没有什么用的【待去掉】
     @Autowired
@@ -44,6 +47,7 @@ public class PaperOfClass3Controller {
     //【POST用法，现已弃用】需要第一级的前端表单<method="post" action="/paperofclass"> 传给此页面名为“classname”的参数【已弃用】
     //【POST用法，现已弃用】此方法下行要获取“科目标签”，只要直接声明参数，与表单名称（classname）一致，即可传过来【已弃用】
 
+    //***************已无用
     //paperofclass?classname=XXX  6.6课选用GET方式传参，参数通过
     @RequestMapping(path = "/paperofclass", method = RequestMethod.GET)
     public String searchpaperofclass(String classname,Model model,Page page) {//此处前端的classname参数的形式是String
@@ -65,7 +69,6 @@ public class PaperOfClass3Controller {
                 /*备注：Map<String,Object> map这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
             }
         }
-        /*System.out.println(papers);*/
         model.addAttribute("papers",papers);//得到的最终数据要传给模板/页面
         model.addAttribute("classname",classificationService.GetNameBySearchname(classname).getName());//希望返回的页面上也带上刚刚的classname参数信息
 
@@ -73,10 +76,67 @@ public class PaperOfClass3Controller {
         page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
         page.setPath("/paperofclass?classname=" + classname);//路径
 
-        //System.out.print(papers);//测试用
-        System.out.print(page.getRows());
         return "/paperofclass";//返回第二级网页
     }
+    @LoginRequired
+    @RequestMapping(path = "/paper/upload",method = RequestMethod.POST)
+    public String uploadPaper(MultipartFile paperfile,Paper paper,Model model){
+        User user = hostHolder.getUser();
+        if (paperfile == null){
+
+
+        }
+        String fileName = paperfile.getOriginalFilename();
+        /*获取前缀存入数据库*/
+        String title = fileName.substring(0,fileName.lastIndexOf("."));
+        /*截取后缀*/
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        String newName = CommunityUtil.generateUUID() +suffix;
+        newName = System.currentTimeMillis()+"_"+newName;
+        String path = uploadPath;
+        //判断后缀是否为空
+        if (StringUtils.isBlank(suffix)) {
+
+
+            /*model.addAttribute("error", "文件的格式不正确!");
+            if (user.getType()==1){
+                return "/site/adminmanage";
+            }else {
+                return "/site/usermanage";
+            }*/
+        }
+        /*if (paper.getContent().length()> 250){
+            ////????
+        }*/
+        File targetFile = new File(path,newName);
+        if(!targetFile.exists()){
+            targetFile.getParentFile().mkdirs();
+        }
+        try{
+            paperfile.transferTo(targetFile);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        paper.setTitle(title);
+        String filepath = domain+"/user/file/"+newName;
+        paper.setFilepath(filepath);
+        paper.setDownloadcount(0);
+        Date dayy = new Date();
+        paper.setGmtcreate(dayy);
+        paper.setUserid(user.getId());
+        if (user.getType() == 1){
+            paper.setStatus(0);
+        }
+        else {
+            paper.setStatus(1);
+        }
+        paperOfClassService.uploadpaper(paper);
+        paperRepository.save(paper);
+        return "redirect:/detail?id="+paper.getId();
+    }
+
+
+
     @LoginRequired
     @RequestMapping(path = "/paper/write",method = RequestMethod.GET)
     public String uploadPaper(Model model){
@@ -85,6 +145,61 @@ public class PaperOfClass3Controller {
         model.addAttribute("classificationList",classificationList);
         model.addAttribute("user",user);
         return "paper/write";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/paper/edit/{id}",method = RequestMethod.GET)
+    public String editPaper(Model model,@PathVariable("id") int id){
+            User user = hostHolder.getUser();
+            Paper paper = paperOfClassService.selectPaperById(id);
+            if (paper.getUserid()==user.getId()||user.getType()==1){
+                /*List<Map<String,Object>> classify = new ArrayList<>();*/
+                String[] allfather={"logic","compute","number","algebra","geometry","topology","analysis","ODE","PDE","dynamical","functional","probability","statistics","opsearch","combinatorial","fuzzy","quantum","applied"};
+                String[] fathers =paper.getFatherid().split(",");
+                List<String> otherfathers = new ArrayList<>();
+                for (String str:allfather){
+                    otherfathers.add(str);
+                }
+                for (String str:fathers){
+                    if (otherfathers.contains(str)){
+                        otherfathers.remove(str);
+                    }
+                }
+                List<Map<String,Object>> fatherss = new ArrayList<>();
+                for (String str:fathers){
+                    Map<String,Object> map1 = new HashMap<>();
+                    map1.put("searchname",str);
+                    map1.put("name",classificationService.GetNameBySearchname(str).getName());
+                    fatherss.add(map1);
+                }
+                List<Map<String,Object>> otherfatherss = new ArrayList<>();
+                for (String str:otherfathers){
+                    Map<String,Object> map2 = new HashMap<>();
+                    map2.put("searchname",str);
+                    map2.put("name",classificationService.GetNameBySearchname(str).getName());
+                    otherfatherss.add(map2);
+                }
+                paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf(".")));
+                if (paper.getStatus()==1 && user.getType()==1){
+                    model.addAttribute("checkLabel",3);
+                }
+                model.addAttribute("fathers",fatherss);
+                model.addAttribute("otherfathers",otherfatherss);
+                model.addAttribute("paper",paper);
+                return "paper/edit";
+            }
+            else {
+                return "error/404";
+            }
+    }
+    @AdminRequired
+    @RequestMapping(path = "/paper/edit",method = RequestMethod.POST)
+    public String postEditPaper(Paper paper,Model model){
+        Paper paper1 = paperOfClassService.selectPaperById(paper.getId());
+        paper1.setContent(paper.getContent());
+        paper1.setFatherid(paper.getFatherid());
+        paperOfClassService.updatastatus(paper1);
+        paperRepository.save(paper1);
+        return "redirect:/detail?id="+paper.getId();
     }
     @LoginRequired
     @RequestMapping(path = "/paper/delete/{id}",method = RequestMethod.GET)
@@ -105,7 +220,7 @@ public class PaperOfClass3Controller {
                 }
             }
             String fileName = paper.getFilepath().split("http://localhost:8080/user/file/")[1];
-            System.out.println(fileName);
+
             if (fileName!=null){
                 String path = uploadPath+"/"+fileName;
                 File file = new File(path);
@@ -113,8 +228,12 @@ public class PaperOfClass3Controller {
                     file.delete();
                 }
             }
-
-            return "redirect:/paper/list";
+            if (paper.getStatus()==1 && user.getType()==1){
+                return "redirect:/user/approval/3";
+            }
+            else {
+                return "redirect:/source/list";
+            }
         }
         else {
             return "error/404";
@@ -131,9 +250,8 @@ public class PaperOfClass3Controller {
             info = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(0));
         }
         else {
-            List<Paper> papers = elasticsearchClassService.searchPaperOnlyByClass(category);
+            List<Paper> papers = elasticsearchClassService.searchPaperByClassAndStatus(category,0);
             info = new PageInfo<>(papers);
-            System.out.println(papers.size());
             int numOfPage = papers.size()/limit;
             List<Paper> showPapers = new ArrayList<>();
             if (papers.size()%limit!=0){
@@ -196,19 +314,28 @@ public class PaperOfClass3Controller {
                 newPage.add(p);
             }
         }
-
         info.setList(newPage);
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("category",category);
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
+        //model.addAttribute("checkLabel",0);
         return "paper/list";
     }
-
+    //******************下面少了responseBody就报JSONString回显的错
+    @AdminRequired
+    @RequestMapping(path = "/paper/pass",method = RequestMethod.POST)
+    @ResponseBody
+    public String passPaper(int pid){
+        Paper paper = paperOfClassService.selectPaperById(pid);
+        paper.setStatus(0);
+        paperOfClassService.updatastatus(paper);
+        return CommunityUtil.getJSONString(0);
+    }
 
     //第三级页面——论文详情页//******************已重构
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
-    public String PaperDerail(int id,Page page,Model model){
+    public String PaperDetail(int id,Page page,Model model){
         Paper paper = paperOfClassService.selectPaperById(id);
         List<Comment> papercomments = commentService.selectcommentByEntity(0,id,0);//status=评论，entitytype=论文
         List<Map<String,Object>> coms = new ArrayList<>();
@@ -250,6 +377,12 @@ public class PaperOfClass3Controller {
         if (papercomments!=null) {
             for (Comment questionComment : papercomments) {
                 Map<String,Object> map = new HashMap<>();
+                User user = hostHolder.getUser();
+                if (user!=null){
+                    if (paper.getStatus()==1 && user.getType()==1){
+                        model.addAttribute("checkLabel",3);
+                    }
+                }
                 map.put("comment",questionComment);
                 map.put("user",userService.findUserById(questionComment.getUserid()));
                 List<Comment> commentComments =commentService.selectcommentByEntity(1,questionComment.getId(),0);//status=评论，entitytype=评论
