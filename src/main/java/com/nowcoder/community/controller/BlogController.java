@@ -205,7 +205,9 @@ public class BlogController {
     }
 
     @RequestMapping(value = "/read/{bid}",method = RequestMethod.GET)
-    public String read(Model model,@PathVariable("bid") String bid ,Page page){
+    public String read(Model model,@PathVariable("bid") String bid ,
+                       @RequestParam(defaultValue = "1") int page,
+                       @RequestParam(defaultValue = "10") int limit){
         Blog blog = blogService.SelectByBid(bid);
         User user = hostHolder.getUser();
         if (user!=null){
@@ -221,11 +223,12 @@ public class BlogController {
         }
 
         //List<Comment> blogComments = commentService.selectcommentByEntity(2,blog.getId(),0);//status=评论，entitytype=论文
-
-        List<Comment> blogComments = commentService.selectByEntityAndPage(2,blog.getId(),0,page.getCurrent()-1,page.getLimit());
+        PageHelper.startPage(page,limit);
+        PageInfo<Comment> blogComments = new PageInfo<>(commentService.selectcommentByEntity(2,blog.getId(),0));
+        //List<Comment> blogComments = commentService.selectByEntityAndPage(2,blog.getId(),0,page.getCurrent()-1,page.getLimit());
         List<Map<String,Object>> coms = new ArrayList<>();
-        if (blogComments!=null) {
-            for (Comment blogComment : blogComments) {
+        if (blogComments.getList().size()>0) {
+            for (Comment blogComment : blogComments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",blogComment);
                 map.put("user",userService.findUserById(blogComment.getUserid()));
@@ -239,18 +242,6 @@ public class BlogController {
                         cc.put("user",userService.findUserById(commentComment.getUserid()));
                         User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
-                        /*if (commentComment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
-                            cc.put("targetname",userService.findUserById(commentComment.getTargetid()).getUsername());//由targetid拿到其targetname
-                        }
-                        else {
-                            cc.put("targetname",null);
-                        }
-                        cc.put("id",commentComment.getId());
-                        cc.put("userid",commentComment.getUserid());
-                        cc.put("type",commentComment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
-                        cc.put("username",userService.findUserById(commentComment.getUserid()).getUsername());
-                        cc.put("content",":"+commentComment.getContent());
-                        cc.put("createtime",commentComment.getCreatetime());*/
                         ccs.add(cc);
                     }
 
@@ -258,21 +249,13 @@ public class BlogController {
                 map.put("replys",ccs);
                 int replyCount = commentService.findCommentCount(1, blogComment.getId());
                 map.put("replyCount", replyCount);
-                /*else {
-                    map.put("replys",null);                *//*是否需要*//*
-                }*/
-                /*map.put("id",blogComment.getId());
-                map.put("username",userService.findUserById(blogComment.getUserid()).getUsername());
-                map.put("userid",blogComment.getUserid());
-                map.put("content",blogComment.getContent());
-                map.put("createtime",blogComment.getCreatetime());*/
                 coms.add(map);
             }
         }
-        page.setRows(blogComments == null?0:(int)commentService.CountByEntity(blog.getId(),2)/10);
-        //page.setRows(3);
-        page.setPath("/blog/read/"+bid);
+        //page.setRows(blogComments == null?0:(int)commentService.CountByEntity(blog.getId(),2)/10);
 
+        //page.setPath("/blog/read/"+bid);
+        model.addAttribute("info",blogComments);
         model.addAttribute("comments",coms);
         model.addAttribute("blog",blog);
         return "blog/read";

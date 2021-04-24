@@ -18,11 +18,14 @@
         <!-- 导航  -->
         <div class="collapse navbar-collapse" id="navbarsExample07">
             <ul class="navbar-nav mr-auto">
-                <li th:if="${checkLabel==null}" th:class="${activeUrl=='index'?'nav-item active':'nav-item'}">
+                <li  th:class="${activeUrl=='index'?'nav-item active':'nav-item'}">
                     <a class="nav-link" th:href="@{/index}">首页 </a>
                 </li>
-                <li  th:if="${checkLabel!=null}" th:class="${activeUrl=='index'?'nav-item active':'nav-item'}">
-                    <a class="nav-link" th:href="@{/index}">退出审核 </a>
+                <li th:if="${checkLabel==null}" th:class="${activeUrl=='attention'?'nav-item active':'nav-item'}">
+                    <a class="nav-link" th:href="@{/attention}">关注 </a>
+                </li>
+                <li  th:if="${checkLabel!=null}" th:class="${activeUrl=='attention'?'nav-item active':'nav-item'}">
+                    <a class="nav-link" th:href="@{/attention}">退出审核 </a>
                 </li>
                 <li th:if="${checkLabel==null}" th:class="${activeUrl=='blog'?'nav-item active':'nav-item'}">
                     <a class="nav-link" th:href="@{/blog/list}">博客 </a>

@@ -302,7 +302,9 @@ public class SourceController {
 
     //第三级页面——论文详情页//******************已重构
     @RequestMapping(path = "/source/detail",method = RequestMethod.GET)
-    public String SourceDetail(int id,Page page,Model model){
+    public String SourceDetail(int id,Model model,
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int limit){
         Paper paper = paperOfClassService.selectPaperById(id);
         User user = hostHolder.getUser();
         if (user!=null){
@@ -310,45 +312,12 @@ public class SourceController {
                 model.addAttribute("checkLabel",4);
             }
         }
-        List<Comment> papercomments = commentService.selectcommentByEntity(4,id,0);//status=评论，entitytype=论文
+        PageHelper.startPage(page,limit);
+        PageInfo<Comment> papercomments = new PageInfo<>(commentService.selectcommentByEntity(4,id,0));
+        //List<Comment> papercomments = commentService.selectcommentByEntity(4,id,0);//status=评论，entitytype=论文
         List<Map<String,Object>> coms = new ArrayList<>();
-        /*if (papercomments!=null) {
-            for (Comment papercomment : papercomments) {
-                Map<String,Object> map = new HashMap<>();
-                List<Comment> commentcomments =commentService.selectcommentByEntity(1,papercomment.getId(),0);//status=评论，entitytype=评论
-                if (commentcomments!=null){
-                    List<Map<String,Object>> ccs = new ArrayList<>();
-                    for (Comment commentcomment:commentcomments){
-                        Map<String,Object> cc = new HashMap<>();
-                        if (commentcomment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
-                            cc.put("targetname",userService.findUserById(commentcomment.getTargetid()).getUsername());//由targetid拿到其targetname
-                        }
-                        else {
-                            cc.put("targetname",null);
-                        }
-                        cc.put("id",commentcomment.getId());
-                        cc.put("userid",commentcomment.getUserid());
-                        cc.put("type",commentcomment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
-                        cc.put("username",userService.findUserById(commentcomment.getUserid()).getUsername());
-                        cc.put("content",":"+commentcomment.getContent());
-                        cc.put("createtime",commentcomment.getCreatetime());
-                        ccs.add(cc);
-                    }
-                    map.put("commentcomments",ccs);
-                }
-                else {
-                    map.put("commentcomments",null);                *//*是否需要*//*
-                }
-                map.put("id",papercomment.getId());
-                map.put("username",userService.findUserById(papercomment.getUserid()).getUsername());
-                map.put("userid",papercomment.getUserid());
-                map.put("content",papercomment.getContent());
-                map.put("createtime",papercomment.getCreatetime());
-                coms.add(map);
-            }
-        }*/
-        if (papercomments!=null) {
-            for (Comment questionComment : papercomments) {
+        if (papercomments.getList().size()>0) {
+            for (Comment questionComment : papercomments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",questionComment);
                 map.put("user",userService.findUserById(questionComment.getUserid()));
@@ -362,18 +331,6 @@ public class SourceController {
                         cc.put("user",userService.findUserById(commentComment.getUserid()));
                         User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
-                        /*if (commentComment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
-                            cc.put("targetname",userService.findUserById(commentComment.getTargetid()).getUsername());//由targetid拿到其targetname
-                        }
-                        else {
-                            cc.put("targetname",null);
-                        }
-                        cc.put("id",commentComment.getId());
-                        cc.put("userid",commentComment.getUserid());
-                        cc.put("type",commentComment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
-                        cc.put("username",userService.findUserById(commentComment.getUserid()).getUsername());
-                        cc.put("content",":"+commentComment.getContent());
-                        cc.put("createtime",commentComment.getCreatetime());*/
                         ccs.add(cc);
                     }
 
@@ -381,14 +338,6 @@ public class SourceController {
                 map.put("replys",ccs);
                 int replyCount = commentService.findCommentCount(1, questionComment.getId());
                 map.put("replyCount", replyCount);
-                /*else {
-                    map.put("replys",null);                *//*是否需要*//*
-                }*/
-                /*map.put("id",questionComment.getId());
-                map.put("username",userService.findUserById(questionComment.getUserid()).getUsername());
-                map.put("userid",questionComment.getUserid());
-                map.put("content",questionComment.getContent());
-                map.put("createtime",questionComment.getCreatetime());*/
                 coms.add(map);
             }
         }
@@ -400,7 +349,7 @@ public class SourceController {
         if (paper.getStatus()== 2){
             paper.setTitle(paper.getTitle()+paper.getFilepath().substring(paper.getFilepath().lastIndexOf('.')));
         }
-
+        model.addAttribute("info",papercomments);
         model.addAttribute("userid",paper.getUserid());
         model.addAttribute("username",userService.findUserById(paper.getUserid()).getUsername());
         model.addAttribute("paper",paper);

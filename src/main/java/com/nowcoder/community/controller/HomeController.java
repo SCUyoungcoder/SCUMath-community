@@ -37,9 +37,9 @@ public class HomeController {
     @Autowired
     private HostHolder hostHolder;
 
-    @RequestMapping(path = "/index1", method = RequestMethod.GET)
-    public String findClassification(Model model) {
-        List<Classification> allClassList = classificationService.AllClassifications();
+    @RequestMapping(path = "/index", method = RequestMethod.GET)
+    public String findClassification(/*Model model*/) {
+        /*List<Classification> allClassList = classificationService.AllClassifications();
         List<Map<String, Object>> allClass = new ArrayList<>();
         for (Classification class1 : allClassList) {
             Map<String, Object> map = new HashMap<>();
@@ -55,11 +55,11 @@ public class HomeController {
             maps.add(map);
         }
         model.addAttribute("rewards",maps);
-        model.addAttribute("allClass", allClass);
+        model.addAttribute("allClass", allClass);*/
         return "/index";
     }
     @LoginRequired
-    @RequestMapping(path = "/index",method = RequestMethod.GET)
+    @RequestMapping(path = "/attention",method = RequestMethod.GET)
     public String getItemOfAttention(Model model,
                                      @RequestParam(defaultValue = "1") int page,
                                      @RequestParam(defaultValue = "10") int limit,

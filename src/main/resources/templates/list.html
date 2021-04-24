@@ -9,7 +9,7 @@
 </head>
 <body style="background: rgb(247,248,249);">
 
-<div th:replace="common/header::header(activeUrl='index')"></div>
+<div th:replace="common/header::header(activeUrl='attention')"></div>
 
 <main role="main" class="container">
     <div class="row">
@@ -46,7 +46,7 @@
                 <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${blog.userId}}" th:text="${blog.userName}"></a>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${blog.userId}}" th:text="${blog.userName}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
                         <span th:text="${blog.type}" class="badge badge-info"></span>
                         <a th:if="${blog.type}=='资源'" th:href="@{'/source/detail?id='+${blog.id}}"
@@ -104,7 +104,7 @@
 
             <div class="p-4 my-3 bg-white rounded">
                 <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/index?userId='+${attention.userId}+'&page=1&limit=10'}"
+                <a th:href="@{'/attention?userId='+${attention.userId}+'&page=1&limit=10'}"
                    th:each="attention:${attentions}" th:text="${attention.userName}"
                    class="badge badge-pill badge-primary mr-1"></a>
             </div>

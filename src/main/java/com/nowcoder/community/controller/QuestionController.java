@@ -204,7 +204,9 @@ public class QuestionController {
     }
 
     @RequestMapping(value = "/read/{qid}",method = RequestMethod.GET)
-    public String read(Model model,@PathVariable("qid") String qid ,Page page){
+    public String read(Model model,@PathVariable("qid") String qid ,
+                       @RequestParam(defaultValue = "1") int page,
+                       @RequestParam(defaultValue = "10") int limit){
         Question question = questionService.SelectByQid(qid);
         User user = hostHolder.getUser();
         if (user!=null){
@@ -220,11 +222,12 @@ public class QuestionController {
         }
 
         //List<Comment> questionComments = commentService.selectcommentByEntity(2,question.getId(),0);//status=评论，entitytype=论文
-
-        List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
+        PageHelper.startPage(page,limit);
+        PageInfo<Comment> questionComments = new PageInfo<>(commentService.selectcommentByEntity(3,question.getId(),0));
+        //List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
         List<Map<String,Object>> coms = new ArrayList<>();
-        if (questionComments!=null) {
-            for (Comment questionComment : questionComments) {
+        if (questionComments.getList().size()>0) {
+            for (Comment questionComment : questionComments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",questionComment);
                 map.put("user",userService.findUserById(questionComment.getUserid()));
@@ -268,10 +271,10 @@ public class QuestionController {
                 coms.add(map);
             }
         }
-        page.setRows(questionComments == null?0:(int)commentService.CountByEntity(question.getId(),2)/10);
+        //page.setRows(questionComments == null?0:(int)commentService.CountByEntity(question.getId(),2)/10);
         //page.setRows(3);
-        page.setPath("/question/read/"+qid);
-
+        //page.setPath("/question/read/"+qid);
+        model.addAttribute("info",questionComments);
         model.addAttribute("comments",coms);
         model.addAttribute("question",question);
         return "question/read";

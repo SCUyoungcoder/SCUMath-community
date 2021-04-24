@@ -46,7 +46,7 @@
                 <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/info/'+${blog.getAuthorId()}}" th:text="${blog.getAuthorName()}"></a>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${blog.getAuthorId()}}" th:text="${blog.getAuthorName()}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
                         <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"
                            class="text-dark font-weight-bold text-decoration-none d-block"></a>

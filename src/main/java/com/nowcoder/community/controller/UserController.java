@@ -118,11 +118,11 @@ public class UserController {
         List<Map<String,Object>> users = new ArrayList<>();
         for (Attention attention:info.getList()){
             Map<String,Object> map = new HashMap<>();
-            User user = userService.findUserById(attention.getUserId());
-            Userinfo userinfo = userinfoService.selectInfoByUserId(attention.getUserId());
+            User user = userService.findUserById(attention.getFocusId());
+            Userinfo userinfo = userinfoService.selectInfoByUserId(attention.getFocusId());
             map.put("username",user.getUsername());
             map.put("userwork",userinfo.getWork());
-            map.put("userid",attention.getUserId());
+            map.put("userid",attention.getFocusId());
             users.add(map);
         }
         model.addAttribute("work",userinfoService.selectInfoByUserId(userId).getWork());
