@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>博客列表</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+
+</head>
+<body style="background: rgb(247,248,249);">
+
+<div th:replace="common/header::header(activeUrl=${label})"></div>
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col-md-9 blog-main">
+
+            <div class="my-3 p-3 bg-white rounded ">
+
+                <h6 class="border-bottom border-gray pb-2 mb-0">
+                    累计：
+                    <span th:text="${blogs.getTotalElements()}"></span>
+                    <span class="float-right" >
+                        <!--<span th:text="${text}"></span>-->
+                        <span >搜索结果</span>
+                    </span>
+                </h6>
+<!--                博客列表-->
+                <div th:each="blog:${blogs}" class="media text-muted pt-3">
+
+                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:if="${label=='blog'||label=='question'}"
+                           th:href="@{'/user/blog/'+${blog.authorId}}" th:text="${blog.authorName}"></a>
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:if="${label=='source'||label=='paper'}" th:href="@{'/user/blog/'+${blog.userid}}" th:text="${blog.fatherid}"></a>
+                        <!--标题 且根据id号 查询数据 跳转到指定的页面-->
+                        <a th:if="${label=='blog'}" th:href="@{'/blog/read/'+${blog.bid}}" th:text="${blog.title}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></a>
+                        <a th:if="${label=='question'}" th:href="@{'/question/read/'+${blog.qid}}" th:text="${blog.title}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></a>
+                        <a th:if="${label=='source'}" th:href="@{'/source/detail?id='+${blog.id}}" th:text="${blog.title}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></a>
+                        <a th:if="${label=='paper'}" th:href="@{'/detail?id='+${blog.id}}" th:text="${blog.title}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></a>
+                        <span th:if="${label=='blog'||label=='question'}">
+                        <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
+                                d="M513.1 187c-324 0-448.7 320-448.7 320s127 327.3 448.7 327.3S961.8 507 961.8 507 837.1 187 513.1 187z m0 522.5c-110.5 0-200.1-89.6-200.1-200.1s89.6-200.1 200.1-200.1 200.1 89.6 200.1 200.1-89.6 200.1-200.1 200.1z"
+                                p-id="643"></path><path
+                                d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
+                                p-id="644"></path></svg>
+                        <!--浏览量-->
+                        [[${blog.views}]]
+                        </span>
+                        <span th:if="${label=='paper'||label=='source'}">
+                        <li class="d-inline ml-2">下载次数 <i th:text="${blog.downloadcount}"></i></li>
+                        </span>
+                        <span th:text="${#dates.format(blog.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"
+                              class="badge badge-light float-right" ></span>
+                    </div>
+
+                </div>
+                <!--分页-->
+                <!--<nav th:if="${checkLabel==null}" aria-label="Page navigation example" class="mt-4">
+                    <ul class="pagination justify-content-center pagination-sm">
+                        &lt;!&ndash;往前翻 如果没有前一页 则禁用&ndash;&gt;
+                        <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/blog/list?page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                        </li>
+
+                        <div th:each="page:${info.getNavigatepageNums()}">
+                            <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
+                                <a class="page-link" th:href="@{'/blog/list?page='+${page}+'&limit=10'}"
+                                   th:text="${page}">
+                                </a>
+                            </li>
+                        </div>
+                        <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link"
+                               th:href="@{'/blog/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                        </li>
+                    </ul>
+                </nav>-->
+                <nav class="mt-5" th:if="${page.rows>0}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+                        </li>
+                        <li th:class="|page-item ${page.current==1?'disabled':''}|">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a></li>
+                        <li th:class="|page-item ${i==page.current?'active':''}|" th:each="i:${#numbers.sequence(page.from,page.to)}">
+                            <a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+                        </li>
+                        <li th:class="|page-item ${page.current==page.total?'disabled':''}|">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <!--<aside th:if="${checkLabel==null}" class="col-md-3 blog-sidebar">
+
+            <div class="my-3 rounded">
+                <p class="mb-0">
+                    <a th:href="@{/blog/write}" class="btn btn-primary btn-sm btn-block"
+                       style="color: white">发布博客</a>
+                </p>
+            </div>
+            <div class="p-4 my-3 bg-white rounded">
+                &lt;!&ndash;直接写默认值了 每页10条数据&ndash;&gt;
+                <a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                   th:each="category:${categoryList}" th:text="${category.getName()}"
+                   class="badge badge-pill badge-primary mr-1"></a>
+            </div>
+        </aside>-->
+    </div>
+    </div>
+</main>
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+
+</body>
+</html>

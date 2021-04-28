@@ -46,8 +46,8 @@
                 <div th:each="question:${info.getList()}" class="media text-muted pt-3">
 
                     <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
-                        <span th:text="${question.getStatus()==0?'未解决':'已解决'}"
-                              th:class="${question.getStatus()==0?'  badge badge-warning ':'  badge badge-info '}"></span>
+                        <span th:text="${question.getSort()==0?'未解决':'已解决'}"
+                              th:class="${question.getSort()==0?'  badge badge-warning ':'  badge badge-info '}"></span>
                         <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${question.getAuthorId()}}" th:text="${question.getAuthorName()}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
 

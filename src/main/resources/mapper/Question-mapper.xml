@@ -167,7 +167,7 @@
     </update>
     <update id="updateQuestion">
         update question set title = #{title} ,content = #{content} ,
-        category_id =#{categoryId}, category_name = #{categoryName}
+        category_id =#{categoryId}, category_name = #{categoryName},sort = #{sort}
         where qid = #{qid}
     </update>
     <update id="updateStatus">

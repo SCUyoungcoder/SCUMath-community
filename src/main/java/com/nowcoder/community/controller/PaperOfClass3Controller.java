@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 
 import java.io.File;
@@ -42,6 +41,8 @@ public class PaperOfClass3Controller {
     private HostHolder hostHolder;
     @Autowired
     private ElasticsearchClassService elasticsearchClassService;//基于ES搜索引擎的查询service
+    @Autowired
+    private ElasticsearchService elasticsearchService;
 
 //第二级 对应科目标签的论文展示页
     //【POST用法，现已弃用】需要第一级的前端表单<method="post" action="/paperofclass"> 传给此页面名为“classname”的参数【已弃用】
@@ -78,6 +79,25 @@ public class PaperOfClass3Controller {
 
         return "/paperofclass";//返回第二级网页
     }
+    @RequestMapping(path = "/paper/search",method = RequestMethod.GET)
+    public String searchpaper(String keyword,String fieldname,String sortname,Page page,Model model){
+        if (sortname==null){
+            sortname="downloadcount";
+        }
+        org.springframework.data.domain.Page<Paper> searchPaper =elasticsearchService.searchPaperByFieldname(keyword,0,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        List<Map<String ,Object>> sources = new ArrayList<>();
+        if (searchPaper !=null){
+            for (Paper paper:searchPaper){/*针对论文的搜索，是否需要写针对悬赏的搜索*/
+                paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
+            }
+        }
+        model.addAttribute("blogs",searchPaper);
+        model.addAttribute("fieldname" ,fieldname);
+        model.addAttribute("label","paper");
+        page.setPath("/paper/search?keyword="+keyword+"&fieldname="+fieldname+"&sortname"+sortname);
+        page.setRows(searchPaper == null?0:searchPaper.getTotalPages());
+        return "search/list";
+    }
     @LoginRequired
     @RequestMapping(path = "/paper/upload",method = RequestMethod.POST)
     public String uploadPaper(MultipartFile paperfile,Paper paper,Model model){
@@ -105,9 +125,6 @@ public class PaperOfClass3Controller {
                 return "/site/usermanage";
             }*/
         }
-        /*if (paper.getContent().length()> 250){
-            ////????
-        }*/
         File targetFile = new File(path,newName);
         if(!targetFile.exists()){
             targetFile.getParentFile().mkdirs();
@@ -134,8 +151,6 @@ public class PaperOfClass3Controller {
         paperRepository.save(paper);
         return "redirect:/detail?id="+paper.getId();
     }
-
-
 
     @LoginRequired
     @RequestMapping(path = "/paper/write",method = RequestMethod.GET)
@@ -232,7 +247,7 @@ public class PaperOfClass3Controller {
                 return "redirect:/user/approval/3";
             }
             else {
-                return "redirect:/source/list";
+                return "redirect:/paper/list";
             }
         }
         else {
@@ -306,11 +321,9 @@ public class PaperOfClass3Controller {
             for (Paper p:info.getList()){
                 User user=userService.findUserById(p.getUserid());
                 if (user==null){
-                    //paperOfClassService.selectPaperOnlyByStatus(0);
                     user=userService.findUserById(p.getUserid());
                 }
                 p.setFilepath(user.getUsername());
-                //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
                 newPage.add(p);
             }
         }
@@ -347,14 +360,17 @@ public class PaperOfClass3Controller {
         }
         PageHelper.startPage(page,limit);
         PageInfo<Comment> papercomments = new PageInfo<>(commentService.selectcommentByEntity(0,id,0));
-
-        //List<Comment> papercomments = commentService.selectcommentByEntity(0,id,0);//status=评论，entitytype=论文
         List<Map<String,Object>> coms = new ArrayList<>();
         if (papercomments.getList().size()>0) {
             for (Comment questionComment : papercomments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",questionComment);
-                map.put("user",userService.findUserById(questionComment.getUserid()));
+                User user1 = userService.findUserById(questionComment.getUserid());
+                Map<String,Object> user11 = new HashMap<>();
+                user11.put("id",user1.getId());
+                user11.put("username",user1.getUsername());
+                map.put("user",user11);
+                //map.put("user",userService.findUserById(questionComment.getUserid()));
                 List<Comment> commentComments =commentService.selectcommentByEntity(1,questionComment.getId(),0);//status=评论，entitytype=评论
                 List<Map<String,Object>> ccs = new ArrayList<>();
                 if (commentComments!=null){
@@ -362,8 +378,18 @@ public class PaperOfClass3Controller {
                     for (Comment commentComment:commentComments){
                         Map<String,Object> cc = new HashMap<>();
                         cc.put("reply",commentComment);
-                        cc.put("user",userService.findUserById(commentComment.getUserid()));
-                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        User user2 = userService.findUserById(commentComment.getUserid());
+                        Map<String,Object> user22 = new HashMap<>();
+                        user22.put("id",user2.getId());
+                        user22.put("username",user2.getUsername());
+                        cc.put("user",user22);
+                        Map<String,Object> target = null;
+                        if (commentComment.getTargetid()!=0){
+                            target = new HashMap<>();
+                            User user33 = userService.findUserById(commentComment.getTargetid());
+                            target.put("username",user33.getUsername());
+                            target.put("id",user33.getId());
+                        }
                         cc.put("target",target);
                         ccs.add(cc);
                     }

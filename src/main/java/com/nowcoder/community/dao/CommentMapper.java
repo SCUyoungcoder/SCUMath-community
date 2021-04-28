@@ -16,10 +16,11 @@ public interface CommentMapper {
     List<Comment> selectByUserid(int userid);
     List<Comment> selectCommentsByTable(int status ,int table);
     List<Comment> selectByTwoTarget(int userId);
+    Comment selectByTableAndEntity(int entityType,int entityId,int table);
     int insertComment(Comment comment);
     int deleteById(int id);
     int deleteByEntity(int entityId,int entityType);
     int countByEntity(int entityId,int entityType);
-
+    int updateTable(int commentId,int table);
 
 }

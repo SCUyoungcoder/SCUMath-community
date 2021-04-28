@@ -48,7 +48,7 @@
         select <include refid="selectFields"></include>
         from comment
         where entity_type = #{entitytype} and entity_id = #{entityid} and status = #{status}
-        order by create_time asc<!--按照时间正序排列，先评论的在前-->
+        order by create_time asc
     </select>
     <select id="selectByEntityandtargitid" resultType="Comment">
         select <include refid="selectFields"></include>
@@ -84,5 +84,12 @@
     <delete id="deleteByEntity">
         delete from comment where entity_id = #{entityId} and entity_type = #{entityType}
     </delete>
-
+    <select id="selectByTableAndEntity" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where entity_type = #{entityType} and entity_id = #{entityId} and notice_table = #{table}
+    </select>
+    <update id="updateTable">
+        update comment set notice_table = #{table} where id = #{commentId}
+    </update>
 </mapper>

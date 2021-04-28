@@ -44,7 +44,7 @@ public class ElasticsearchClassService {
     }
 
 
-    public List<Paper> searchPaperOnlyByClass(String classname){
+    /*public List<Paper> searchPaperOnlyByClass(String classname){
         Pageable pageable = new PageRequest(0,1000);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status","0")))//构造查询条件——classname，在fatherid里面查;且status==0的论文
@@ -54,7 +54,7 @@ public class ElasticsearchClassService {
                 .withPageable(pageable)
                 .build();
         return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
-    }
+    }*/
     public List<Paper> searchPaperByClassAndStatus(String classname,int status){
         Pageable pageable = new PageRequest(0,1000);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()

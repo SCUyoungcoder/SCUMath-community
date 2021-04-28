@@ -213,6 +213,10 @@ public class UserController {
     public String settingInfo(Model model){
         User user = hostHolder.getUser();
         callbackInfo(user.getId(), model);
+        user.setPassword(null);
+        user.setActivationCode(null);
+        user.setSalt(null);
+        user.setEmail(null);
         model.addAttribute("user", user);
         int followeeCount = attentionService.CountAttentionByUserId(user.getId());
         model.addAttribute("followeeCount", followeeCount);
@@ -237,9 +241,11 @@ public class UserController {
     public void callbackInfo(int userId, Model model) {
         //获取用户信息
         Userinfo userInfo = userinfoService.selectInfoByUserId(userId);
-        model.addAttribute("userInfo", userInfo);
-        //如果专业不为空 也要回显
-        String major = userInfo.getWork();
+        //model.addAttribute("userInfo", userInfo);
+        String major = null;
+        if (userInfo!=null){
+            major = userInfo.getWork();
+        }
         //不为null 也不为""时
         if (major != null && !major.isEmpty()) {
             model.addAttribute("major", major);
@@ -271,6 +277,10 @@ public class UserController {
         if (user==null){
             throw new RuntimeException("该用户不存在!");
         }
+        user.setPassword(null);
+        user.setActivationCode(null);
+        user.setSalt(null);
+        user.setEmail(null);
         model.addAttribute("user", user);
         callbackInfo(id, model);
         PageHelper.startPage(page, limit);
@@ -299,6 +309,10 @@ public class UserController {
         if (user==null){
             throw new RuntimeException("该用户不存在!");
         }
+        user.setPassword(null);
+        user.setActivationCode(null);
+        user.setSalt(null);
+        user.setEmail(null);
         model.addAttribute("user", user);
         callbackInfo(id, model);
         PageHelper.startPage(page, limit);
@@ -327,6 +341,10 @@ public class UserController {
         if (user==null){
             throw new RuntimeException("该用户不存在!");
         }
+        user.setPassword(null);
+        user.setActivationCode(null);
+        user.setSalt(null);
+        user.setEmail(null);
         model.addAttribute("user", user);
         callbackInfo(id, model);
         PageHelper.startPage(page, limit);
@@ -369,6 +387,10 @@ public class UserController {
         if (user==null){
             throw new RuntimeException("该用户不存在!");
         }
+        user.setPassword(null);
+        user.setActivationCode(null);
+        user.setSalt(null);
+        user.setEmail(null);
         model.addAttribute("user", user);
         callbackInfo(id, model);
         PageHelper.startPage(page, limit);
@@ -488,19 +510,16 @@ public class UserController {
     @RequestMapping(path = "/search" ,method = RequestMethod.GET)
     public String search(String keyword, String fieldname, String sortname, Page page, Model model){
         if (sortname == null){
-            sortname = "createtime";
+            sortname = "gmtcreate";
         }
-        org.springframework.data.domain.Page<Paper> searchpapers = elasticsearchService.searchPaperByFieldname(keyword,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
-        System.out.println(searchpapers.toString());
+        org.springframework.data.domain.Page<Paper> searchpapers = elasticsearchService.searchPaperByFieldname(keyword,0,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
         List<Map<String ,Object>> papers = new ArrayList<>();
         if (searchpapers !=null){
-            for (Paper paper:searchpapers){
-                if(paper.getStatus()==0){                   /*针对论文的搜索，是否需要写针对悬赏的搜索*/
+            for (Paper paper:searchpapers){/*针对论文的搜索，是否需要写针对悬赏的搜索*/
                     Map<String,Object> map = new HashMap<>();
                     paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
                     map.put("paper",paper);
                     papers.add(map);
-                }
             }
         }
         model.addAttribute("papers",papers);

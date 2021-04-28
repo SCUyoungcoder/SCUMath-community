@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.dao.elasticsearth.BlogRepository;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommunityUtil;
@@ -36,7 +37,10 @@ public class BlogController {
     private String uploadPicPath;
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-
+    @Autowired
+    private ElasticsearchService elasticsearchService;
+    @Autowired
+    private BlogRepository blogRepository;
     @Autowired
     private BlogService blogService;
     @Autowired
@@ -51,6 +55,20 @@ public class BlogController {
     private UserService userService;
     @Autowired
     private UploadPicService uploadPic;
+    @RequestMapping(path = "/search",method = RequestMethod.GET)
+    public String searchBlog(String keyword,String fieldname,String sortname,Page page,Model model){
+        if (sortname ==null ){
+            sortname = "views";
+        }
+        org.springframework.data.domain.Page<Blog> searchBlog = elasticsearchService.searchBlogByFieldname(keyword,0,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        model.addAttribute("blogs",searchBlog);
+        model.addAttribute("fieldname",fieldname);
+        model.addAttribute("label","blog");
+        //model.addAttribute("text","");
+        page.setPath("/blog/search?keyword="+keyword+"&fieldname="+fieldname+"&sortname"+sortname);
+        page.setRows(searchBlog == null?0:searchBlog.getTotalPages());
+        return "search/list";
+    }
 
     @LoginRequired
     @RequestMapping(path = "/write",method = RequestMethod.GET)
@@ -116,6 +134,7 @@ public class BlogController {
         blog.setGmtCreate(new Date(System.currentTimeMillis()));
         blog.setGmtUpdate(new Date(System.currentTimeMillis()));
         blogService.InsertBlog(blog);
+        blogRepository.save(blog);
         String[] findPicName = blogWriteForm.getContent().split("/blog/UsingTheComplexLinkGetThePicForPicManage/");
         for(int i = 1;i<findPicName.length;i++){
             String newPic = findPicName[i].split("\\)")[0];
@@ -231,7 +250,11 @@ public class BlogController {
             for (Comment blogComment : blogComments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",blogComment);
-                map.put("user",userService.findUserById(blogComment.getUserid()));
+                User user1 = userService.findUserById(blogComment.getUserid());
+                Map<String,Object> user11 = new HashMap<>();
+                user11.put("id",user1.getId());
+                user11.put("username",user1.getUsername());
+                map.put("user",user11);
                 List<Comment> commentComments =commentService.selectcommentByEntity(1,blogComment.getId(),0);//status=评论，entitytype=评论
                 List<Map<String,Object>> ccs = new ArrayList<>();
                 if (commentComments!=null){
@@ -239,8 +262,19 @@ public class BlogController {
                     for (Comment commentComment:commentComments){
                         Map<String,Object> cc = new HashMap<>();
                         cc.put("reply",commentComment);
-                        cc.put("user",userService.findUserById(commentComment.getUserid()));
-                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        User user2 = userService.findUserById(commentComment.getUserid());
+                        Map<String,Object> user22 = new HashMap<>();
+                        user22.put("id",user2.getId());
+                        user22.put("username",user2.getUsername());
+                        cc.put("user",user22);
+                        Map<String,Object> target = null;
+                        if (commentComment.getTargetid()!=0){
+                            target = new HashMap<>();
+                            User user33 = userService.findUserById(commentComment.getTargetid());
+                            target.put("username",user33.getUsername());
+                            target.put("id",user33.getId());
+                        }
+                        //target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
                         ccs.add(cc);
                     }

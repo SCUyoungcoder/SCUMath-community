@@ -31,6 +31,8 @@
                     <a style="color:#71716999;background: #ffb700c4" class="badge badge-danger"
                        th:text="${question.getAuthorName()}" th:href="@{|/user/blog/${question.authorId}|}"></a>
                     <span>
+                        <span th:text="${question.getSort()==0?'未解决':'已解决'}"
+                              th:class="${question.getSort()==0?'  badge badge-warning ':'  badge badge-info '}"></span>
                     <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
                          xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
                             d="M513.1 187c-324 0-448.7 320-448.7 320s127 327.3 448.7 327.3S961.8 507 961.8 507 837.1 187 513.1 187z m0 522.5c-110.5 0-200.1-89.6-200.1-200.1s89.6-200.1 200.1-200.1 200.1 89.6 200.1 200.1-89.6 200.1-200.1 200.1z"
@@ -38,7 +40,7 @@
                             d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
                             p-id="644"></path></svg>
                         [[${question.getViews()}]]
-        </span>
+                    </span>
                     <!--自己可以删除编辑文章 当然管理员也可以-->
                 <div class="float-right"
                      th:if="${loginUser != null&&((loginUser.getId()==question.getAuthorId())||loginUser.getType()==1)}">
@@ -82,7 +84,6 @@
 
 
             <div class="col-md-12 blog-main" style="margin-top: 20px;">
-                <!--想要保存评论 必须拿到对应的qid 否则都不知道存哪里-->
                 <form th:action="@{'/comment/question/'+${question.getQid()}}" method="post">
                     <input type="hidden" name="entitytype" value="3">
                     <input type="hidden" name="entityid" th:value="${question.getId()}">
@@ -108,7 +109,7 @@
 
                             <div class="media-body">
                                 <div>
-                                    <span class="font-size-12 text-success" th:utext="${cvo.user.username}"></span>:
+                                    <a class="font-size-12 text-success" th:href="@{'/user/blog/'+${cvo.user.id}}" th:utext="${cvo.user.username}"></a>:
                                     <span class="mt-2" th:utext="${cvo.comment.content}">
 
                                 </span>
@@ -119,7 +120,11 @@
                                 <div class="text-muted font-size-12">
                                     <span class="font-size-9 text-muted"> <b  th:text="${#dates.format(cvo.comment.createtime,'yyyy-MM-dd HH:mm:ss')}"></b></span>
                                     <ul class="d-inline float-right">
-
+                                        <div th:if="${question.getAuthorName()==loginUser.username && question.getSort()==0}" class="d-inline ml-2">
+                                            <a th:onclick = "downQuestion([[${question.getQid()}]],[[${cvo.comment.id}]])"
+                                                data-toggle="collapse" class="btn btn-light btn-sm">确认解决</a></div>
+                                        <div th:if="${cvo.comment.table==1}" class="d-inline ml-2">
+                                            <span class=" badge badge-info ">解决方案</span></div>
                                         <li class="d-inline ml-2">|</li>
                                         <li class="d-inline ml-2"><a href="#" class="btn-light">回复(<i th:text="${cvo.replyCount}">2</i>)</a></li>
                                     </ul>
@@ -130,11 +135,11 @@
                                     <li class=" mb-7 " th:each="rvo:${cvo.replys}">
                                         <div>
 										<span th:if="${rvo.target==null}">
-											<b class="text-info" th:text="${rvo.user.username}"></b>:&nbsp;&nbsp;
+											<a class="text-info" th:href="@{'/user/blog/'+${rvo.user.id}}" th:text="${rvo.user.username}"></a>:&nbsp;&nbsp;
 										</span>
                                             <span th:if="${rvo.target!=null}">
-											<i class="text-info" th:text="${rvo.user.username}"></i> 回复
-											<b class="text-info" th:text="${rvo.target.username}"></b>:&nbsp;&nbsp;
+											<a class="text-info" th:href="@{'/user/blog/'+${rvo.user.id}}" th:text="${rvo.user.username}"></a> 回复
+											<a class="text-info" th:href="@{'/user/blog/'+${rvo.target.id}}" th:text="${rvo.target.username}"></a>:&nbsp;&nbsp;
 										</span>
                                             <span th:utext="${rvo.reply.content}"></span>
                                         </div>
@@ -255,6 +260,14 @@
                 }
             }
         );
+    }
+    function downQuestion(str1,str2) {
+        var msg = "确定您的问题已由该用户解决吗？\n\n请确认！";
+        if (confirm(msg)==true){
+        window.location.href = "/question/done/"+str1+"?commentId="+str2;
+        }else{
+
+        }
     }
 </script>
 </body>

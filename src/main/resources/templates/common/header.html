@@ -58,6 +58,33 @@
                     <a class="nav-link" th:href="@{/say}">发布公告 </a>
                 </li>
             </ul>
+            <div class="search-block level-right">
+                <form class="level-item mini-search" method="GET" action="/user/search">        <!--_-->
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
+                            <!--<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  -->            <!---->
+                        </div>
+                        <div class="control">
+                            <div >
+                                <select name="fieldname" aria-label="Field to search">
+                                    <option value="title" selected="selected">名字</option>
+                                    <option value="content">摘要</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control">
+                            <div >
+                                <select name="sortname" aria-label="Field to search">
+                                    <option value="createtime" selected="selected">上传时间</option>
+                                    <option value="downloadcount">下载量</option>                                                          <!--更改下拉菜单项-->
+                                </select>
+                            </div>
+                        </div>
+                        <button class="button is-small is-cul-darker">搜索</button>
+                    </div>
+                </form>
+            </div>
             <!--如果未登录-->
             <div th:if="${loginUser==null}">
                 <a class="btn btn-sm btn-primary" th:href="@{/login}" role="button">

@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.LoginRequired;
+//import com.nowcoder.community.dao.elasticsearth.QuestionRepository;
+import com.nowcoder.community.dao.elasticsearth.QuestionRepository;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommunityUtil;
@@ -37,6 +39,10 @@ public class QuestionController {
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private ElasticsearchService elasticsearchService;
+    @Autowired
     private QuestionService questionService;
     @Autowired
     private PictureService pictureService;
@@ -51,6 +57,33 @@ public class QuestionController {
     @Autowired
     private UploadPicService uploadPic;
 
+    @RequestMapping(path = "/search",method = RequestMethod.GET)
+    public String searchQuestion(String keyword,String fieldname,String sortname,Page page,Model model){
+        if (sortname ==null ){
+            sortname = "views";
+        }
+        org.springframework.data.domain.Page<Question> searchQuestion = elasticsearchService.searchQuestionByFieldname(keyword,0,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        model.addAttribute("blogs",searchQuestion);
+        model.addAttribute("fieldname",fieldname);
+        model.addAttribute("label","question");
+        //model.addAttribute("text","");
+        page.setPath("/question/search?keyword="+keyword+"&fieldname="+fieldname+"&sortname"+sortname);
+        page.setRows(searchQuestion == null?0:searchQuestion.getTotalPages());
+        return "search/list";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/done/{qid}",method = RequestMethod.GET)
+    public String questionDone(Model model,@PathVariable("qid") String qid,int commentId){
+        Question question = questionService.SelectByQid(qid);
+        User user = hostHolder.getUser();
+        if (user.getId()!=question.getAuthorId() || question.getStatus()==1){
+            return "error/404";
+        }
+        question.setSort(1);
+        questionService.UpdateQuestion(question);
+        commentService.UpdateTable(commentId,1);
+        return "redirect:/question/read/"+qid;
+    }
     @LoginRequired
     @RequestMapping(path = "/write",method = RequestMethod.GET)
     public String toWrite(Model model){
@@ -115,6 +148,7 @@ public class QuestionController {
         question.setGmtCreate(new Date(System.currentTimeMillis()));
         question.setGmtUpdate(new Date(System.currentTimeMillis()));
         questionService.InsertQuestion(question);
+        questionRepository.save(question);
         String[] findPicName = questionWriteForm.getContent().split("/blog/UsingTheComplexLinkGetThePicForPicManage/");
         for(int i = 1;i<findPicName.length;i++){
             String newPic = findPicName[i].split("\\)")[0];
@@ -224,13 +258,31 @@ public class QuestionController {
         //List<Comment> questionComments = commentService.selectcommentByEntity(2,question.getId(),0);//status=评论，entitytype=论文
         PageHelper.startPage(page,limit);
         PageInfo<Comment> questionComments = new PageInfo<>(commentService.selectcommentByEntity(3,question.getId(),0));
+        if (page==1 && question.getSort()==1){
+            Comment comment = commentService.SelectByTableAndEntity(3,question.getId(),1);
+            if (comment!=null){
+                List<Comment> c1 = questionComments.getList();
+                if (c1.contains(comment)){
+                    c1.remove(comment);
+
+                }
+                comment.setTable(1);
+                c1.add(0,comment);
+                questionComments.setList(c1);
+                System.out.println(c1);
+            }
+        }
         //List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
         List<Map<String,Object>> coms = new ArrayList<>();
         if (questionComments.getList().size()>0) {
             for (Comment questionComment : questionComments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",questionComment);
-                map.put("user",userService.findUserById(questionComment.getUserid()));
+                User user1 = userService.findUserById(questionComment.getUserid());
+                Map<String,Object> user11 = new HashMap<>();
+                user11.put("id",user1.getId());
+                user11.put("username",user1.getUsername());
+                map.put("user",user11);
                 List<Comment> commentComments =commentService.selectcommentByEntity(1,questionComment.getId(),0);//status=评论，entitytype=评论
                 List<Map<String,Object>> ccs = new ArrayList<>();
                 if (commentComments!=null){
@@ -238,21 +290,20 @@ public class QuestionController {
                     for (Comment commentComment:commentComments){
                         Map<String,Object> cc = new HashMap<>();
                         cc.put("reply",commentComment);
-                        cc.put("user",userService.findUserById(commentComment.getUserid()));
-                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        User user2 = userService.findUserById(commentComment.getUserid());
+                        Map<String,Object> user22 = new HashMap<>();
+                        user22.put("id",user2.getId());
+                        user22.put("username",user2.getUsername());
+                        cc.put("user",user22);
+                        Map<String,Object> target = null;
+                        if (commentComment.getTargetid()!=0){
+                            target = new HashMap<>();
+                            User user33 = userService.findUserById(commentComment.getTargetid());
+                            target.put("username",user33.getUsername());
+                            target.put("id",user33.getId());
+                        }
+                        //target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
-                        /*if (commentComment.getTargetid()!=0){       *//*上传评论时，如果没有targetid数据库默认置0——正常情况应该不会发生这种事情*//*
-                            cc.put("targetname",userService.findUserById(commentComment.getTargetid()).getUsername());//由targetid拿到其targetname
-                        }
-                        else {
-                            cc.put("targetname",null);
-                        }
-                        cc.put("id",commentComment.getId());
-                        cc.put("userid",commentComment.getUserid());
-                        cc.put("type",commentComment.getType());//论文详情页评论区，只需要评论，这里把评论的类型（type = 0:主评论，1：次评论）
-                        cc.put("username",userService.findUserById(commentComment.getUserid()).getUsername());
-                        cc.put("content",":"+commentComment.getContent());
-                        cc.put("createtime",commentComment.getCreatetime());*/
                         ccs.add(cc);
                     }
 
@@ -260,20 +311,10 @@ public class QuestionController {
                 map.put("replys",ccs);
                 int replyCount = commentService.findCommentCount(1, questionComment.getId());
                 map.put("replyCount", replyCount);
-                /*else {
-                    map.put("replys",null);                *//*是否需要*//*
-                }*/
-                /*map.put("id",questionComment.getId());
-                map.put("username",userService.findUserById(questionComment.getUserid()).getUsername());
-                map.put("userid",questionComment.getUserid());
-                map.put("content",questionComment.getContent());
-                map.put("createtime",questionComment.getCreatetime());*/
                 coms.add(map);
             }
         }
-        //page.setRows(questionComments == null?0:(int)commentService.CountByEntity(question.getId(),2)/10);
-        //page.setRows(3);
-        //page.setPath("/question/read/"+qid);
+        //置顶用户确认的回答
         model.addAttribute("info",questionComments);
         model.addAttribute("comments",coms);
         model.addAttribute("question",question);

@@ -62,7 +62,7 @@
                         <div class="control">
                             <div>
                                 <select name="sortname" aria-label="Field to search">
-                                    <option value="createtime" selected="selected">上传时间</option>
+                                    <option value="gmtcreate" selected="selected">上传时间</option>
                                     <option value="downloadcount">下载量</option>
                                     <!--更改下拉菜单项-->
                                 </select>
@@ -135,7 +135,7 @@
                         </div>
                         <div class="text-muted font-size-12">
                             <u class="mr-3" th:utext="${map.paper.fatherid}">寒江雪</u>发布于 <b
-                                th:text="${#dates.format(map.paper.createtime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15
+                                th:text="${#dates.format(map.paper.gmtcreate,'yyyy-MM-dd HH:mm:ss')}">2019-04-15
                             15:32:18</b>
                             <ul class="d-inline float-right">
                                 <li class="d-inline ml-2">下载次数 <i th:text="${map.paper.downloadcount}">11</i></li>

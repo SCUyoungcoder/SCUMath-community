@@ -12,7 +12,8 @@ import java.util.Date;
 
 /*elasticsearth.在类上加这个注解，表示DiscussPost实体和discusspost索引有对应关系。。配置索引名字，类型，分片，及备份数*/
 /*type将来会弱化，所以写一个固定的就行了.后面两个根据服务器处理能力配置*/
-@Document(indexName = "paper",type = "_doc",shards =6 ,replicas =3 )
+//@Document(indexName = "paper",type = "_doc",shards =6 ,replicas =3 )
+@Document(indexName = "paper",type = "papertype",shards =6 ,replicas =3 )
 public class Paper {
     /*将数据库中的字段与索引的字段链接起来*/
     @Id

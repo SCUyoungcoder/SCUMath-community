@@ -66,7 +66,16 @@ public class HomeController {
                                      @RequestParam(defaultValue = "0") int userId){
         User user = hostHolder.getUser();
         List<Map<String,Object>> attentions = new ArrayList<>();
-        List<Attention> attentionList = attentionService.SelectByUserId(user.getId());
+        List<Attention> attentionList = new ArrayList<>();
+        if(userId==0){
+            attentionList  = attentionService.SelectByUserId(user.getId());
+        }
+        else {
+            Attention attention = new Attention();
+            attention.setFocusId(userId);
+            attention.setUserId(user.getId());
+            attentionList.add(attention);
+        }
         StringBuilder sql = new StringBuilder();
         StringBuilder sql2 = new StringBuilder();
         if (!attentionList.isEmpty()){

@@ -108,7 +108,7 @@
 
                             <div class="media-body">
                                 <div>
-                                    <span class="font-size-12 text-success" th:utext="${cvo.user.username}"></span>:
+                                    <a class="font-size-12 text-success" th:href="@{'/user/blog/'+${cvo.user.id}}" th:utext="${cvo.user.username}"></a>:
                                     <span class="mt-2" th:utext="${cvo.comment.content}">
 
                                 </span>
@@ -131,11 +131,11 @@
                                     <li class=" mb-7 " th:each="rvo:${cvo.replys}">
                                         <div>
 										<span th:if="${rvo.target==null}">
-											<b class="text-info" th:text="${rvo.user.username}"></b>:&nbsp;&nbsp;
+											<a class="text-info" th:href="@{'/user/blog/'+${rvo.user.id}}" th:text="${rvo.user.username}"></a>:&nbsp;&nbsp;
 										</span>
                                             <span th:if="${rvo.target!=null}">
-											<i class="text-info" th:text="${rvo.user.username}"></i> 回复
-											<b class="text-info" th:text="${rvo.target.username}"></b>:&nbsp;&nbsp;
+											<a th:href="@{'/user/blog/'+${rvo.user.id}}" class="text-info" th:text="${rvo.user.username}"></a> 回复
+											<a th:href="@{'/user/blog/'+${rvo.target.id}}" class="text-info" th:text="${rvo.target.username}"></a>:&nbsp;&nbsp;
 										</span>
                                             <span th:utext="${rvo.reply.content}"></span>
                                         </div>

@@ -31,6 +31,8 @@ public class SourceController {
     @Autowired
     private ClassificationService classificationService;
     @Autowired
+    private ElasticsearchService elasticsearchService;
+    @Autowired
     private PaperRepository paperRepository;
     @Autowired
     private PaperOfClassService paperOfClassService;
@@ -41,13 +43,31 @@ public class SourceController {
     @Autowired
     private HostHolder hostHolder;
 
+    @RequestMapping(path = "/source/search",method = RequestMethod.GET)
+    public String searchSource(String keyword,String fieldname,String sortname,Page page,Model model){
+        if (sortname==null){
+            sortname="downloadcount";
+        }
+        org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.searchPaperByFieldname(keyword,2,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        List<Map<String ,Object>> sources = new ArrayList<>();
+        if (searchSource !=null){
+            for (Paper paper:searchSource){/*针对论文的搜索，是否需要写针对悬赏的搜索*/
+                paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
+            }
+        }
+        model.addAttribute("blogs",searchSource);
+        model.addAttribute("fieldname" ,fieldname);
+        model.addAttribute("label","source");
+        page.setPath("/source/search?keyword="+keyword+"&fieldname="+fieldname+"&sortname"+sortname);
+        page.setRows(searchSource == null?0:searchSource.getTotalPages());
+        return "search/list";
+    }
     @LoginRequired
     @RequestMapping(path = "/source/upload",method = RequestMethod.POST)
     public String uploadSource(MultipartFile paperfile, Paper paper, Model model){
         User user = hostHolder.getUser();
         if (paperfile == null){
-
-
+            return "error/404";
         }
         String fileName = paperfile.getOriginalFilename();
         /*获取前缀存入数据库*/
@@ -320,7 +340,12 @@ public class SourceController {
             for (Comment questionComment : papercomments.getList()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("comment",questionComment);
-                map.put("user",userService.findUserById(questionComment.getUserid()));
+                User user1 = userService.findUserById(questionComment.getUserid());
+                Map<String,Object> user11 = new HashMap<>();
+                user11.put("id",user1.getId());
+                user11.put("username",user1.getUsername());
+                map.put("user",user11);
+                //map.put("user",userService.findUserById(questionComment.getUserid()));
                 List<Comment> commentComments =commentService.selectcommentByEntity(1,questionComment.getId(),0);//status=评论，entitytype=评论
                 List<Map<String,Object>> ccs = new ArrayList<>();
                 if (commentComments!=null){
@@ -328,8 +353,19 @@ public class SourceController {
                     for (Comment commentComment:commentComments){
                         Map<String,Object> cc = new HashMap<>();
                         cc.put("reply",commentComment);
-                        cc.put("user",userService.findUserById(commentComment.getUserid()));
-                        User target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
+                        User user2 = userService.findUserById(commentComment.getUserid());
+                        Map<String,Object> user22 = new HashMap<>();
+                        user22.put("id",user2.getId());
+                        user22.put("username",user2.getUsername());
+                        cc.put("user",user22);
+                        Map<String,Object> target = null;
+                        if (commentComment.getTargetid()!=0){
+                            target = new HashMap<>();
+                            User user33 = userService.findUserById(commentComment.getTargetid());
+                            target.put("username",user33.getUsername());
+                            target.put("id",user33.getId());
+                        }
+                        //target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
                         ccs.add(cc);
                     }

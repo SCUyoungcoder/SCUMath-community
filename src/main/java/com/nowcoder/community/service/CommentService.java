@@ -46,6 +46,8 @@ public class CommentService {
     }
     public List<Comment> SelectByTwoTarget(int userId){return commentMapper.selectByTwoTarget(userId);}
 
+    public Comment SelectByTableAndEntity(int entityType ,int entityId,int table){return commentMapper.selectByTableAndEntity(entityType,entityId,table);}
+
     public int CountByEntity(int entityId, int entityType) {
         return commentMapper.countByEntity(entityId, entityType);
     }
@@ -66,4 +68,5 @@ public class CommentService {
     public int DeleteByEntity(int entityId, int entityType) {
         return commentMapper.deleteByEntity(entityId, entityType);
     }
+    public int UpdateTable(int commentId,int table){return commentMapper.updateTable(commentId,table);}
 }

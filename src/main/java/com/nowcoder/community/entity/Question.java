@@ -1,73 +1,93 @@
 package com.nowcoder.community.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import java.util.Date;
 
+@Document(indexName = "question",type = "questiontype",shards = 6,replicas = 3)
 public class Question {
     /**
      * 自增id
      */
+    @Id
     private int id;
 
     /**
      * 问题id
      */
+    @Field(type = FieldType.Text)
     private String qid;
 
     /**
      * 博客标题
      */
+    @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String title;
 
     /**
      * 博客内容
      */
+    @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String content;
 
     /**
      * 排序 0 普通  1 置顶
      */
+    @Field(type = FieldType.Integer)
     private int sort;
 
+    @Field(type = FieldType.Integer)
     private int status;
 
     /**
      * 浏览量
      */
+    @Field(type = FieldType.Integer)
     private int views;
 
     /**
      * 作者id
      */
+    @Field(type = FieldType.Integer)
     private int authorId;
 
     /**
      * 作者名
      */
+    @Field(type = FieldType.Text)
     private String authorName;
 
     /**
      * 作者头像
      */
+    @Field(type = FieldType.Text)
     private String authorAvatar;
 
     /**
      * 问题分类id
      */
+    @Field(type = FieldType.Integer)
     private int categoryId;
 
     /**
      * 问题分类名称
      */
+    @Field(type = FieldType.Text)
     private String categoryName;
 
     /**
      * 创建时间
      */
+    @Field(type = FieldType.Date)
     private Date gmtCreate;
 
     /**
      * 修改时间
      */
+    @Field(type = FieldType.Date)
     private Date gmtUpdate;
 
     public int getStatus() {
