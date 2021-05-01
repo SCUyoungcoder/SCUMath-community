@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>论文发布</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
+    <style>
+        .nav-underline .nav-link {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            font-size: .875rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body style="background: #f2f2f2;">
+
+<!-- 导航栏 -->
+<div th:replace="common/header::header(activeUrl='comment')"></div>
+
+<main role="main" class="container mt-3 p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12 blog-main">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">发布公告</h4>
+
+                <form class="needs-validation" enctype="multipart/form-data" th:action="@{/comment/notice}" method="post">
+
+                    <b class="label" for="content">公告题目:</b>
+                    <input type="text" name="title" class="form-control" id="firstName" value="" required>
+
+                        <br>
+                        <b class="label" for="content">公告内容:</b><br>
+                    <div class="form-group">
+                        <textarea style="border-radius: 10px" id ="content" name="content" rows="3" required
+                                  class="form-control"></textarea>
+                    </div>
+
+
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">立即发布</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+
+
+</body>
+</html>

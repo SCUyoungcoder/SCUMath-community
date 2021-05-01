@@ -121,7 +121,12 @@ public class UserController {
             User user = userService.findUserById(attention.getFocusId());
             Userinfo userinfo = userinfoService.selectInfoByUserId(attention.getFocusId());
             map.put("username",user.getUsername());
-            map.put("userwork",userinfo.getWork());
+            if (userinfo==null){
+                map.put("userwork","");
+            }
+            else {
+                map.put("userwork",userinfo.getWork());
+            }
             map.put("userid",attention.getFocusId());
             users.add(map);
         }
@@ -218,23 +223,26 @@ public class UserController {
         user.setSalt(null);
         user.setEmail(null);
         model.addAttribute("user", user);
+        Userinfo userInfo = userinfoService.selectInfoByUserId(user.getId());
+        System.out.println(userInfo);
+        if (userInfo==null){
+            userInfo = new Userinfo();
+            userInfo.setUserid(user.getId());
+            userInfo.setNickname("");
+            userInfo.setRealname("");
+            userInfo.setQq("");
+            userInfo.setWechat("");
+            userInfo.setEmail("");
+            userInfo.setPhone("");
+            userInfo.setWork("");
+            userInfo.setAddress("");
+            userInfo.setIntro("");
+        }
+        model.addAttribute("userInfo", userInfo);
         int followeeCount = attentionService.CountAttentionByUserId(user.getId());
         model.addAttribute("followeeCount", followeeCount);
         int followerCount = attentionService.CountAttentionByFocusId(user.getId());
         model.addAttribute("followerCount", followerCount);
-        //model.addAttribute("hasFollowed", false);
-       /* // 关注数量
-        long followeeCount = followService.findFolloweeCount(uid, ENTITY_TYPE_USER);
-        model.addAttribute("followeeCount", followeeCount);
-        // 粉丝数量
-        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, uid);
-        model.addAttribute("followerCount", followerCount);
-        // 是否已关注
-        boolean hasFollowed = false;
-        if (hostHolder.getUser() != null) {
-            hasFollowed = followService.hasFollowed(hostHolder.getUser().getUid(), ENTITY_TYPE_USER, uid);
-        }
-        model.addAttribute("hasFollowed", hasFollowed);*/
         return "user/setting";
 
     }
@@ -749,8 +757,9 @@ public class UserController {
         }
         //System.out.println(title);
 
-
-        paperOfClassService.updateDownloadcount(paper.getId(),paper.getDownloadcount()+1);
+        paper.setDownloadcount(paper.getDownloadcount()+1);
+        paperOfClassService.updateDownloadcount(paper.getId(),paper.getDownloadcount());
+        paperRepository.save(paper);
     }
     /*更改密码*/
     @LoginRequired

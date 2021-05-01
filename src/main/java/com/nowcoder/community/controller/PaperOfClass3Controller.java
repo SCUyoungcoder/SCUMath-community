@@ -343,6 +343,7 @@ public class PaperOfClass3Controller {
         Paper paper = paperOfClassService.selectPaperById(pid);
         paper.setStatus(0);
         paperOfClassService.updatastatus(paper);
+        paperRepository.save(paper);
         return CommunityUtil.getJSONString(0);
     }
 

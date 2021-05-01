@@ -81,20 +81,20 @@
                     <ul class="pagination justify-content-center pagination-sm">
                         <!--往前翻 如果没有前一页 则禁用-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:href="@{'/index1?page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:href="@{'/attention?page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
                         </li>
 
                         <div th:each="page:${info.getNavigatepageNums()}">
                             <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
-                                <a class="page-link" th:href="@{'/index1?page='+${page}+'&limit=10'}"
+                                <a class="page-link" th:href="@{'/attention?page='+${page}+'&limit=10'}"
                                    th:text="${page}">
                                 </a>
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
                             <a class="page-link"
-                               th:href="@{'/index1?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                               th:href="@{'/attention?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>

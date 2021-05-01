@@ -13,6 +13,7 @@ public class LikeService {
     public int FindBlogLikeById(int userId,int blogId){return likeMapper.findBlogLikeById(userId,blogId);}
     public int InsertBlogLike(int userId,int blogId){return likeMapper.insertBlogLike(userId,blogId);}
     public int DeleteBlogLike(int id){return likeMapper.deleteBlogLike(id);}
+    public int DeleteBlogByTwoId(int userId,int blogId){return likeMapper.deleteBlogByTwoId(userId,blogId);}
     public int CountBlogLike(int blogId){return likeMapper.countBlogLike(blogId);}
 
     public int FindQuestionLikeById(int userId,int questionId){return likeMapper.findQuestionLikeById(userId,questionId);}

@@ -54,7 +54,9 @@
                         <span th:if="${label=='paper'||label=='source'}">
                         <li class="d-inline ml-2">下载次数 <i th:text="${blog.downloadcount}"></i></li>
                         </span>
-                        <span th:text="${#dates.format(blog.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"
+                        <span th:if="${label=='blog'||label=='question'}" th:text="${#dates.format(blog.gmtCreate,'yyyy-MM-dd HH:mm:ss')}"
+                              class="badge badge-light float-right" ></span>
+                        <span th:if="${label=='paper'||label=='source'}" th:text="${#dates.format(blog.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"
                               class="badge badge-light float-right" ></span>
                     </div>
 
@@ -101,21 +103,40 @@
                 </nav>
             </div>
         </div>
-        <!--<aside th:if="${checkLabel==null}" class="col-md-3 blog-sidebar">
-
+        <form method="GET" th:action="@{'/'+${label}+'/search'}">
+            <div class="p-4 my-3 bg-white rounded">
+                <b>搜索字段:
+                </b>
+                <select name="fieldname" aria-label="Field to search">
+                    <option value="title" selected="selected">题目</option>
+                    <option value="content">内容</option>
+                    <!--<option value="content\,title">题目+内容</option>-->
+                    <!--更改下拉菜单项-->
+                </select>
+                <br>
+                <div style="margin-top:10px">
+                    <b>排序方式:</b>
+                    <select name="sortname" aria-label="Field to search">
+                        <option th:if="${label=='paper'||label=='source'}" value="gmtcreate" selected="selected">发布时间</option>
+                        <option th:if="${label=='paper'||label=='source'}" value="downloadcount">下载量</option>
+                        <option th:if="${label=='blog'||label=='question'}" value="gmtCreate" selected="selected">发布时间</option>
+                        <option th:if="${label=='blog'||label=='question'}" value="views">浏览量</option>
+                    </select>
+                </div>
+                <div style="margin-top:10px">
+                <input  class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms" required>
+                </div>
+                <!--<a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                   th:each="category:${categoryList}" th:text="${category.getName()}"
+                   class="badge badge-pill badge-primary mr-1"></a>-->
+            </div>
             <div class="my-3 rounded">
                 <p class="mb-0">
-                    <a th:href="@{/blog/write}" class="btn btn-primary btn-sm btn-block"
-                       style="color: white">发布博客</a>
+                    <button class="btn btn-primary btn-sm btn-block"
+                       style="color: white">搜索</button>
                 </p>
             </div>
-            <div class="p-4 my-3 bg-white rounded">
-                &lt;!&ndash;直接写默认值了 每页10条数据&ndash;&gt;
-                <a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
-                   th:each="category:${categoryList}" th:text="${category.getName()}"
-                   class="badge badge-pill badge-primary mr-1"></a>
-            </div>
-        </aside>-->
+        </form>
     </div>
     </div>
 </main>

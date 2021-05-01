@@ -160,6 +160,25 @@
         where author_id = #{userId}
         order by id desc
     </select>
+    <select id="selectByAvatar" resultType="Blog">
+        select <include refid="Base_Column_List"/>
+        from blog
+        where author_avatar = #{Avatar}
+        order by gmt_update desc
+        limit #{offset},#{limit}
+    </select>
+    <select id="selectAllByAvatar" resultType="Blog">
+        select <include refid="Base_Column_List"/>
+        from blog
+        where author_avatar = #{Avatar}
+        order by gmt_update desc
+    </select>
+    <select id="selectByAvatarAndClassname" resultType="Blog">
+        select <include refid="Base_Column_List"/>
+        from blog
+        where author_avatar = #{Avatar} and category_name = #{classname}
+        order by gmt_update desc
+    </select>
     <select id="countByAuthorId" resultType="int">
         select count(id) from blog where author_id = #{id}
     </select>
@@ -168,7 +187,8 @@
     </update>
     <update id="updateBlog">
         update blog set title = #{title} ,content = #{content} ,
-        category_id =#{categoryId}, category_name = #{categoryName}
+        category_id =#{categoryId}, category_name = #{categoryName},sort = #{sort},
+        author_avatar = #{authorAvatar},gmt_update = #{gmtUpdate}
         where bid = #{bid}
     </update>
     <update id="updateStatus">

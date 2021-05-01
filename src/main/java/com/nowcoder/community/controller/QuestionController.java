@@ -59,7 +59,7 @@ public class QuestionController {
 
     @RequestMapping(path = "/search",method = RequestMethod.GET)
     public String searchQuestion(String keyword,String fieldname,String sortname,Page page,Model model){
-        if (sortname ==null ){
+        if (sortname == null ){
             sortname = "views";
         }
         org.springframework.data.domain.Page<Question> searchQuestion = elasticsearchService.searchQuestionByFieldname(keyword,0,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
@@ -81,6 +81,7 @@ public class QuestionController {
         }
         question.setSort(1);
         questionService.UpdateQuestion(question);
+        questionRepository.save(question);
         commentService.UpdateTable(commentId,1);
         return "redirect:/question/read/"+qid;
     }
@@ -113,7 +114,7 @@ public class QuestionController {
         PageInfo<Question> info = new PageInfo<>(questionService.SelectByCategoryId(cid));
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
-        model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
+        model.addAttribute("thisCategory",classificationService.GetByClassificationId(cid));
         model.addAttribute("categoryList",classifications);
         //model.addAttribute("checkLabel",0);
         return "question/list";
@@ -172,6 +173,7 @@ public class QuestionController {
         oldQuestion.setCategoryId(question.getCategoryId());
         oldQuestion.setCategoryName(classificationService.GetByClassificationId(question.getCategoryId()).getName());
         questionService.UpdateQuestion(oldQuestion);
+        questionRepository.save(oldQuestion);
         //数据库中删除本博客没用的图片
         int newtype = (int)(Math.random()*90+10);
         //System.out.println(pictureService.UpdateFahterTypeByFather(newtype,question.getId(),1));
@@ -248,11 +250,15 @@ public class QuestionController {
                 model.addAttribute("checkLabel",2);
             }
             if (user.getId()!=question.getAuthorId()){
-                questionService.UpdateViews(question.getId(),question.getViews() + 1);
+                question.setViews(question.getViews()+1);
+                questionService.UpdateViews(question.getId(),question.getViews() );
+                questionRepository.save(question);
             }
         }
         else {
-            questionService.UpdateViews(question.getId(),question.getViews() + 1);
+            question.setViews(question.getViews()+1);
+            questionService.UpdateViews(question.getId(),question.getViews());
+            questionRepository.save(question);
         }
 
         //List<Comment> questionComments = commentService.selectcommentByEntity(2,question.getId(),0);//status=评论，entitytype=论文
@@ -380,6 +386,7 @@ public class QuestionController {
         }
         if (question.getAuthorId() == user.getId() || user.getType() == 1){
             questionService.DeleteQuestionById(question.getId());
+            questionRepository.deleteById(question.getId());
             List<Comment> delectComents = commentService.selectcommentByEntity(3,question.getId(),0);
             if (delectComents!=null){
                 for (Comment dc:delectComents){
@@ -417,7 +424,9 @@ public class QuestionController {
         User user = hostHolder.getUser();
         Question question = questionService.SelectByQid(qid);
         if (user.getType()==1){
-            questionService.UpdateStatus(question.getId(),0);
+            question.setStatus(0);
+            questionService.UpdateStatus(question.getId(),question.getStatus());
+            questionRepository.save(question);
             return CommunityUtil.getJSONString(0);
         }
         else {

@@ -31,7 +31,8 @@ public class LoginController {
 
     @RequestMapping(path = "/register",method = RequestMethod.GET)
     public String getRegisterPage(){
-        return "/site/register";
+        //return "/site/register";
+        return "/register";
     }
 
     /*index的引用路径在HomeController里面用了，去那里找
@@ -70,7 +71,8 @@ public class LoginController {
     }
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     public String getLoginPage(){
-        return "/site/login";
+        return "/login";
+        //return "/site/login";
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)

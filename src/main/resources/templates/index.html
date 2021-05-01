@@ -12,7 +12,7 @@
 <div th:replace="common/header::header(activeUrl='index')"></div>
 <main role="main">
     <div class="jumbotron" style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc inset;">
-        <div class="container">
+        <div class="container" >
             <h1 class="display-3">数学视界 </h1>
             <p style="margin-top: 2rem;">
 
@@ -20,32 +20,48 @@
             <p style="margin-top: 2rem;">
 
             </p>
-            <p><a class="btn btn-primary btn-lg" target="_blank" href="#" role="button">了解更多</a></p>
+            <p><a class="btn btn-primary btn-lg" target="_blank" href="/blog/list" role="button">了解更多</a></p>
         </div>
-    </div>
-    <div class="container">
 
+    </div>
+<!--    <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <h2>问答</h2>
-                <p> 大家畅所欲言  有什么问题尽管提哦 </p>
-                <p><a th:href="@{/question}" class="btn btn-secondary" role="button">前往 »</a></p>
-            </div>
             <div class="col-md-4">
                 <h2>博客</h2>
                 <p> 想写什么就写什么吧  你的文章将会被更多的人看到哦 </p>
-                <p><a th:href="@{/blog}" class="btn btn-secondary" role="button">前往 »</a></p>
+                <p><a th:href="@{/blog/list}" class="btn btn-secondary" role="button">前往 »</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>问答</h2>
+                <p> 大家畅所欲言  有什么问题尽管提哦 </p>
+                <p><a th:href="@{/question/list}" class="btn btn-secondary" role="button">前往 »</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>论文库</h2>
+                <p> 一些优秀的论文都放在这里</p>
+                <p>  <p><a th:href="@{/paper/list}" class="btn btn-secondary" role="button">前往 »</a></p></p>
             </div>
             <div class="col-md-4">
                 <h2>资源库</h2>
                 <p> 一些资源都放在这里哦</p>
-                <p>  <p><a th:href="@{/download}" class="btn btn-secondary" role="button">前往 »</a></p></p>
+                <p>  <p><a th:href="@{/source/list}" class="btn btn-secondary" role="button">前往 »</a></p></p>
             </div>
         </div>
+    </div>-->
+    <div th:each="paper:${notice}" class="jumbotron" style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc inset;" >
+        <div class="" style="margin-left: 5px">
+            <span class="badge badge-info" >公告</span>
+            <a style="color:#71716999;background: #ffb700c4"  class="" th:href="@{'/user/blog/'+${paper.userid}}" th:text="${paper.fatherid}"></a>
+            <!--标题 且根据id号 查询数据 跳转到指定的页面-->
+            <span style="" th:text="${paper.title}"
+            ></span>
+            <p  th:text="${paper.content}" style="rows:2"></p>
 
-
-
+            <span th:text="${#dates.format(paper.gmtcreate,'yyyy-MM-dd HH:mm:ss')}"
+            ></span>
+        </div>
     </div>
+    <p style="text-align:center;">如果你在使用中遇到问题，请联系我们：xxxxxxxxx@mail.com</p>
 </main>
 <div th:replace="common/footer::footer"></div>
 <!--<a class="to-top">返回顶部</a>-->

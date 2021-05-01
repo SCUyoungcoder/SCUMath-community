@@ -50,7 +50,7 @@
         select <include refid="selectFields"></include>
         from paper
         where status = #{status}
-        order by id asc
+        order by id desc
         limit #{offset},#{limit}
     </select>
     <select id="selectByTitle" resultType="Paper">
@@ -70,7 +70,7 @@
         select <include refid="selectFields"></include>
         from paper
         where user_id = #{id} and status = #{status}
-        order by id asc
+        order by id desc
     </select>
     <!--insert标签 parameterType声明参数类型 keyproperty表明id字段主键对应属性（添加数据时不会输入id的mysql会自动生成id，mybatis从mysql得到后自动填入user）-->
     <insert id="insertPaper" parameterType="Paper" keyProperty="id">

@@ -20,29 +20,37 @@
                 <h6 class="border-bottom border-gray pb-2 mb-0">
                     累计：
                     <span th:text="${info.getTotal()}"></span>
-                    <span class="float-right" th:if="${!#strings.isEmpty(thisCategoryName)}">
+                    <span class="float-right" th:if="${!#strings.isEmpty(thisCategory)}">
                         <a th:href="@{/blog/list}">全部</a>
                         /
-                        <span th:text="${thisCategoryName}"></span>
+                        <span th:text="${thisCategory.name}"></span>
                     </span>
                 </h6>
+                <!--                置顶列表-->
+                <div th:each="blog:${blogs}" class="media text-muted pt-3">
+
+                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${blog.getAuthorId()}}" th:text="${blog.getAuthorName()}"></a>
+                        <a style="color:#71716999;background: #24b75d"  class="badge badge-danger float-right" th:href="@{'/blog/topList'}" >置顶</a>
+                        <!--标题 且根据id号 查询数据 跳转到指定的页面-->
+                        <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></a>
+                        <svg t="1610696420189" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg" p-id="642" width="16" height="16"><path
+                                d="M513.1 187c-324 0-448.7 320-448.7 320s127 327.3 448.7 327.3S961.8 507 961.8 507 837.1 187 513.1 187z m0 522.5c-110.5 0-200.1-89.6-200.1-200.1s89.6-200.1 200.1-200.1 200.1 89.6 200.1 200.1-89.6 200.1-200.1 200.1z"
+                                p-id="643"></path><path
+                                d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
+                                p-id="644"></path></svg>
+                        <!--浏览量-->
+                        [[${blog.getViews()}]]
+                        </span>
+                        <span th:text="${#dates.format(blog.getGmtUpdate(),'yyyy-MM-dd HH:mm:ss')}"
+                              class="badge badge-light float-right" ></span>
+                    </div>
+
+                </div>
+
 <!--                博客列表-->
-                <!--<ul class="list-unstyled">
-                    <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="blog:${info.getList()}">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-3">
-                                &lt;!&ndash;标题 且根据id号 查询数据 跳转到指定的页面&ndash;&gt;
-                                <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"></a>
-                            </h5>
-                            <h6 class="mt-0 mb-3">
-                                <h th:utext="${blog.getContent()}"></h>
-                            </h6>
-                            <div class="text-muted font-size-12">
-                                <a class="mr-3" th:utext="${blog.getAuthorName()}" th:href="@{|/user/${blog.authorId}|}"></a> 发布于 <b th:text="${#dates.format(blog.getGmtCreate(),'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
-                            </div>
-                        </div>
-                    </li>
-                </ul>-->
                 <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
@@ -67,22 +75,43 @@
                 <!--分页-->
                 <nav th:if="${checkLabel==null}" aria-label="Page navigation example" class="mt-4">
                     <ul class="pagination justify-content-center pagination-sm">
-                        <!--往前翻 如果没有前一页 则禁用-->
+                        <!--往前翻 如果没有前一页 则禁用--><!--th:if="${!#strings.isEmpty(thisCategory)}"-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
                             <a class="page-link" th:href="@{'/blog/list?page='+${info.getPrePage()}+'&limit=10'}"
-                               tabindex="">Previous</a>
+                               th:if="${pageLabel==0&&#strings.isEmpty(thisCategory)}" tabindex="">Previous</a>
+                            <a class="page-link" th:href="@{'/blog/category?cid='+${thisCategory.id}+'&page='+${info.getPrePage()}+'&limit=10'}"
+                               th:if="${pageLabel==0&&!#strings.isEmpty(thisCategory)}" tabindex="">Previous</a>
+                            <a class="page-link" th:href="@{'/blog/topList?page='+${info.getPrePage()}+'&limit=10'}"
+                               th:if="${pageLabel==1&&#strings.isEmpty(thisCategory)}" tabindex="">Previous</a>
+                            <a class="page-link" th:href="@{'/blog/topcategory?cid='+${thisCategory.id}+'&page='+${info.getPrePage()}+'&limit=10'}"
+                               th:if="${pageLabel==1&&!#strings.isEmpty(thisCategory)}" tabindex="">Previous</a>
                         </li>
 
                         <div th:each="page:${info.getNavigatepageNums()}">
                             <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
                                 <a class="page-link" th:href="@{'/blog/list?page='+${page}+'&limit=10'}"
-                                   th:text="${page}">
+                                   th:if="${pageLabel==0&&#strings.isEmpty(thisCategory)}" th:text="${page}">
+                                </a>
+                                <a class="page-link" th:href="@{'/blog/category?cid='+${thisCategory.id}+'&page='+${page}+'&limit=10'}"
+                                   th:if="${pageLabel==0&&!#strings.isEmpty(thisCategory)}" th:text="${page}">
+                                </a>
+                                <a class="page-link" th:href="@{'/blog/topList?page='+${page}+'&limit=10'}"
+                                   th:if="${pageLabel==1&&#strings.isEmpty(thisCategory)}" th:text="${page}">
+                                </a>
+                                <a class="page-link" th:href="@{'/blog/topcategory?cid='+${thisCategory.id}+'&page='+${page}+'&limit=10'}"
+                                   th:if="${pageLabel==1&&!#strings.isEmpty(thisCategory)}" th:text="${page}">
                                 </a>
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link"
+                            <a class="page-link" th:if="${pageLabel==0&&#strings.isEmpty(thisCategory)}"
                                th:href="@{'/blog/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${pageLabel==0&&!#strings.isEmpty(thisCategory)}"
+                               th:href="@{'/blog/category?cid='+${thisCategory.id}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${pageLabel==1&&#strings.isEmpty(thisCategory)}"
+                               th:href="@{'/blog/topList?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${pageLabel==1&&!#strings.isEmpty(thisCategory)}"
+                               th:href="@{'/blog/topcategory?cid='+${thisCategory.id}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -98,7 +127,12 @@
             </div>
             <div class="p-4 my-3 bg-white rounded">
                 <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                <a th:if="${pageLabel==0}"
+                        th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                   th:each="category:${categoryList}" th:text="${category.getName()}"
+                   class="badge badge-pill badge-primary mr-1"></a>
+                <a th:if="${pageLabel==1}"
+                        th:href="@{'/blog/topcategory?cid='+${category.getId()}+'&page=1&limit=10'}"
                    th:each="category:${categoryList}" th:text="${category.getName()}"
                    class="badge badge-pill badge-primary mr-1"></a>
             </div>

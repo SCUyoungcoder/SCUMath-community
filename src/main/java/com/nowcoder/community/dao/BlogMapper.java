@@ -11,6 +11,9 @@ public interface BlogMapper {
     int insertBlog(Blog blog);
     int deleteBlogById(int id);
     Blog selectByBid(String bid);
+    List<Blog> selectByAvatar(String Avatar , int offset, int limit);
+    List<Blog> selectAllByAvatar(String Avatar);
+    List<Blog> selectByAvatarAndClassname(String Avatar,String classname);
     Blog selectById(int id);
     Blog selectByIdAndCreateTime(int id, Date gmtCreate);
     int updateViews(int id,int count);

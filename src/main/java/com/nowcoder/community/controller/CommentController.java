@@ -2,6 +2,7 @@ package com.nowcoder.community.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
@@ -34,6 +35,28 @@ public class CommentController {
     @Autowired
     private HostHolder hostHolder;
 
+    @AdminRequired
+    @RequestMapping(path = "/comment/notice",method = RequestMethod.GET)
+    public String getNoticePage(Model model){
+        model.addAttribute("checkLabel",5);
+        return "comment/write";
+    }
+    @AdminRequired
+    @RequestMapping(path = "/comment/notice",method = RequestMethod.POST)
+    public String postNoticePage(Model model,String title,String content){
+        User user = hostHolder.getUser();
+        Paper notice = new Paper();
+        notice.setGmtcreate(new Date());
+        notice.setTitle(title);
+        notice.setContent(content);
+        notice.setUserid(user.getId());
+        notice.setStatus(5);
+        notice.setDownloadcount(0);
+        notice.setFatherid("notice");
+        notice.setFilepath("notice");
+        paperOfClassService.uploadpaper(notice);
+        return "redirect:/index";
+    }
     @LoginRequired
     @RequestMapping(path = "/comment/list",method = RequestMethod.GET)
     public String getAllCommentForMe(Model model,
@@ -112,7 +135,7 @@ public class CommentController {
         }
         model.addAttribute("info",info);
         model.addAttribute("mapList",mapList);
-        return null;
+        return "comment/list";
     }
 
     @LoginRequired

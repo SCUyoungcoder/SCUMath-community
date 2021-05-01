@@ -54,6 +54,8 @@ public class BlogController {
     @Autowired
     private UserService userService;
     @Autowired
+    private LikeService likeService;
+    @Autowired
     private UploadPicService uploadPic;
     @RequestMapping(path = "/search",method = RequestMethod.GET)
     public String searchBlog(String keyword,String fieldname,String sortname,Page page,Model model){
@@ -79,15 +81,36 @@ public class BlogController {
         model.addAttribute("user",user);
         return "blog/write";
     }
+    @RequestMapping(path = "topList",method = RequestMethod.GET)
+    public String showTopList(Model model,
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "10") int limit){
+        PageHelper.startPage(page,limit);
+        PageInfo<Blog> info = new PageInfo<>(blogService.SelectAllByAvatar("置顶"));
+        List<Classification> classifications = classificationService.AllClassifications();
+        model.addAttribute("blogs",info.getList());
+        model.addAttribute("categoryList",classifications);
+        List<Blog> list = new ArrayList<>();
+        info.setList(list);
+        model.addAttribute("info",info);
+        model.addAttribute("pageLabel",1);
+        return "blog/list";
+    }
     @RequestMapping(path = "/list",method = RequestMethod.GET)
     public String showList(Model model,
                            @RequestParam(defaultValue = "1") int page,
                            @RequestParam(defaultValue = "10") int limit){
+        List<Blog> blogs = new ArrayList<>();
+        if (page==1){
+            blogs = blogService.SelectByAvatar("置顶",0,3);
+        }
         PageHelper.startPage(page,limit);
         PageInfo<Blog> info = new PageInfo<>(blogService.SelectAllByStatus(0));
         List<Classification> classifications = classificationService.AllClassifications();
+        model.addAttribute("blogs",blogs);
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
+        model.addAttribute("pageLabel",0);
         //model.addAttribute("checkLabel",0);
         return "blog/list";
     }
@@ -99,8 +122,27 @@ public class BlogController {
         PageInfo<Blog> info = new PageInfo<>(blogService.SelectByCategoryId(cid));
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
-        model.addAttribute("thisCategoryName",classificationService.GetByClassificationId(cid).getName());
+        model.addAttribute("thisCategory",classificationService.GetByClassificationId(cid));
         model.addAttribute("categoryList",classifications);
+        model.addAttribute("pageLabel",0);
+        //model.addAttribute("checkLabel",0);
+        return "blog/list";
+    }
+    @RequestMapping(path = "/topcategory",method = RequestMethod.GET)
+    public String topCategory(Model model,int cid,
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int limit){
+        PageHelper.startPage(page,limit);
+        Classification classification = classificationService.GetByClassificationId(cid);
+        PageInfo<Blog> info = new PageInfo<>(blogService.SelectByAvatarAndClassname("置顶",classification.getName()));
+        model.addAttribute("blogs",info.getList());
+        List<Blog> list = new ArrayList<>();
+        info.setList(list);
+        List<Classification> classifications = classificationService.AllClassifications();
+        model.addAttribute("info", info);
+        model.addAttribute("thisCategory",classificationService.GetByClassificationId(cid));
+        model.addAttribute("categoryList",classifications);
+        model.addAttribute("pageLabel",1);
         //model.addAttribute("checkLabel",0);
         return "blog/list";
     }
@@ -158,6 +200,7 @@ public class BlogController {
         oldBlog.setCategoryId(blog.getCategoryId());
         oldBlog.setCategoryName(classificationService.GetByClassificationId(blog.getCategoryId()).getName());
         blogService.UpdateBlog(oldBlog);
+        blogRepository.save(oldBlog);
         //数据库中删除本博客没用的图片
         int newtype = (int)(Math.random()*90+10);
         //System.out.println(pictureService.UpdateFahterTypeByFather(newtype,blog.getId(),1));
@@ -183,7 +226,6 @@ public class BlogController {
         if (!pictures.isEmpty()){
             for (Picture pic:pictures){
                 String path = uploadPicPath+"/"+pic.getSaveName();
-                System.out.println(path);
                 File file = new File(path);
                 if (!file.isDirectory()){
                     System.out.println("正在删除文件");
@@ -234,11 +276,22 @@ public class BlogController {
                 model.addAttribute("checkLabel",1);
             }
             if (user.getId()!=blog.getAuthorId()){
-                blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
+                blog.setViews(blog.getViews()+1);
+                blogService.UpdateViews(blog.getId(),blog.getViews());
+                blogRepository.save(blog);
+            }
+            int isLike = likeService.FindBlogLikeById(user.getId(),blog.getId());
+            if (isLike!=0){
+                model.addAttribute("isLike",1);
+            }
+            else {
+                model.addAttribute("isLike",0);
             }
         }
         else {
-            blogService.UpdateViews(blog.getId(),blog.getViews() + 1);
+            blog.setViews(blog.getViews()+1);
+            blogService.UpdateViews(blog.getId(),blog.getViews());
+            blogRepository.save(blog);
         }
 
         //List<Comment> blogComments = commentService.selectcommentByEntity(2,blog.getId(),0);//status=评论，entitytype=论文
@@ -287,7 +340,6 @@ public class BlogController {
             }
         }
         //page.setRows(blogComments == null?0:(int)commentService.CountByEntity(blog.getId(),2)/10);
-
         //page.setPath("/blog/read/"+bid);
         model.addAttribute("info",blogComments);
         model.addAttribute("comments",coms);
@@ -354,6 +406,7 @@ public class BlogController {
         }
         if (blog.getAuthorId() == user.getId() || user.getType() == 1){
             blogService.DeleteBlogById(blog.getId());
+            blogRepository.deleteById(blog.getId());
             List<Comment> delectComents = commentService.selectcommentByEntity(2,blog.getId(),0);
             if (delectComents!=null){
                 for (Comment dc:delectComents){
@@ -387,26 +440,55 @@ public class BlogController {
         }
     }
     @AdminRequired
+    @RequestMapping(path = "toTop",method = RequestMethod.POST)
+    @ResponseBody
+    public String toTop(String bid){
+        Blog blog = blogService.SelectByBid(bid);
+        blog.setGmtUpdate(new Date(System.currentTimeMillis()));
+        int re = 0;
+        if (blog.getAuthorAvatar().equals("置顶")){
+            blog.setAuthorAvatar("取消置顶");
+            re = 1;
+        }else {
+            blog.setAuthorAvatar("置顶");
+        }
+        blogService.UpdateBlog(blog);
+        blogRepository.save(blog);
+        return CommunityUtil.getJSONString(re);
+    }
+    @AdminRequired
     @PostMapping(path = "/pass")
     @ResponseBody
     public String pass(String bid) {
         /*System.out.println(bid);*/
         Blog blog = blogService.SelectByBid(bid);
-        blogService.UpdateStatus(blog.getId(),0);
+        blog.setStatus(0);
+        blogService.UpdateStatus(blog.getId(),blog.getStatus());
+        blogRepository.save(blog);
         return CommunityUtil.getJSONString(0);
     }
+    @RequestMapping(path = "/like",method = RequestMethod.POST)
+    @ResponseBody
+    public String like(String bid){
+        User user = hostHolder.getUser();
+        Blog blog = blogService.SelectByBid(bid);
+        if (user!=null){
+            int isLike = likeService.FindBlogLikeById(user.getId(),blog.getId());
+            if (isLike == 0){
+                likeService.InsertBlogLike(user.getId(),blog.getId());
+                blog.setSort(blog.getSort()+1);
+            }
+            else {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+                likeService.DeleteBlogByTwoId(user.getId(),blog.getId());
+                blog.setSort(blog.getSort() - 1);
+            }
+            blogService.UpdateBlog(blog);
+            blogRepository.save(blog);
+            return CommunityUtil.getJSONString(0);
+        }
+        else {
+            return CommunityUtil.getJSONString(1);
+        }
+    }
 }

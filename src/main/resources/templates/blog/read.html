@@ -13,6 +13,8 @@
             font-size: .875rem;
             color: #6c757d;
         }
+        .like{ font-size:25px; float:right ;color:#ccc; cursor:pointer;}
+        .cs{color:#f00;}
     </style>
 </head>
 <body style="background:rgb(247,248,249);">
@@ -38,8 +40,10 @@
                             d="M400.7 508.4c0 40.4 21.5 77.6 56.5 97.8 34.9 20.2 78 20.2 113 0 34.9-20.2 56.5-57.5 56.5-97.8 0-62.4-50.6-113-113-113s-113 50.6-113 113z"
                             p-id="644"></path></svg>
                         [[${blog.getViews()}]]
-        </span>
-                    <!--自己可以删除编辑文章 当然管理员也可以-->
+                    </span>
+                    <h id="myLike" style="float:right ;font-size:25px" th:text="${blog.getSort()}"></h>
+                <span th:if="${isLike!=1}" class="like">&#10084;</span>
+                    <span th:if="${isLike==1}" class="like cs">&#10084;</span>
                 <div class="float-right"
                      th:if="${loginUser != null&&((loginUser.getId()==blog.getAuthorId())||loginUser.getType()==1)}">
                     <input type="hidden" id="bid" th:value="${blog.getBid()}">
@@ -64,8 +68,19 @@
                                   d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                         </svg>
                         编辑</a>
-
-                    <button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&blog.getStatus() == 1}">通过</button>
+                <a id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&blog.getStatus() == 1}" href=#>
+                    <svg t="1619591128432" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="786" width="14" height="14">
+                        <path d="M806.016 310.848L640 136.96v173.888h166.016zM832 377.92H576v-268.16H192v804.48h640v-536.32zM160 42.688H640l256 268.16v636.992a33.472 33.472 0 0 1-8.96 24.064 30.4 30.4 0 0 1-23.04 9.408h-704a30.4 30.4 0 0 1-23.04-9.408 33.472 33.472 0 0 1-8.96-24.064V76.16c0-9.728 3.008-17.792 8.96-24.064A30.4 30.4 0 0 1 160 42.688z m318.016 609.728l180.992-189.632 46.016 47.168-227.008 237.76L320 581.184l44.992-47.168 113.024 118.4z"
+                              fill="#24b75d" p-id="787"></path></svg>
+                    通过
+                </a>
+                <a id="topBlog" style="color:#24b75d" th:if="${(loginUser.type==1)&&blog.getStatus() == 0}" href=#>
+                    <svg t="1619593384575" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1000" width="14" height="14">
+                        <path d="M883.2 140.8c-25.6 0-46.4 8-64 20.8v-28.8c0-56-46.4-97.6-107.2-97.6-25.6 0-51.2 8-72 25.6C622.4 25.6 584 0 540.8 0c-56 0-102.4 38.4-107.2 89.6-17.6-12.8-38.4-20.8-64-20.8-59.2 0-107.2 43.2-107.2 97.6v328l-6.4-12.8c-38.4-51.2-110.4-68.8-166.4-38.4-30.4 17.6-46.4 43.2-56 72-8 30.4 0 64 20.8 89.6 0 0 140.8 184 200 260.8C336 972.8 456 1024 627.2 1024c273.6 0 366.4-161.6 366.4-299.2V238.4c-4.8-51.2-51.2-97.6-110.4-97.6z m16 580.8c0 51.2-16 217.6-276.8 217.6C481.6 939.2 384 900.8 320 816c-60.8-78.4-196.8-260.8-196.8-260.8-4.8-8-8-12.8-4.8-20.8 0-4.8 4.8-12.8 12.8-12.8 17.6-8 46.4-4.8 59.2 17.6l84.8 102.4c12.8 12.8 30.4 17.6 46.4 12.8S352 633.6 352 616V168c0-4.8 8-12.8 20.8-12.8s17.6 8 17.6 12.8v268.8c0 33.6 30.4 59.2 64 59.2s64-25.6 64-59.2V97.6c0-8 8-12.8 20.8-12.8S560 89.6 560 97.6v337.6c0 33.6 30.4 59.2 64 59.2s64-25.6 64-59.2V132.8c0-4.8 8-12.8 20.8-12.8s20.8 8 20.8 12.8v337.6c0 33.6 30.4 59.2 64 59.2s64-25.6 64-59.2v-232c0-4.8 8-12.8 20.8-12.8s20.8 8 20.8 12.8v483.2z"
+                              fill="#24b75d" p-id="1001"></path></svg>
+                    <i id="changeTop" th:if="${blog.getAuthorAvatar()=='置顶'}">取消</i><i id="changeTop2"></i>置顶
+                </a>
+                    <!--<button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&blog.getStatus() == 1}">通过</button>-->
                 </div>
                 </p>
             </div>
@@ -238,10 +253,53 @@
             });
         }
     );
+        $(function () {
+            $(".like").click(function () {
+            var x = Number(document.getElementById('myLike').innerText);
+            if(this.className=='like'){
+                document.getElementById('myLike').innerText = x + 1;
+            }
+            else{
+                document.getElementById('myLike').innerText = x - 1;
+            }
+            $(this).toggleClass('cs');
+            $.post(
+                "/blog/like",
+                {"bid":$("#bid").val()},
+                function(data){
+                    data = $.parseJSON(data);
+                    if(data.code == 0) {
+
+                    } else{
+                        alert('请先登录！');
+                    }
+                }
+            );
+            })
+        })
     $(function(){
         $("#passBtn").click(setPass);
+        $("#topBlog").click(manageTopBlog);
     });
-
+    function manageTopBlog(){
+        $.post(
+            "/blog/toTop",
+            {"bid":$("#bid").val()},
+            function(data) {
+                data = $.parseJSON(data);
+                if(data.code == 0) {
+                    alert("置顶成功!");
+                    document.getElementById('changeTop').innerText='';
+                    document.getElementById('changeTop2').innerText='取消';
+                }
+                if(data.code == 1){
+                    alert("取消置顶成功!");
+                     document.getElementById('changeTop').innerText='';
+                    document.getElementById('changeTop2').innerText='';
+                }
+            }
+        );
+    }
     // 审核通过
     function setPass() {
         $.post(

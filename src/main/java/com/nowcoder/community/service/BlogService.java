@@ -23,6 +23,9 @@ public class BlogService {
     public Blog SelectById(int id){return blogMapper.selectById(id);}
     public Blog SelectByIdAndCreateTime(int id, Date gmtCreate){return blogMapper.selectByIdAndCreateTime(id,gmtCreate);}
 
+    public List<Blog> SelectByAvatarAndClassname(String Avatar,String classname){return blogMapper.selectByAvatarAndClassname(Avatar,classname);}
+    public List<Blog> SelectAllByAvatar(String Avatar){return blogMapper.selectAllByAvatar(Avatar);}
+    public List<Blog> SelectByAvatar(String Avatar,int offset,int limit){return blogMapper.selectByAvatar(Avatar,offset,limit);}
     public List<Blog> SelectBySort(int sort){return blogMapper.selectBySort(sort);}
     public List<Blog> SelectByAuthorId(int userId){return blogMapper.selectByAuthorId(userId);}
     public List<Blog> SelectAllByStatus(int status){return blogMapper.selectAllByStatus(status);}

@@ -38,7 +38,7 @@ public class HomeController {
     private HostHolder hostHolder;
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
-    public String findClassification(/*Model model*/) {
+    public String findClassification(Model model) {
         /*List<Classification> allClassList = classificationService.AllClassifications();
         List<Map<String, Object>> allClass = new ArrayList<>();
         for (Classification class1 : allClassList) {
@@ -56,6 +56,11 @@ public class HomeController {
         }
         model.addAttribute("rewards",maps);
         model.addAttribute("allClass", allClass);*/
+        List<Paper> notices = paperOfClassService.selectpaperByStatus(5,0,3);
+        for (Paper paper:notices){
+            paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
+        }
+        model.addAttribute("notice",notices);
         return "/index";
     }
     @LoginRequired
@@ -66,11 +71,28 @@ public class HomeController {
                                      @RequestParam(defaultValue = "0") int userId){
         User user = hostHolder.getUser();
         List<Map<String,Object>> attentions = new ArrayList<>();
-        List<Attention> attentionList = new ArrayList<>();
+        List<Attention> attentionList = attentionService.SelectByUserId(user.getId());
+        if(attentionList.isEmpty()){
+            PageInfo<Itemindex> info1 = new PageInfo<>();
+            model.addAttribute("info",info1);
+            model.addAttribute("attentions",attentions);
+            return "/list";
+        }else {
+            for (Attention attention:attentionList){
+                Map<String ,Object> map = new HashMap<>();
+                int id = attention.getFocusId();
+                map.put("userId",id);
+                map.put("userName",userService.findUserById(id).getUsername());
+                attentions.add(map);
+            }
+            model.addAttribute("attentions",attentions);
+        }
         if(userId==0){
             attentionList  = attentionService.SelectByUserId(user.getId());
+            System.out.println(attentionList);
         }
         else {
+            attentionList = new ArrayList<>();
             Attention attention = new Attention();
             attention.setFocusId(userId);
             attention.setUserId(user.getId());
@@ -79,16 +101,16 @@ public class HomeController {
         StringBuilder sql = new StringBuilder();
         StringBuilder sql2 = new StringBuilder();
         if (!attentionList.isEmpty()){
-            Map<String ,Object> map = new HashMap<>();
+            /*Map<String ,Object> map = new HashMap<>();*/
             int id;
             id = attentionList.get(0).getFocusId();
             sql.append(" author_id = ");
             sql2.append(" user_id = ");
             sql2.append(id);
             sql.append(id);
-            map.put("userId",id);
+            /*map.put("userId",id);
             map.put("userName",userService.findUserById(id).getUsername());
-            attentions.add(map);
+            attentions.add(map);*/
             attentionList.remove(0);
             if (!attentionList.isEmpty()){
                 for (Attention attention:attentionList){
@@ -97,12 +119,15 @@ public class HomeController {
                     sql2.append(" or user_id = ");
                     sql2.append(id);
                     sql.append(id);
-                    map.put("userId",id);
-                    map.put("userName",userService.findUserById(id).getUsername());
-                    attentions.add(map);
+                    /*Map<String ,Object> map1 = new HashMap<>();
+                    map1.put("userId",id);
+                    map1.put("userName",userService.findUserById(id).getUsername());
+                    attentions.add(map1);*/
                 }
             }
         }
+        System.out.println(sql.toString());
+        System.out.println(sql2.toString());
         PageHelper.startPage(page,limit);
         PageInfo<Itemindex> info = new PageInfo<>(attentionService.SelectAllItemByUserIds(sql2.toString(),sql.toString()));
         List<Itemindex> items = new ArrayList<>();
@@ -137,8 +162,9 @@ public class HomeController {
                 }
             }
         }
+        System.out.println(attentions);
         model.addAttribute("info",info);
-        model.addAttribute("attentions",attentions);
+        /*model.addAttribute("attentions",attentions);*/
         return "/list";
 
     }
