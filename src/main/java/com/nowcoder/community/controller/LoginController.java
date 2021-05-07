@@ -51,11 +51,12 @@ public class LoginController {
         String kaptcha = (String) session.getAttribute("kaptcha");
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
             model.addAttribute("codeMsg", "验证码不正确!");
-            return "/site/login";
+            return "/login";
         }
 
         // 检查账号,密码                      两个常量，勾选了记住我，记住时间很长，否则相对短
-        int expiredSeconds = rememberme ? 3600*24*100 : 3600*12;
+        //7天或者3小时
+        int expiredSeconds = rememberme ? 3600*24*7 : 3600*3;
         Map<String, Object> map = loginService.login(username, password, expiredSeconds);
         if (map.containsKey("ticket")) {/*map里包含ticket就成功了，需要跳转到index页面*/
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
@@ -66,7 +67,7 @@ public class LoginController {
         } else {
             model.addAttribute("usernameMsg", map.get("usernameMsg"));/*如果不是usernameMsy的问题get到的是null，不影响*/
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
-            return "/site/login";
+            return "/login";
         }
     }
     @RequestMapping(path = "/login",method = RequestMethod.GET)
@@ -76,18 +77,20 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)
-    public String register(Model model, User user){
-        Map<String,Object>map = loginService.register(user);
+    public String register(Model model, User user,String code){
+        Map<String,Object>map = loginService.register(user,code);
         if(map == null || map.isEmpty()){
-            model.addAttribute("msg","注册成功，我们已经向您的邮箱发送了一封注册邮件,请尽快激活");
-            model.addAttribute("target","/index");
-            return "/site/registerresult";
+            model.addAttribute("regMsg","注册成功，请登录");
+            //model.addAttribute("target","/index");
+            return "/login";
         }else {
-            model.addAttribute("usernameMsy",map.get("usernameMsy"));
+            /*model.addAttribute("usernameMsy",map.get("usernameMsy"));
             model.addAttribute("passwordMsg",map.get("passwordMsg"));
-            model.addAttribute("emailMsg",map.get("emailMsg"));
-
-            return "/site/register";
+            model.addAttribute("emailMsg",map.get("emailMsg"));*/
+            model.addAttribute("regMsg",map.get("regMsg"));
+            model.addAttribute("code",code);
+            model.addAttribute("user",user);
+            return "/register";
         }
     }
 

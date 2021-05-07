@@ -43,6 +43,7 @@ public class SourceController {
     @Autowired
     private HostHolder hostHolder;
 
+    @LoginRequired
     @RequestMapping(path = "/source/search",method = RequestMethod.GET)
     public String searchSource(String keyword,String fieldname,String sortname,Page page,Model model){
         if (sortname==null){
@@ -224,6 +225,7 @@ public class SourceController {
             return "error/404";
         }
     }
+    @LoginRequired
     @RequestMapping(path = "/source/list",method = RequestMethod.GET)
     public String sourceList(Model model,
                             @RequestParam(defaultValue = "a") String category,
@@ -236,6 +238,7 @@ public class SourceController {
         }
         else {
             List<Paper> papers = elasticsearchClassService.searchPaperByClassAndStatus(category,2);
+            System.out.println(papers);
             info = new PageInfo<>(papers);
             //System.out.println(papers.size());
             int numOfPage = papers.size()/limit;
@@ -322,6 +325,7 @@ public class SourceController {
     }
 
     //第三级页面——论文详情页//******************已重构
+    @LoginRequired
     @RequestMapping(path = "/source/detail",method = RequestMethod.GET)
     public String SourceDetail(int id,Model model,
                                @RequestParam(defaultValue = "1") int page,

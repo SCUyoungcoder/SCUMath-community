@@ -1,7 +1,9 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.dao.InvitationCodeMapper;
 import com.nowcoder.community.dao.LoginticketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.InvitationCode;
 import com.nowcoder.community.entity.Loginticket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
@@ -25,6 +27,9 @@ public class LoginService {
     private UserMapper userMapper;
 
     @Autowired
+    private InvitationCodeMapper invitationCodeMapper;
+
+    @Autowired
     private MailClient mailClient;
 
     @Autowired
@@ -35,52 +40,57 @@ public class LoginService {
 
     /*@Value("${server.servlet.context-path}")
     private String contextPath;*/
-    public Map<String,Object> register(User user){
+    public Map<String,Object> register(User user,String code){
         Map<String,Object>map = new HashMap<>();
         //空之判断
         if (user == null){
             throw new IllegalArgumentException("参数不能为空!");
         }
         if(StringUtils.isBlank(user.getUsername())){
-            map.put("usernameMsg","账号不能为空！");
+            map.put("regMsg","账号不能为空！");
             return map;
         }
         if(StringUtils.isBlank(user.getPassword())){
-            map.put("passwordMsg","密码不能为空！");
+            map.put("regMsg","密码不能为空！");
             return map;
         }
-        if(StringUtils.isBlank(user.getEmail())){
+/*        if(StringUtils.isBlank(user.getEmail())){
             map.put("emailMsg","邮箱不能为空！");
+            return map;
+        }*/
+        InvitationCode invitationCode = invitationCodeMapper.selectByCode(code);
+        if (invitationCode==null){
+            map.put("regMsg","邀请码不正确!");
             return map;
         }
         //验证账号是否能用
         User u = userMapper.selectByName(user.getUsername());
         if(u !=null){
-            map.put("usernameMsg","该账号已存在!");
+            map.put("regMsg","该账号已存在!");
             return map;
         }
         //验证邮箱
-        u = userMapper.selectByEmail(user.getEmail());
+/*        u = userMapper.selectByEmail(user.getEmail());
         if (u != null){
             map.put("emailMsg","该邮箱已被注册！");
             return map;
-        }
+        }*/
         //用户注册
         user.setSalt(CommunityUtil.generateUUID().substring(0,5));
         user.setPassword(CommunityUtil.md5(user.getPassword()+user.getSalt()));
         user.setType(0);
-        user.setStatus(0);
+        user.setStatus(1);
         user.setActivationCode(CommunityUtil.generateUUID());//激活码
         user.setCreateTime(new Date());
         userMapper.insertUser(user);//insert后自动生成id
         //发送激活邮件
-        Context context = new Context();
+        /*Context context = new Context();
         context.setVariable("email",user.getEmail());
         //http://localhost:8080/xxx/101(用户id)/code(激活码)domain后未加contextPath
         String url = domain+"/activation/"+user.getId()+"/"+user.getActivationCode();
         context.setVariable("url",url);
         String content = templateEngine.process("/mail/register",context);
-        mailClient.sendMail(user.getEmail(),"激活账号",content);
+        mailClient.sendMail(user.getEmail(),"激活账号",content);*/
         return map;
     }
     public int activation(int userId,String code){
@@ -136,6 +146,7 @@ public class LoginService {
         loginticket.setTicket(CommunityUtil.generateUUID());/*这里的ticket是一个随机生成的字符串，存进数据库后，将其发给客户端，让其凭此访问服务器*/
         loginticket.setStatus(0);
         loginticket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+        System.out.println(loginticket.getExpired());
         loginticketMapper.insertTicket(loginticket);
 
         map.put("ticket", loginticket.getTicket());

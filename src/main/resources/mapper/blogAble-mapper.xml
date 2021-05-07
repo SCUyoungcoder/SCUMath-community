@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--https://mybatis.org/mybatis-3/zh/getting-started.html入门找已映射的sql语句copy过来-->
+<mapper namespace="com.nowcoder.community.dao.BlogAbleMapper">
+    <sql id="insertFields"><!---->
+        blog_id, user_id, type, entity_id
+    </sql>
+    <sql id="selectFields">
+        id, blog_id, user_id, type, entity_id
+    </sql>
+    <insert id="insertBlogAble" parameterType="BlogAble" keyProperty="id">
+        insert into blog_able (<include refid="insertFields"></include>)
+        values(#{blogId},#{userId},#{type},#{entityId})
+    </insert>
+    <select id="selectByBlogId" resultType="BlogAble">
+        select <include refid="selectFields"></include>
+        from blog_able
+        where blog_id = #{blogId}
+        order by id desc
+    </select>
+    <select id="selectBlogAbleById" resultType="BlogAble">
+        select <include refid="selectFields"></include>
+        from blog_able
+        where id = #{id}
+    </select>
+    <select id="selectByBlogIdAndType" resultType="BlogAble">
+        select <include refid="selectFields"></include>
+        from blog_able
+        where blog_id = #{blogId} and type = #{type}
+        order by id desc
+    </select>
+    <select id="selectByUserIdAndType" resultType="BlogAble">
+        select <include refid="selectFields"></include>
+        from blog_able
+        where user_id = #{userId} and type = #{type}
+        order by id desc
+    </select>
+    <select id="selectByBlogIdAndTypeAndEntityId" resultType="BlogAble">
+        select <include refid="selectFields"></include>
+        from blog_able
+        where blog_id = #{blogId} and type = #{type} and entity_id = #{entityId}
+    </select>
+    <update id="updateBlogAble">
+        update blog_able
+        set type = #{type}
+        where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete from blog_able where id = #{id}
+    </delete>
+    <delete id="deleteByBlogId">
+        delete from blog_able where blog_id = #{blogId}
+    </delete>
+</mapper>

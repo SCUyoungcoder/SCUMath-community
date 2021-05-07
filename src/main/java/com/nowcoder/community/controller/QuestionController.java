@@ -57,6 +57,7 @@ public class QuestionController {
     @Autowired
     private UploadPicService uploadPic;
 
+    @LoginRequired
     @RequestMapping(path = "/search",method = RequestMethod.GET)
     public String searchQuestion(String keyword,String fieldname,String sortname,Page page,Model model){
         if (sortname == null ){
@@ -94,6 +95,7 @@ public class QuestionController {
         model.addAttribute("user",user);
         return "question/write";
     }
+    @LoginRequired
     @RequestMapping(path = "/list",method = RequestMethod.GET)
     public String showList(Model model,
                            @RequestParam(defaultValue = "1") int page,
@@ -106,6 +108,7 @@ public class QuestionController {
         //model.addAttribute("checkLabel",0);
         return "question/list";
     }
+    @LoginRequired
     @RequestMapping(path = "/category",method = RequestMethod.GET)
     public String readCategory(Model model,int cid,
                                @RequestParam(defaultValue = "1") int page,
@@ -238,7 +241,7 @@ public class QuestionController {
             return "error/404";
         }
     }
-
+    @LoginRequired
     @RequestMapping(value = "/read/{qid}",method = RequestMethod.GET)
     public String read(Model model,@PathVariable("qid") String qid ,
                        @RequestParam(defaultValue = "1") int page,

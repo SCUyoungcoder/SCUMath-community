@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.GroupMemberMapper">
+    <sql id="insertFields">
+        group_id, user_id, username
+    </sql>
+    <sql id="selectFields">
+        id, group_id, user_id, username
+    </sql>
+    <insert id="insertGroupMember" parameterType="GroupMember" keyProperty="id">
+        insert into group_member (<include refid="insertFields"></include>)
+        values(#{groupId},#{userId},#{username})
+    </insert>
+    <select id="selectByGroupId" resultType="GroupMember">
+        select <include refid="selectFields"></include>
+        from group_member
+        where group_id = #{groupId}
+        order by id desc
+    </select>
+    <select id="selectByGroupIdAndUserId" resultType="GroupMember">
+        select <include refid="selectFields"></include>
+        from group_member
+        where group_id = #{groupId} and user_id = #{userId}
+    </select>
+    <select id="selectById" resultType="GroupMember">
+        select <include refid="selectFields"></include>
+        from group_member
+        where id = #{id}
+    </select>
+    <select id="selectByGroupIdAndUserName" resultType="GroupMember">
+        select <include refid="selectFields"></include>
+        from group_member
+        where group_id = #{groupId} and username = #{userName}
+    </select>
+    <delete id="deleteGroupMemberById">
+        delete from group_member where id = #{id}
+    </delete>
+    <delete id="deleteByGroupId">
+        delete from group_member where group_id = #{groupId}
+    </delete>
+</mapper>

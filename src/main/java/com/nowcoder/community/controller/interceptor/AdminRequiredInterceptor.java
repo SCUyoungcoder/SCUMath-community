@@ -21,13 +21,14 @@ public class AdminRequiredInterceptor implements HandlerInterceptor {
         if (handler instanceof HandlerMethod) {/*判断拦截下来的是否是方法*/
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
+            System.out.println("AdminRequired is run");
             AdminRequired adminRequired = method.getAnnotation(AdminRequired.class);
             if (adminRequired != null && hostHolder.getUser() == null) {/*当前方法需要登录，而未获取到用户信息*/
                 response.sendRedirect(request.getContextPath() + "/login");
                 /*request取到路径加上login，跳转到login*/
                 return false;
             }
-            if (hostHolder.getUser().getType()==0){
+            if (adminRequired != null && hostHolder.getUser().getType()==0){
                 response.sendRedirect(request.getContextPath()+"/index");
                 return false;
             }

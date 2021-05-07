@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.dao.GroupMapper;
 import com.nowcoder.community.dao.elasticsearth.PaperRepository;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.service.*;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -62,7 +60,177 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @LoginRequired
+    @RequestMapping(path = "/deleteMember/{groupMemberId}",method = RequestMethod.GET)
+    public String deleteMember(@PathVariable("groupMemberId") int groupMemberId){
+        User user = hostHolder.getUser();
+        GroupMember groupMember = userService.getGroupMemberById(groupMemberId);
+        Group group = userService.getGroupById(groupMember.getGroupId());
+        if (user.getId()!=group.getOwnerId()){
+            return "redirect:/user/groupDetail/"+group.getId();
+        }
+        userService.deleteGroupMemberById(groupMemberId,group.getId());
+        return "redirect:/user/groupDetail/"+group.getId();
+    }
+    @LoginRequired
+    @RequestMapping(path = "/addGroupMember/{groupId}",method = RequestMethod.POST)
+    public String addGroupMember(String allMembers,@PathVariable("groupId") int groupId){
+        if (allMembers==null){
+            return "redirect:/user/groupDetail/"+groupId;
+        }
+        User user = hostHolder.getUser();
+        Group group = userService.getGroupById(groupId);
+        if (user.getId()!=group.getOwnerId()){
+            return "redirect:/user/groupDetail/"+groupId;
+        }
+        String[] memberList = allMembers.split(" ");
+        userService.addGroupMember(memberList,groupId);
+        System.out.println(allMembers);
+        return "redirect:/user/groupDetail/"+groupId;
+    }
+    @LoginRequired
+    @RequestMapping(path = "/groupDetail/{id}",method = RequestMethod.GET)
+    public String groupDetail(Model model,@PathVariable("id") int id){
+        User user = hostHolder.getUser();
+        Group group = userService.getGroupById(id);
+        if (group==null){
+            return "redirect:/user/groupList?msg=4";
+        }
+        if (group.getOwnerId()!=user.getId()){
+            return "redirect:/user/groupList?msg=5";
+        }
+        List<GroupMember> groupMemberList1 = userService.getGroupMemberByGroupId(id);
+        List<GroupMember> groupMemberList = new ArrayList<>();
+        for (GroupMember groupMember:groupMemberList1){
+            GroupMember groupMember1 = new GroupMember();
+            groupMember1.setId(0);
+            groupMember1.setGroupId(0);
+            groupMember1.setUserId(groupMember.getUserId());
+            groupMember1.setUsername(groupMember.getUsername());
+            groupMemberList.add(groupMember1);
+        }
+        List<Attention> attentionList1 = attentionService.SelectByUserId(user.getId());
+        List<Attention> attentionList2 = attentionService.SelectByFocusId(user.getId());
+        attentionList1.addAll(attentionList2);
+        List<GroupMember> groupMembers = new ArrayList<>();
+        for (Attention attention:attentionList1){
+            GroupMember groupMember = new GroupMember();
+            if (attention.getUserId()==user.getId()){
+                groupMember.setUserId(attention.getFocusId());
+            }else {
+                groupMember.setUserId(attention.getUserId());
+            }
+            groupMember.setUsername(userService.findUserById(groupMember.getUserId()).getUsername());
+            if (!groupMembers.contains(groupMember) && !groupMemberList.contains(groupMember)){
+                groupMembers.add(groupMember);
+            }
+        }
+        int i = 1;
+        for (GroupMember groupMember:groupMembers){
+            groupMember.setId(i);
+            i++;
+        }
+        model.addAttribute("groupMembers",groupMembers);
+        model.addAttribute("group",group);
+        model.addAttribute("groupMemberList",groupMemberList1);
+        return "group/detail";
+    }
+
+    @LoginRequired
+    @RequestMapping(path = "/deleteGroup/{id}",method = RequestMethod.GET)
+    public String deleteGroup(@PathVariable("id") int id){
+        User user = hostHolder.getUser();
+        int result = userService.deleteGroupById(id,user.getId());
+        if (result == -1){
+            return "redirect:/user/groupList?msg=2";
+        }
+        if (result == 0){
+            return "redirect:/user/groupList?msg=3";
+        }
+        return  "redirect:/user/groupList";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/addGroup",method = RequestMethod.POST)
+    public String addGroup(Model model,Group group){
+        User user = hostHolder.getUser();
+        group.setOwnerId(user.getId());
+        int result = userService.addGroup(group);
+        if (result==0){
+            return "redirect:/user/groupList?msg=1";
+        }
+        return "redirect:/user/groupList";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/groupList",method = RequestMethod.GET)
+    public String groupList(Model model,
+                            @RequestParam(defaultValue = "0" ) int msg,
+                            @RequestParam(defaultValue = "1" ) int page,
+                            @RequestParam(defaultValue = "10") int limit){
+        User user = hostHolder.getUser();
+        PageHelper.startPage(page,limit);
+        PageInfo<Group> info = new PageInfo<>(userService.getGroupByOwnerId(user.getId()));
+        switch (msg){
+            case 1:
+                model.addAttribute("regMsg","该小组名已存在！");
+                break;
+            case 2:
+                model.addAttribute("regMsg","不存在该小组！");
+                break;
+            case 3:
+                model.addAttribute("regMsg","没有权限删除该小组!");
+                break;
+            case 4:
+                model.addAttribute("regMsg","该小组不存在！");
+                break;
+            case 5:
+                model.addAttribute("regMsg","没有权限查看该小组!");
+                break;
+        }
+        model.addAttribute("info",info);
+        return "group/list";
+    }
+
     @AdminRequired
+    @RequestMapping(path = "/addCode",method = RequestMethod.POST)
+    public String addCode(Model model,InvitationCode invitationCode){
+        User user = hostHolder.getUser();
+        invitationCode.setAdminId(user.getId());
+        int result = userService.addCode(invitationCode);
+        if (result == 0){
+            return "redirect:/user/invitationCode?msg=1";
+        }
+        return "redirect:/user/invitationCode";
+    }
+
+    @AdminRequired
+    @RequestMapping(path = "/deleteCode/{id}",method = RequestMethod.GET)
+    public String deleteCode(@PathVariable("id") int id){
+        int result = userService.deleteCodeById(id);
+        if (result == 0){
+            return "redirect:/user/invitationCode?msg=2";
+        }
+        return "redirect:/user/invitationCode";
+    }
+
+    @AdminRequired
+    @RequestMapping(path = "/invitationCode",method = RequestMethod.GET)
+    public String manageCode(Model model,
+                             @RequestParam(defaultValue = "0" ) int msg,
+                             @RequestParam(defaultValue = "1" ) int page,
+                             @RequestParam(defaultValue = "10") int limit){
+        PageHelper.startPage(page,limit);
+        PageInfo<InvitationCode> info = new PageInfo<>(userService.getAllCode());
+        if (msg==1){
+            model.addAttribute("regMsg","该邀请码已存在！");
+        }
+        if(msg==2){
+            model.addAttribute("regMsg","该邀请码不存在！");
+        }
+        model.addAttribute("info",info);
+        return "invitationCode/list";
+    }
+
+    @LoginRequired
     @RequestMapping(path = "/fans/{userId}",method = RequestMethod.GET)
     public String getFans(Model model,@PathVariable("userId") int userId,
                           @RequestParam(defaultValue = "1" ) int page,
@@ -88,7 +256,14 @@ public class UserController {
             map.put("userid",attention.getUserId());
             users.add(map);
         }
-        model.addAttribute("work",userinfoService.selectInfoByUserId(userId).getWork());
+        Userinfo userinfo = userinfoService.selectInfoByUserId(userId);
+        String work;
+        if (userinfo==null||userinfo.getWork()==null){
+            work = "";
+        }else {
+            work = userinfo.getWork();
+        }
+        model.addAttribute("work",work);
         model.addAttribute("user",userMap);
         model.addAttribute("users",users);
         model.addAttribute("info",info);
@@ -99,7 +274,7 @@ public class UserController {
         model.addAttribute("followLabel","fans");
         return "user/flow";
     }
-    @AdminRequired
+    @LoginRequired
     @RequestMapping(path = "/follow/{userId}",method = RequestMethod.GET)
     public String getFollow(Model model,@PathVariable("userId") int userId,
                           @RequestParam(defaultValue = "1" ) int page,
@@ -130,7 +305,14 @@ public class UserController {
             map.put("userid",attention.getFocusId());
             users.add(map);
         }
-        model.addAttribute("work",userinfoService.selectInfoByUserId(userId).getWork());
+        Userinfo userinfo = userinfoService.selectInfoByUserId(userId);
+        String work;
+        if (userinfo==null||userinfo.getWork()==null){
+            work = "";
+        }else {
+            work = userinfo.getWork();
+        }
+        model.addAttribute("work",work);
         model.addAttribute("user",userMap);
         model.addAttribute("users",users);
         model.addAttribute("info",info);
@@ -277,6 +459,7 @@ public class UserController {
         userinfoService.updateByUserid(userinfo);
         return "redirect:/user/blog/"+user.getId();
     }
+    @LoginRequired
     @RequestMapping(path = "/blog/{id}",method = RequestMethod.GET)
     public String userBlog(@PathVariable int id, Model model,
                            @RequestParam(value = "page", defaultValue = "1") int page,
@@ -309,6 +492,7 @@ public class UserController {
         model.addAttribute("hasFollowed", hasFollowed);
         return "user/index";
     }
+    @LoginRequired
     @RequestMapping(path = "/question/{id}",method = RequestMethod.GET)
     public String userQuestion(@PathVariable int id, Model model,
                            @RequestParam(value = "page", defaultValue = "1") int page,
@@ -341,6 +525,7 @@ public class UserController {
         model.addAttribute("hasFollowed", hasFollowed);
         return "user/index";
     }
+    @LoginRequired
     @RequestMapping(path = "/paper/{id}",method = RequestMethod.GET)
     public String userPaper(@PathVariable int id, Model model,
                             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -387,6 +572,7 @@ public class UserController {
         model.addAttribute("hasFollowed", hasFollowed);
         return "user/index";
     }
+    @LoginRequired
     @RequestMapping(path = "/source/{id}",method = RequestMethod.GET)
     public String userSource(@PathVariable int id, Model model,
                              @RequestParam(value = "page", defaultValue = "1") int page,
@@ -515,6 +701,7 @@ public class UserController {
 
     }
     /*/user/search?keyword=ODE&fieldname=fatherid*/
+    @LoginRequired
     @RequestMapping(path = "/search" ,method = RequestMethod.GET)
     public String search(String keyword, String fieldname, String sortname, Page page, Model model){
         if (sortname == null){

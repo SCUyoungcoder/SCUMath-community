@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.GroupMapper">
+    <sql id="insertFields">
+        group_name, owner_id, create_time, count_member
+    </sql>
+    <sql id="selectFields">
+        id, group_name, owner_id, create_time, count_member
+    </sql>
+    <insert id="insertGroup" parameterType="Group" keyProperty="id">
+        insert into my_group (<include refid="insertFields"></include>)
+        values(#{groupName},#{ownerId},#{createTime},#{countMember})
+    </insert>
+    <select id="selectGroupByOwnerId" resultType="Group">
+        select <include refid="selectFields"></include>
+        from my_group
+        where owner_id = #{ownerId}
+        order by id desc
+    </select>
+    <update id="updateGroup">
+        update my_group set count_member = #{countMember} where id = #{id}
+    </update>
+    <select id="selectGroupById" resultType="Group">
+        select <include refid="selectFields"></include>
+        from my_group
+        where id = #{id}
+    </select>
+    <select id="selectGroupByGroupNameAndOwnerId" resultType="Group">
+        select <include refid="selectFields"></include>
+        from my_group
+        where group_name = #{groupName} and owner_id = #{ownerId}
+    </select>
+    <delete id="deleteGroupById">
+        delete from my_group where id = #{id}
+    </delete>
+</mapper>

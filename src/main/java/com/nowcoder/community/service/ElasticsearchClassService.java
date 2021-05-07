@@ -59,7 +59,7 @@ public class ElasticsearchClassService {
         Pageable pageable = new PageRequest(0,1000);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status",status)))
-                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
+                /*.withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))*/
                 .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
                 .withPageable(pageable)

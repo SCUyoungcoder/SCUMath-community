@@ -6,16 +6,29 @@
     <title>注册-数学视界</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/login.css}">
+    <script>
+    function check(){
+	if(document.getElementById("password").value!=
+		document.getElementById("repassword").value)
+	{
+		document.getElementById("checkMsg").innerText="两次密码的输入不一致,请重新输入";
+		return false;
+	}else{
+	    document.getElementById("checkMsg").innerText="";
+	    return true;
+	}
+}
+  </script>
 </head>
 <body class="text-center">
 
-<form class="form-signin" th:action="@{/register}" method="post">
+<form class="form-signin" th:action="@{/register}" method="post" onsubmit="return check()">
     <h1 class="h3 mb-3 font-weight-normal">注册</h1>
-    <span th:text="${regMsg}" style="color: red"></span>
-    <input type="text" name="username" class="form-control mb-2" placeholder="用户名" required="">
-    <input type="password" name="password"  class="form-control" placeholder="密码" required="">
-    <input type="password" name="repassword" class="form-control" placeholder="再次输入密码" required="">
-    <input type="text" name="code" class="form-control" placeholder="邀请码" required="">
+    <span id="checkMsg" th:text="${regMsg}" style="color: red"></span>
+    <input type="text" th:value="${user!=null?user.username:''}" name="username" class="form-control mb-2" placeholder="用户名" required="">
+    <input id="password" th:value="${user!=null?user.password:''}" type="password" name="password"  class="form-control" placeholder="密码" required="">
+    <input id="repassword" th:value="${user!=null?user.password:''}" type="password" name="repassword" class="form-control" placeholder="再次输入密码" required="">
+    <input type="text" th:value="${code!=null?code:''}" name="code" class="form-control" placeholder="邀请码" required="">
     <button class="btn btn-primary btn-block mt-3" type="submit">注册</button>
    <p style="text-align: right"><a th:href="@{/login}" >已有账号?去登录</a></p>
 

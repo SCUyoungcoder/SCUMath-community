@@ -50,6 +50,7 @@ public class PaperOfClass3Controller {
 
     //***************已无用
     //paperofclass?classname=XXX  6.6课选用GET方式传参，参数通过
+    @LoginRequired
     @RequestMapping(path = "/paperofclass", method = RequestMethod.GET)
     public String searchpaperofclass(String classname,Model model,Page page) {//此处前端的classname参数的形式是String
         //搜索论文(6.6课22：56开始介绍查询的controller)
@@ -79,6 +80,7 @@ public class PaperOfClass3Controller {
 
         return "/paperofclass";//返回第二级网页
     }
+    @LoginRequired
     @RequestMapping(path = "/paper/search",method = RequestMethod.GET)
     public String searchpaper(String keyword,String fieldname,String sortname,Page page,Model model){
         if (sortname==null){
@@ -254,6 +256,7 @@ public class PaperOfClass3Controller {
             return "error/404";
         }
     }
+    @LoginRequired
     @RequestMapping(path = "/paper/list",method = RequestMethod.GET)
     public String paperList(Model model,
                             @RequestParam(defaultValue = "a") String category,
@@ -348,6 +351,7 @@ public class PaperOfClass3Controller {
     }
 
     //第三级页面——论文详情页//******************已重构
+    @LoginRequired
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
     public String PaperDetail(int id,Model model,
                               @RequestParam(defaultValue = "1") int page,

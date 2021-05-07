@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>小组列表</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+<!--    <link rel="stylesheet" th:href="@{/css/colorpicker.css}">
+    <link rel="stylesheet" th:href="@{/css/datepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/timepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/select2.css}">-->
+   <!-- <link rel="stylesheet" th:href="@{/css/bootstrap.css}">-->
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <!--<link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">-->
+ <!--   <link rel="stylesheet" th:href="@{/css/alertify.css}">-->
+    <style type="text/css">
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f6f6f6;
+            min-width: 200px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .handle{
+            cursor:pointer;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown a:hover {background-color: #ddd}
+        .show {
+            display:block;
+        }
+        .bar{
+            height: 260px;
+            overflow-y: auto;
+        }
+        .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropbtn:hover, .dropbtn:focus {
+            background-color: #3e8e41;
+        }
+        #myInput {
+            border-box: box-sizing;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAACYktHRAD/h4/MvwAAAAl2cEFnAAABKgAAASkAUBZlMQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMy0wNC0xMFQwNjo1OTowNy0wNzowMI5BiVEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTMtMDQtMTBUMDY6NTk6MDctMDc6MDD/HDHtAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAABF0RVh0VGl0bGUAc2VhcmNoLWljb27Cg+x9AAACKklEQVQ4T6WUSavqQBCFK+2sII7gShFXLpUsBBHFf+1KcAQFwaWiolsnnBDn++4p0iHRqPDuByFJd/Wp6qrqVn5+IQP3+52m0ymtVis6Ho885na7KRgMUiKR4O9vmEQHgwGNx2NyOp0khCBFUXgcJo/Hg67XK8ViMcpkMjz+Dl200+nQZrMhh8PBE4gYQgDidrudvzEOm2KxyP9WsCginM1mHKEUS6VSFA6HOWI4G41GPAfx2+1GgUCAVFXVZMwovwY/lUqFPB4PiyFn+XxemzbT6/VovV6z8Ol0olwux+LPCBQFEQKIvhME2WyWbWGHFCD/VghUGVvE1rDlb6TTabbFmuVyqY2aEWgbFALeI5GINvyeUCjEtlgju+IZoRWfkS30CURoxFJUNjMEt9stf38CNjJKIFvNiMBJgTebzcZt843hcMhCELWqPBDxeJwulwtvC/3X7/e1qVfgFD0rC5tMJrUZM8Lr9VI0GmVBRDCfz6nZbHI/Sna7HXW7XZpMJtxSiBIP1lmhH9NqtaqfGKQDTmQREBnSgwfmMqfYYblc1o+2xHShtNttLgSiee4EmMEp3hDBPJzikimVSuRyuTTLJ1GwWCz4pCB3UhiL/X4/Hw50C5zjLSM+n898weCogxdRIzAGxigAdtNqtV6EC4UC+Xy+z6Kf2O/31Gg0TMK4ZBDxf4uCw+FA9XpdF0aaUOg/iQLcHbVaTb/p0Cl/FgXIJ/oYnaCqKv0DC6dltH6Ks84AAAAASUVORK5CYII=");
+            background-position: 14px 12px;
+            background-repeat: no-repeat;
+            font-size: 16px;
+            padding: 14px 20px 12px 45px;
+            border: none;
+        }
+        .myli{
+            margin-top: 10px;
+        }
+        .hide{display: none;}
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body style="background: rgb(247,248,249);">
+<div th:replace="common/header::header(activeUrl=group)"></div>
+<main role="main" class="container">
+    <div class="main_container" id="forms_page">
+        <div class="row-fluid">
+            <div class="widget widget-padding span12">
+                <div class="widget-header">
+                    <h5 style="margin-left:20px;" th:text="${group.groupName}"></h5>
+                    <h5 style="margin-left:20px;">已拥有组员</h5>
+                    <h5 style="margin-left:20px;" th:text="${group.countMember}"></h5>
+                </div>
+                <div class="widget-body" style="padding-right: 15%" id="oldskill">
+                    <div th:each="groupMember:${groupMemberList}"><h th:id="'a'+${groupMember.id}" th:text="${groupMember.username}"></h><a th:href="@{'/user/deleteMember/'+${groupMember.id}}">删除成员</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid" >
+            <div class="widget widget-padding span12">
+                <div class="widget-header">
+                    <h5 style="margin-left:20px;">新增组员</h5>
+
+                </div>
+                <div class="widget-body" >
+                    <div onclick="myFunction()" id="mybt" style="background-color: white;color: grey; min-width: 150px;" class="btn  btn-primary">添加组员</div>
+                    <div onclick="addline()" class="btn  btn-primary">+</div>
+                    <div  id="input1" class="dropdown-content ">
+                        <!--                                            <input type='text' style='height: 40px' placeholder='搜索..' id='myInput' onkeyup='filterFunction()'>-->
+                        <input type="text" style="height: 40px" placeholder="搜索.." id="myInput" onkeyup="filterFunction()">
+                        <div id="input2"  class="bar">
+                            <a th:each="groupMember:${groupMembers}" th:onclick="'getid(i'+${groupMember.id}+')'" th:id="'i'+${groupMember.id}" th:text="${groupMember.username}"></a>
+                        </div>
+                    </div>
+                    <br>
+                    <form method="post" th:action="@{|/user/addGroupMember/${group.id}|}">
+                        <textarea name="allMembers" id="addskilltxt" style="border-radius: 10px"
+                                  rows="3" required class="form-control" readonly="readonly"></textarea>
+                        <input class="btn btn-primary" type="submit" value="提交">
+                        <button class="btn" id="clear">删除</button>
+                    </form>
+
+
+                    <!--<input name="allMembers" id="addskilltxt" style="font-size: 20px" disabled></input>-->
+                </div>
+            </div>
+            <!--<div class="widget-footer">
+                <button class="btn btn-primary" type="submit" id="add1">保存</button>
+                <button class="btn" id="clear">删除</button>
+            </div>
+            <button class="btn btn-primary" type="submit" id="add11">保存</button>
+            <button class="btn" id="clear1">删除</button>-->
+        </div>
+    </div>
+</main>
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+<script type="text/javascript">
+    function deletebtn(id) {
+    console.log(id);
+            var z={};
+            var x=id.innerText.trim().split("(")[0];
+            var s=x;
+            // console.log(s);
+            z.skill=s;
+            // console.log(z);
+            $.post("http://localhost:8080/user/deleteMember",
+            z,
+            function (data) {
+                if (data.status==3) {
+                    document.getElementById('oldskill').innerHTML="";
+                    new getskills();
+                    // w.removeChild(id);
+                }
+                if (data.status==-1){
+                    alert("未登录!");
+                    window.location.href="../../Untitled/login/index.html";
+                }
+            })
+    }
+    function myFunction() {
+        document.getElementById("input1").classList.remove("hide");
+        document.getElementById("input1").classList.toggle("show");
+    }
+    function addline() {
+        var x=document.getElementById("mybt").innerText;
+        if (x!="添加组员"){
+            var w=document.getElementById("addskilltxt");
+            var s = w.value;
+            s = s +" "+x;
+            w.value = s;
+            document.getElementById("mybt").innerText="添加组员";
+        }
+    }
+    function getid(i) {
+        var x=i.innerText;
+        document.getElementById("mybt").innerText=x;
+        // var x=i.innerText;
+        // var w=document.getElementById("addskilltxt");
+        // var y=w.innerText;
+        // if (y.length==0){
+        //     y="已选择的技能:"+x+"(默认熟练度掌握)";
+        //     userskills= x+":2";
+        // }
+        // else {
+        //     var z=y.split("熟练度");
+        //     if (z.length==2){
+        //         y=y.split("(默认熟练度掌握)")[0]+"(掌握)"
+        //     }
+        //     y=y+","+x+"(默认熟练度掌握)";
+        //     userskills=userskills+ ","+x+":2";
+        // }
+        document.getElementById("input1").classList.remove("show");
+        document.getElementById("input1").classList.add("hide");
+        // w.innerText=y;
+    }
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        var div = document.getElementById("input1");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+    $('#clear').on('click',function () {
+        var x=document.getElementById('addskilltxt');
+        var y=x.lastChild;
+        if (y==null){
+            alert("已完全删除！");
+        }
+        else {
+            x.removeChild(y);
+        }
+        // console.log(x);
+        // if (x!=""){
+        //     var y=x.split(",");
+        //     console.log(y);
+        //     if(y.length==1){
+        //         document.getElementById('addskilltxt').innerText="";
+        //     }
+        //     else{
+        //         var z="";
+        //         for (var i=0;i<(y.length-1);i++) {
+        //             if (z==""){
+        //                 z=z+y[i];
+        //             }
+        //             else {
+        //                 z=z+','+y[i];
+        //             }
+        //
+        //         }
+        //         console.log(z);
+        //         document.getElementById('addskilltxt').innerText=z;
+        //     }
+        // }
+        // else{
+        //     alert("已完全删除")
+        // }
+    });
+    //获取用户选择，并提交进数据库
+    $('#add').on('click',function () {
+        var x=document.getElementById('addskilltxt').innerText;
+        var data1={};
+        var s="";
+        if (x!=null){
+            var y=x.split("\n");
+            for (var i=0;i<y.length;i++){
+                //var c;
+                //var z=y[i].split(")")[0].split("(");
+                //switch (z[1]) {
+                //    case "了解":c=1;break;
+                //    case "掌握":c=2;break;
+                //    case "熟练":c=3;break;
+                //    case "精通":c=4;break;
+                //    case "大师":c=5;break;
+                //}
+                if (i==0){
+                    s=z[0];
+                    //<!--s=z[0]+":"+c;-->
+                }
+                else {
+                    s=s+","+z[0];
+                    //<!--s=s+","+z[0]+":"+c;-->
+                }
+            }
+            console.log(s);
+            data1.skill=s;
+            $.post("/user/addGroupMember",
+                {"members":s},
+                function (data) {
+                    if (data.status==3){
+                        document.getElementById('addskilltxt').innerText="";
+                        alert("添加成功！");
+                        document.getElementById('oldskill').innerHTML="";
+                        new getskills();
+                    }
+                    else {
+                        if (data.status==-1){
+                            alert("未登录!");
+                            window.location.href="../../Untitled/login/index.html";
+                        }
+                        else {
+                            alert("提交失败！");
+                        }
+                    }
+
+                });
+        }
+    })
+</script>
+
+</body>
+</html>

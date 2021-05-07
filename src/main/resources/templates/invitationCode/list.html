@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>邀请码列表</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+
+</head>
+<body style="background: rgb(247,248,249);">
+
+<div th:replace="common/header::header(activeUrl=invitationCode)"></div>
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col-md-9 blog-main">
+
+            <div class="my-3 p-3 bg-white rounded ">
+
+                <h6 class="border-bottom border-gray pb-2 mb-0">
+                    累计：
+                    <span th:text="${info.getTotal()}"></span>
+                    <span th:text="${regMsg}" style="color: red"></span>
+                </h6>
+<!--                博客列表-->
+                <div th:each="code:${info.getList()}" class="media text-muted pt-3">
+
+                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right"  th:href="@{'/user/deleteCode/'+${code.id}}">删除</a>
+                        <!--标题 且根据id号 查询数据 跳转到指定的页面-->
+                        <p th:text="${code.code}"
+                           class="text-dark font-weight-bold text-decoration-none d-block"></p>
+                    </div>
+
+                </div>
+                <!--分页-->
+                <nav aria-label="Page navigation example" class="mt-4">
+                    <ul class="pagination justify-content-center pagination-sm">
+                        <!--往前翻 如果没有前一页 则禁用-->
+                        <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/user/invitationCode?page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                        </li>
+
+                        <div th:each="page:${info.getNavigatepageNums()}">
+                            <li class="page-item" th:classappend="${page}==${info.getPageNum()}?'active':''">
+                                <a class="page-link" th:href="@{'/user/invitationCode?page='+${page}+'&limit=10'}"
+                                   th:text="${page}">
+                                </a>
+                            </li>
+                        </div>
+                        <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
+                            <a class="page-link"
+                               th:href="@{'/user/invitationCode?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <form method="POST" th:action="@{'/user/addCode'}">
+            <div class="p-4 my-3 bg-white rounded">
+                <b>添加邀请码:
+                </b>
+                <div style="margin-top:10px">
+                <input  class="input is-small" type="text" name="code" placeholder="邀请码..." aria-label="Search term or terms" required>
+                </div>
+                <!--<a th:href="@{'/blog/category?cid='+${category.getId()}+'&page=1&limit=10'}"
+                   th:each="category:${categoryList}" th:text="${category.getName()}"
+                   class="badge badge-pill badge-primary mr-1"></a>-->
+            </div>
+            <div class="my-3 rounded">
+                <p class="mb-0">
+                    <button class="btn btn-primary btn-sm btn-block"
+                       style="color: white">添加</button>
+                </p>
+            </div>
+        </form>
+    </div>
+    </div>
+</main>
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+
+</body>
+</html>

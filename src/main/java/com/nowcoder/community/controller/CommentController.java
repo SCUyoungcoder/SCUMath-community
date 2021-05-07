@@ -34,6 +34,8 @@ public class CommentController {
     private PaperOfClassService paperOfClassService;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private BlogAbleService blogAbleService;
 
     @AdminRequired
     @RequestMapping(path = "/comment/notice",method = RequestMethod.GET)
@@ -56,6 +58,32 @@ public class CommentController {
         notice.setFilepath("notice");
         paperOfClassService.uploadpaper(notice);
         return "redirect:/index";
+    }
+    @LoginRequired
+    @RequestMapping(path = "/comment/blogApply",method = RequestMethod.GET)
+    public String getAllBlogApply(Model model,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "10") int limit){
+        User user = hostHolder.getUser();
+        PageHelper.startPage(page,limit);
+        PageInfo<BlogAble> info = new PageInfo<>(blogAbleService.selectBlogAbleByUserIdAndType(user.getId(),0));
+        List<Map<String ,Object>> mapList = new ArrayList<>();
+        for (BlogAble blogAble:info.getList()){
+            Map<String ,Object> map = new HashMap<>();
+            User user1 = userService.findUserById(blogAble.getEntityId());
+            Blog blog = blogService.SelectById(blogAble.getBlogId());
+            map.put("userName",user1.getUsername());
+            map.put("userId",user1.getId());
+            map.put("blogAbleId",blogAble.getId());
+            map.put("title",blog.getTitle());
+            map.put("url","/blog/read/"+blog.getBid());
+            map.put("category","在博客");
+            mapList.add(map);
+        }
+        model.addAttribute("blogAbleLabel",1);
+        model.addAttribute("info",info);
+        model.addAttribute("mapList",mapList);
+        return "comment/list";
     }
     @LoginRequired
     @RequestMapping(path = "/comment/list",method = RequestMethod.GET)
@@ -133,6 +161,7 @@ public class CommentController {
             }
             mapList.add(map);
         }
+        model.addAttribute("blogAbleLabel",0);
         model.addAttribute("info",info);
         model.addAttribute("mapList",mapList);
         return "comment/list";

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>小组列表</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+<!--    <link rel="stylesheet" th:href="@{/css/colorpicker.css}">
+    <link rel="stylesheet" th:href="@{/css/datepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/timepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/select2.css}">-->
+   <!-- <link rel="stylesheet" th:href="@{/css/bootstrap.css}">-->
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <!--<link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">-->
+ <!--   <link rel="stylesheet" th:href="@{/css/alertify.css}">-->
+    <style type="text/css">
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f6f6f6;
+            min-width: 200px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .handle{
+            cursor:pointer;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown a:hover {background-color: #ddd}
+        .show {
+            display:block;
+        }
+        .bar{
+            height: 260px;
+            overflow-y: auto;
+        }
+        .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropbtn:hover, .dropbtn:focus {
+            background-color: #3e8e41;
+        }
+        #myInput {
+            border-box: box-sizing;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAACYktHRAD/h4/MvwAAAAl2cEFnAAABKgAAASkAUBZlMQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMy0wNC0xMFQwNjo1OTowNy0wNzowMI5BiVEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTMtMDQtMTBUMDY6NTk6MDctMDc6MDD/HDHtAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAABF0RVh0VGl0bGUAc2VhcmNoLWljb27Cg+x9AAACKklEQVQ4T6WUSavqQBCFK+2sII7gShFXLpUsBBHFf+1KcAQFwaWiolsnnBDn++4p0iHRqPDuByFJd/Wp6qrqVn5+IQP3+52m0ymtVis6Ho885na7KRgMUiKR4O9vmEQHgwGNx2NyOp0khCBFUXgcJo/Hg67XK8ViMcpkMjz+Dl200+nQZrMhh8PBE4gYQgDidrudvzEOm2KxyP9WsCginM1mHKEUS6VSFA6HOWI4G41GPAfx2+1GgUCAVFXVZMwovwY/lUqFPB4PiyFn+XxemzbT6/VovV6z8Ol0olwux+LPCBQFEQKIvhME2WyWbWGHFCD/VghUGVvE1rDlb6TTabbFmuVyqY2aEWgbFALeI5GINvyeUCjEtlgju+IZoRWfkS30CURoxFJUNjMEt9stf38CNjJKIFvNiMBJgTebzcZt843hcMhCELWqPBDxeJwulwtvC/3X7/e1qVfgFD0rC5tMJrUZM8Lr9VI0GmVBRDCfz6nZbHI/Sna7HXW7XZpMJtxSiBIP1lmhH9NqtaqfGKQDTmQREBnSgwfmMqfYYblc1o+2xHShtNttLgSiee4EmMEp3hDBPJzikimVSuRyuTTLJ1GwWCz4pCB3UhiL/X4/Hw50C5zjLSM+n898weCogxdRIzAGxigAdtNqtV6EC4UC+Xy+z6Kf2O/31Gg0TMK4ZBDxf4uCw+FA9XpdF0aaUOg/iQLcHbVaTb/p0Cl/FgXIJ/oYnaCqKv0DC6dltH6Ks84AAAAASUVORK5CYII=");
+            background-position: 14px 12px;
+            background-repeat: no-repeat;
+            font-size: 16px;
+            padding: 14px 20px 12px 45px;
+            border: none;
+        }
+        #usermyInput {
+            border-box: box-sizing;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAACYktHRAD/h4/MvwAAAAl2cEFnAAABKgAAASkAUBZlMQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMy0wNC0xMFQwNjo1OTowNy0wNzowMI5BiVEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTMtMDQtMTBUMDY6NTk6MDctMDc6MDD/HDHtAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAABF0RVh0VGl0bGUAc2VhcmNoLWljb27Cg+x9AAACKklEQVQ4T6WUSavqQBCFK+2sII7gShFXLpUsBBHFf+1KcAQFwaWiolsnnBDn++4p0iHRqPDuByFJd/Wp6qrqVn5+IQP3+52m0ymtVis6Ho885na7KRgMUiKR4O9vmEQHgwGNx2NyOp0khCBFUXgcJo/Hg67XK8ViMcpkMjz+Dl200+nQZrMhh8PBE4gYQgDidrudvzEOm2KxyP9WsCginM1mHKEUS6VSFA6HOWI4G41GPAfx2+1GgUCAVFXVZMwovwY/lUqFPB4PiyFn+XxemzbT6/VovV6z8Ol0olwux+LPCBQFEQKIvhME2WyWbWGHFCD/VghUGVvE1rDlb6TTabbFmuVyqY2aEWgbFALeI5GINvyeUCjEtlgju+IZoRWfkS30CURoxFJUNjMEt9stf38CNjJKIFvNiMBJgTebzcZt843hcMhCELWqPBDxeJwulwtvC/3X7/e1qVfgFD0rC5tMJrUZM8Lr9VI0GmVBRDCfz6nZbHI/Sna7HXW7XZpMJtxSiBIP1lmhH9NqtaqfGKQDTmQREBnSgwfmMqfYYblc1o+2xHShtNttLgSiee4EmMEp3hDBPJzikimVSuRyuTTLJ1GwWCz4pCB3UhiL/X4/Hw50C5zjLSM+n898weCogxdRIzAGxigAdtNqtV6EC4UC+Xy+z6Kf2O/31Gg0TMK4ZBDxf4uCw+FA9XpdF0aaUOg/iQLcHbVaTb/p0Cl/FgXIJ/oYnaCqKv0DC6dltH6Ks84AAAAASUVORK5CYII=");
+            background-position: 14px 12px;
+            background-repeat: no-repeat;
+            font-size: 16px;
+            padding: 14px 20px 12px 45px;
+            border: none;
+        }
+        .myli{
+            margin-top: 10px;
+        }
+        .hide{display: none;}
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body style="background: rgb(247,248,249);">
+<div th:replace="common/header::header(activeUrl=group)"></div>
+<main role="main" class="container">
+    <div class="main_container" id="forms_page">
+        <div class="row-fluid">
+            <div class="widget widget-padding span12">
+                <div class="widget-header">
+                    <h5 style="margin-left:20px;">有权限查看博客</h5>
+                    <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"
+                       class="text-dark font-weight-bold text-decoration-none d-block" style="font-size:15px ;margin-top:15px"></a>
+                </div>
+                <div class="widget-body" style="padding-right: 15%" id="oldskill">
+                    <h5>小组：</h5>
+                    <div th:each="group:${groupList1}"><h th:id="'a'+${group.id}" th:text="${group.name}"></h><a th:href="@{'/blog/deleteGroup/'+${blog.id}+'/'+${group.id}}">删除小组</a></div>
+                    <h5>用户：</h5>
+                    <div th:each="groupMember:${groupMemberList1}"><h th:id="'a'+${groupMember.id}" th:text="${groupMember.name}"></h><a th:href="@{'/blog/deleteUser/'+${blog.id}+'/'+${groupMember.id}}">删除用户</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid" >
+            <div class="widget widget-padding span12">
+                <div class="widget-header">
+                    <h5 style="margin-left:20px;">新增小组</h5>
+
+                </div>
+                <div class="widget-body" >
+                    <div onclick="myFunction()" id="mybt" style="background-color: white;color: grey; min-width: 150px;" class="btn  btn-primary">添加小组</div>
+                    <div onclick="addline()" class="btn  btn-primary">+</div>
+                    <div  id="input1" class="dropdown-content ">
+                        <!--                                            <input type='text' style='height: 40px' placeholder='搜索..' id='myInput' onkeyup='filterFunction()'>-->
+                        <input type="text" style="height: 40px" placeholder="搜索.." id="myInput" onkeyup="filterFunction()">
+                        <div id="input2"  class="bar">
+                            <a th:each="group:${groupList2}" th:onclick="'getid(i'+${group.id}+')'" th:id="'i'+${group.id}" th:text="${group.name}"></a>
+                        </div>
+                    </div>
+                    <br>
+                    <!--<form method="post" th:action="@{|/user/addGroupMember|}">
+                        <textarea name="allMembers" id="addskilltxt" style="border-radius: 10px"
+                                  rows="3" required class="form-control" readonly="readonly"></textarea>
+                        <input class="btn btn-primary" type="submit" value="提交">
+                    </form>-->
+                    <form method="post" th:action="@{|/blog/addGroup/${blog.id}|}">
+                        <textarea name="groups" id="addskilltxt" style="border-radius: 10px"
+                                  rows="3" required class="form-control" readonly="readonly"></textarea>
+                        <input class="btn btn-primary" type="submit" value="提交">
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid" >
+            <div class="widget widget-padding span12">
+                <div class="widget-header">
+                    <h5 style="margin-left:20px;">新增用户</h5>
+                </div>
+                <div class="widget-body" >
+                    <div onclick="usermyFunction()" id="usermybt" style="background-color: white;color: grey; min-width: 150px;" class="btn  btn-primary">添加用户</div>
+                    <div onclick="useraddline()" class="btn  btn-primary">+</div>
+                    <div  id="userinput1" class="dropdown-content ">
+                        <!--                                            <input type='text' style='height: 40px' placeholder='搜索..' id='myInput' onkeyup='filterFunction()'>-->
+                        <input type="text" style="height: 40px" placeholder="搜索.." id="usermyInput" onkeyup="userfilterFunction()">
+                        <div id="userinput2"  class="bar">
+                            <a th:each="groupMember:${groupMemberList2}" th:onclick="'usergetid(u'+${groupMember.id}+')'" th:id="'u'+${groupMember.id}" th:text="${groupMember.name}"></a>
+                        </div>
+                    </div>
+                    <br>
+                    <form method="post" th:action="@{|/blog/addUser/${blog.id}|}">
+                        <textarea name="users" id="useraddskilltxt" style="border-radius: 10px"
+                                  rows="3" required class="form-control" readonly="readonly"></textarea>
+                        <input class="btn btn-primary" type="submit" value="提交">
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:replace="common/footer::footer"></div>
+<a class="to-top">返回顶部</a>
+<th:block th:replace="common/footer::script"></th:block>
+<script type="text/javascript">
+    function myFunction() {
+        document.getElementById("input1").classList.remove("hide");
+        document.getElementById("input1").classList.toggle("show");
+    }
+    function addline() {
+        var x=document.getElementById("mybt").innerText;
+        if (x!="添加小组"){
+            var w=document.getElementById("addskilltxt");
+            var s = w.value;
+            s = s +" "+x;
+            w.value = s;
+            document.getElementById("mybt").innerText="添加小组";
+        }
+    }
+    function getid(i) {
+        var x=i.innerText;
+        document.getElementById("mybt").innerText=x;
+        document.getElementById("input1").classList.remove("show");
+        document.getElementById("input1").classList.add("hide");
+    }
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        var div = document.getElementById("input1");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+    //添加user部分的事件
+    function userfilterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("usermyInput");
+        filter = input.value.toUpperCase();
+        var div = document.getElementById("userinput1");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+    function usermyFunction() {
+        document.getElementById("userinput1").classList.remove("hide");
+        document.getElementById("userinput1").classList.toggle("show");
+    }
+    function usergetid(i) {
+        var x=i.innerText;
+        document.getElementById("usermybt").innerText=x;
+        document.getElementById("userinput1").classList.remove("show");
+        document.getElementById("userinput1").classList.add("hide");
+    }
+    function useraddline() {
+        var x=document.getElementById("usermybt").innerText;
+        if (x!="添加用户"){
+            var w=document.getElementById("useraddskilltxt");
+            var s = w.value;
+            s = s +" "+x;
+            w.value = s;
+            document.getElementById("usermybt").innerText="添加用户";
+        }
+    }
+</script>
+
+</body>
+</html>
