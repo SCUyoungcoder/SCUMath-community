@@ -127,7 +127,6 @@ public class QuestionController {
     public String save(QuestionWriteForm questionWriteForm) {
         User user = hostHolder.getUser();
         //接受博客表单vo
-        System.out.println(questionWriteForm);
         Question question = new Question();
         String qid = CommunityUtil.generateUUID();
         question.setQid(qid);
@@ -179,11 +178,9 @@ public class QuestionController {
         questionRepository.save(oldQuestion);
         //数据库中删除本博客没用的图片
         int newtype = (int)(Math.random()*90+10);
-        //System.out.println(pictureService.UpdateFahterTypeByFather(newtype,question.getId(),1));
         List<Picture> pictureList = pictureService.SelectByFather(oldQuestion.getId(),2);
         //System.out.println(question.getId());
         if (!pictureList.isEmpty()){
-            System.out.println("修改数据库");
             for (Picture picture:pictureList){
                 pictureService.UpdateFather(picture.getId(),picture.getFatherId(),newtype);
             }
@@ -198,14 +195,11 @@ public class QuestionController {
         }
         //本地删除本博客没用的图片
         List<Picture> pictures = pictureService.SelectByFather(oldQuestion.getId(),newtype);
-        System.out.println(pictures);
         if (!pictures.isEmpty()){
             for (Picture pic:pictures){
                 String path = uploadPicPath+"/"+pic.getSaveName();
-                System.out.println(path);
                 File file = new File(path);
                 if (!file.isDirectory()){
-                    System.out.println("正在删除文件");
                     file.delete();
                 }
 
@@ -278,7 +272,6 @@ public class QuestionController {
                 comment.setTable(1);
                 c1.add(0,comment);
                 questionComments.setList(c1);
-                System.out.println(c1);
             }
         }
         //List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
@@ -423,7 +416,6 @@ public class QuestionController {
     @PostMapping(path = "/pass")
     @ResponseBody
     public String pass(String qid) {
-        System.out.println(qid);
         User user = hostHolder.getUser();
         Question question = questionService.SelectByQid(qid);
         if (user.getType()==1){

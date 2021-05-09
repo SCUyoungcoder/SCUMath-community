@@ -25,6 +25,7 @@ public class UserService {
     @Autowired
     private GroupMemberMapper groupMemberMapper;
 
+    public User selectByUserName(String username){return userMapper.selectByName(username);}
     public int deleteGroupMemberById(int groupMemberId,int groupId){
         Group group = groupMapper.selectGroupById(groupId);
         group.setCountMember(group.getCountMember()-1);

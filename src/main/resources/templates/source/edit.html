@@ -13,6 +13,7 @@
             font-size: .875rem;
             color: #6c757d;
         }
+
     </style>
 </head>
 <body style="background: #f2f2f2;">
@@ -30,56 +31,64 @@
                 </h2>
 
                 <form class="needs-validation" enctype="multipart/form-data" th:action="@{/source/edit}" method="post">
-                    <!-- 隐藏域 -->
-                    <!--<input type="hidden" name="authorId" th:value="${user.getId()}">
-                    <input type="hidden" name="authorName" th:value="${user.getUsername()}">-->
-                    <!--<input type="hidden" name="authorAvatar" th:value="${session.loginUser.getAvatar()}">-->
+                    <b class="label">资源ID:</b>
+                    <input id="content2" name="id" class="input is-medium"
+                           required="" type="text" th:value="${paper.id}" readonly>
 
-                        <!--<div class="col-md-10 mb-3">
-                            <label for="firstName">提问标题</label>
-                            <input type="text" name="title" class="form-control" id="firstName" value="" required>
-                        </div>-->
-                        <b class="label" >资源ID:</b>
-                        <input id="content2" name="id" class="input is-medium"
-                               required="" type="text" th:value="${paper.id}" readonly>
-
-                        <br>
-                        <b class="label" >选择类别:</b>
-                        <!--<input id="fatherid" name="fatherid" class="input is-medium"
-                            required="" type="text" value="">-->
-                        <a th:each="fid:${fathers}">
-                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" checked></label>
-                        </a>
-                        <a th:each="fid:${otherfathers}">
-                            <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}" th:utext="${fid.name}" ></label>
-                        </a>
-                        <br>
-                        <b class="label" for="content">内容:</b><br>
-                        <!--<input id="content" name="content" class="input is-medium"
-                               required="" type="text" value="">-->
+                    <!--<div style="float:right" class="col-md-2 mb-3">
+                        <label >资源分类:</label>
+                        <label th:text="${statusName}"></label>
+                    </div>-->
+                    <div  style="float:right" class="col-md-2 mb-3">
+                        <label for="country">资源分类</label>
+                        <select name="status" class="custom-select d-block w-100" id="country">
+                            <option th:if="${statusName!='代码'}" value=2>代码</option>
+                            <option th:if="${statusName!='软件'}" value=6>软件</option>
+                            <option th:if="${statusName!='文献'}" value=8>文献</option>
+                            <option th:if="${statusName=='代码'}" value=2 selected>代码</option>
+                            <option th:if="${statusName=='软件'}" value=6 selected>软件</option>
+                            <option th:if="${statusName=='文献'}" value=8 selected>文献</option>
+                        </select>
+                    </div>
+                    <br>
+                    <br>
+                    <b class="label">选择类别:</b>
+                    <!--<input id="fatherid" name="fatherid" class="input is-medium"
+                        required="" type="text" value="">-->
+                    <a th:each="fid:${fathers}">
+                        <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}"
+                                      th:utext="${fid.name}" checked></label>
+                    </a>
+                    <a th:each="fid:${otherfathers}">
+                        <label><input type="checkbox" name="fatherid" th:value="${fid.searchname}"
+                                      th:utext="${fid.name}"></label>
+                    </a>
+                    <br>
+                    <b class="label" for="content">内容:</b><br>
+                    <!--<input id="content" name="content" class="input is-medium"
+                           required="" type="text" value="">-->
                     <div class="form-group">
-                        <textarea style="border-radius: 10px" id ="content" name="content" rows="3" required
+                        <textarea style="border-radius: 10px" id="content" name="content" rows="3" required
                                   class="form-control" th:text="${paper.content}"></textarea>
                     </div>
-                       <!-- <textarea id="content1" name="content" class="input is-medium"
-                                  required="" type="text" th:text="${paper.content}"></textarea>-->
-                        <!--<div class="col-md-2 mb-3">
-                            <label for="country">标签</label>
-                            <select name="categoryId" class="custom-select d-block w-100" id="country">
-                                <option th:each="classification:${classificationList}"
-                                        th:value="${classification.getId()}" th:text="${classification.getName()}">
-                                </option>
-                            </select>
-                        </div>-->
+                    <!-- <textarea id="content1" name="content" class="input is-medium"
+                               required="" type="text" th:text="${paper.content}"></textarea>-->
+                    <!--<div class="col-md-2 mb-3">
+                        <label for="country">标签</label>
+                        <select name="categoryId" class="custom-select d-block w-100" id="country">
+                            <option th:each="classification:${classificationList}"
+                                    th:value="${classification.getId()}" th:text="${classification.getName()}">
+                            </option>
+                        </select>
+                    </div>-->
 
-                        <!--<div class="col-md-12 mb-3">
-                            <p>提问详情</p>
-                            <div id="blog-content">
-                                <textarea required name="content" id="content" style="display:none;" rows="3"
-                                          class="form-control"> </textarea>
-                            </div>
-                        </div>-->
-
+                    <!--<div class="col-md-12 mb-3">
+                        <p>提问详情</p>
+                        <div id="blog-content">
+                            <textarea required name="content" id="content" style="display:none;" rows="3"
+                                      class="form-control"> </textarea>
+                        </div>
+                    </div>-->
 
 
                     <button class="btn btn-primary btn-lg btn-block" type="submit">立即上传</button>

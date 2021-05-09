@@ -317,7 +317,6 @@ public class BlogController {
     public String save(BlogWriteForm blogWriteForm) {
         User user = hostHolder.getUser();
         //接受博客表单vo
-        System.out.println(blogWriteForm);
         Blog blog = new Blog();
         String bid = CommunityUtil.generateUUID();
         blog.setBid(bid);
@@ -370,11 +369,8 @@ public class BlogController {
         blogRepository.save(oldBlog);
         //数据库中删除本博客没用的图片
         int newtype = (int) (Math.random() * 90 + 10);
-        //System.out.println(pictureService.UpdateFahterTypeByFather(newtype,blog.getId(),1));
         List<Picture> pictureList = pictureService.SelectByFather(oldBlog.getId(), 1);
-        //System.out.println(blog.getId());
         if (!pictureList.isEmpty()) {
-            System.out.println("修改数据库");
             for (Picture picture : pictureList) {
                 pictureService.UpdateFather(picture.getId(), picture.getFatherId(), newtype);
             }
@@ -389,13 +385,11 @@ public class BlogController {
         }
         //本地删除本博客没用的图片
         List<Picture> pictures = pictureService.SelectByFather(oldBlog.getId(), newtype);
-        System.out.println(pictures);
         if (!pictures.isEmpty()) {
             for (Picture pic : pictures) {
                 String path = uploadPicPath + "/" + pic.getSaveName();
                 File file = new File(path);
                 if (!file.isDirectory()) {
-                    System.out.println("正在删除文件");
                     file.delete();
                 }
 
@@ -567,7 +561,7 @@ public class BlogController {
         //传输结束后，删除文件，可以不删除，在生成的图片中回对此进行覆盖
 /*        File file1 = new File("E:\\Java\\eclipse_code\\NLP\\WebContent\\source\\wordcloud.png");
         file1.delete();
-        System.out.println("文件删除！");*/
+        */
 
     }
 
@@ -595,10 +589,7 @@ public class BlogController {
                 for (Picture pic : pictures) {
                     String path = uploadPicPath + "/" + pic.getSaveName();
                     File file = new File(path);
-                    System.out.println(file);
-                    System.out.println(path);
                     if (!file.isDirectory()) {
-                        System.out.println("正在删除");
                         file.delete();
                     }
                 }
@@ -636,7 +627,6 @@ public class BlogController {
     @PostMapping(path = "/pass")
     @ResponseBody
     public String pass(String bid) {
-        /*System.out.println(bid);*/
         Blog blog = blogService.SelectByBid(bid);
         blog.setStatus(0);
         blogService.UpdateStatus(blog.getId(), blog.getStatus());

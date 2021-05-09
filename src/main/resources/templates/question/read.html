@@ -66,8 +66,13 @@
                                   d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                         </svg>
                         编辑</a>
-
-                    <button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&question.getStatus() == 1}">通过</button>
+                <a id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&question.getStatus() == 1}" href=#>
+                    <svg t="1619591128432" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="786" width="14" height="14">
+                        <path d="M806.016 310.848L640 136.96v173.888h166.016zM832 377.92H576v-268.16H192v804.48h640v-536.32zM160 42.688H640l256 268.16v636.992a33.472 33.472 0 0 1-8.96 24.064 30.4 30.4 0 0 1-23.04 9.408h-704a30.4 30.4 0 0 1-23.04-9.408 33.472 33.472 0 0 1-8.96-24.064V76.16c0-9.728 3.008-17.792 8.96-24.064A30.4 30.4 0 0 1 160 42.688z m318.016 609.728l180.992-189.632 46.016 47.168-227.008 237.76L320 581.184l44.992-47.168 113.024 118.4z"
+                              fill="#24b75d" p-id="787"></path></svg>
+                    通过
+                </a>
+                    <!--<button id="passBtn" style="color:#24b75d" th:if="${(loginUser.type==1)&&question.getStatus() == 1}">通过</button>-->
                 </div>
                 </p>
             </div>

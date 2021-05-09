@@ -14,7 +14,6 @@ public interface PaperMapper {
     List<Paper> selectByFatherid(@Param("fatherid") int fatherid);//第二级科目标签页面论文查询需要，添加@Param注解 By MY
     List<Paper> selecyByUserid(int userid);
     List<Paper> selectOnlyByStatus(int status);
-    /*Paper selectByTitle(String title);*/
     List<Paper> selectByTitle(String title);/*这里是否与elasticsearch搜索有关*/
     Paper selectByFulltitle(String title);
     Paper selectByFilepath(String filepath);
@@ -27,4 +26,8 @@ public interface PaperMapper {
     int countstatus(int status);
     int countByAuthorIdAndStatus(int id,int status);
     List<Paper> selectByAuthorIdAndStatus(int id,int status);
+
+
+    List<Paper> newSelectByThreeStatus(int status1,int status2,int status3);
+    List<Paper> newSelectByAuthorIdAndThreeStatus(int userId,int status1,int status2,int status3);
 }

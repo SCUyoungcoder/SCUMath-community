@@ -127,33 +127,6 @@
                     </button>
                 </form>
             </div>
-            <!--<div class="search-block level-right">
-                <form class="level-item mini-search" method="GET" action="/user/search">        &lt;!&ndash;_&ndash;&gt;
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input class="input is-small" type="text" name="keyword" placeholder="搜索..." aria-label="Search term or terms">
-                            &lt;!&ndash;<p class="help"><a href="https://arxiv.org/search/advanced">高级搜索</a></p>  &ndash;&gt;            &lt;!&ndash;&ndash;&gt;
-                        </div>
-                        <div class="control">
-                            <div >
-                                <select name="fieldname" aria-label="Field to search">
-                                    <option value="title" selected="selected">名字</option>
-                                    <option value="content">摘要</option>                                                          &lt;!&ndash;更改下拉菜单项&ndash;&gt;
-                                </select>
-                            </div>
-                        </div>
-                        <div class="control">
-                            <div >
-                                <select name="sortname" aria-label="Field to search">
-                                    <option value="createtime" selected="selected">上传时间</option>
-                                    <option value="downloadcount">下载量</option>                                                          &lt;!&ndash;更改下拉菜单项&ndash;&gt;
-                                </select>
-                            </div>
-                        </div>
-                        <button class="button is-small is-cul-darker">搜索</button>
-                    </div>
-                </form>
-            </div>-->
             <!--如果未登录-->
             <div th:if="${loginUser==null}">
                 <a class="btn btn-sm btn-primary" th:href="@{/login}" role="button">

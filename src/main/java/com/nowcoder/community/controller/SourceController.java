@@ -49,11 +49,23 @@ public class SourceController {
         if (sortname==null){
             sortname="downloadcount";
         }
-        org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.searchPaperByFieldname(keyword,2,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        //org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.searchPaperByFieldname(keyword,2,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
+        org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.newSearchSourceByFieldname(keyword,2,6,8,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
         List<Map<String ,Object>> sources = new ArrayList<>();
         if (searchSource !=null){
             for (Paper paper:searchSource){/*针对论文的搜索，是否需要写针对悬赏的搜索*/
                 paper.setFatherid((userService.findUserById(paper.getUserid())).getUsername());
+                switch (paper.getStatus()){
+                    case 2:
+                        paper.setFatherid("代码");
+                        break;
+                    case 6:
+                        paper.setFatherid("软件");
+                        break;
+                    case 8:
+                        paper.setFatherid("文献");
+                        break;
+                }
             }
         }
         model.addAttribute("blogs",searchSource);
@@ -109,10 +121,7 @@ public class SourceController {
         paper.setGmtcreate(dayy);
         paper.setUserid(user.getId());
         if (user.getType() == 1){
-            paper.setStatus(2);
-        }
-        else {
-            paper.setStatus(3);
+            paper.setStatus(paper.getStatus()-1);
         }
         paperOfClassService.uploadpaper(paper);
         paperRepository.save(paper);
@@ -154,7 +163,6 @@ public class SourceController {
             for (String str:fathers){
                 Map<String,Object> map1 = new HashMap<>();
                 map1.put("searchname",str);
-                System.out.println(str);
                 map1.put("name",classificationService.GetNameBySearchname(str).getName());
                 fatherss.add(map1);
             }
@@ -169,6 +177,22 @@ public class SourceController {
             if (paper.getStatus()==3 && user.getType()==1){
                 model.addAttribute("checkLabel",4);
             }
+            String statusName =null;
+            switch (paper.getStatus()){
+                case 2:
+                case 3:
+                    statusName = "代码";
+                    break;
+                case 6:
+                case 7:
+                    statusName = "软件";
+                    break;
+                case 8:
+                case 9:
+                    statusName = "文献";
+                    break;
+            }
+            model.addAttribute("statusName",statusName);
             model.addAttribute("fathers",fatherss);
             model.addAttribute("otherfathers",otherfatherss);
             model.addAttribute("paper",paper);
@@ -182,6 +206,10 @@ public class SourceController {
     @RequestMapping(path = "/source/edit",method = RequestMethod.POST)
     public String postEditSource(Paper paper,Model model){
         Paper paper1 = paperOfClassService.selectPaperById(paper.getId());
+        if (paper1.getStatus()%2==1){
+            paper.setStatus(paper.getStatus()+1);
+        }
+        paper1.setStatus(paper.getStatus());
         paper1.setContent(paper.getContent());
         paper1.setFatherid(paper.getFatherid());
         paperOfClassService.updatastatus(paper1);
@@ -228,67 +256,141 @@ public class SourceController {
     @LoginRequired
     @RequestMapping(path = "/source/list",method = RequestMethod.GET)
     public String sourceList(Model model,
+                            @RequestParam(defaultValue = "0") int status,
                             @RequestParam(defaultValue = "a") String category,
                             @RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "10") int limit){
         PageHelper.startPage(page,limit);
         PageInfo<Paper> info ;
-        if (category.length()==1){
-            info = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(2));
+        if (status == 0){
+            if (category.length()==1){
+                //info = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(2));
+                info = new PageInfo<>(paperOfClassService.NewSelectByThreeStatus(2,6,8));
+            }
+            else {
+                //List<Paper> papers = elasticsearchClassService.searchPaperByClassAndStatus(category,2);
+                List<Paper> papers = elasticsearchClassService.NewSearchPaperByClassAndThreeStatus(category,2,6,8);
+                info = new PageInfo<>(papers);
+                int numOfPage = papers.size()/limit;
+                List<Paper> showPapers = new ArrayList<>();
+                if (papers.size()%limit!=0){
+                    numOfPage++;
+                    if (papers.size()/10+1>page){
+                        showPapers = papers.subList((page-1)*limit,(page)*limit);
+                    }
+                    else {
+                        showPapers = papers.subList((page-1)*limit,papers.size());
+                    }
+                }
+                else {
+                    if (papers.size()==0){
+
+                        showPapers = null;
+                    }
+                    else {
+                        showPapers = papers.subList((page-1)*limit,(page)*limit);
+                    }
+                }
+                if (numOfPage ==0){
+                    paperOfClassService.selectPaperOnlyByStatus(2);
+                    //PageHelper,第一个查询自动添加limit和page
+                    numOfPage++;
+                }
+                /*papers=papers.subList(1,4); //包含1不包含4*/
+                info.setList(showPapers);
+                int num[]= new int[numOfPage];
+                for (int i=0;i<numOfPage;i++){
+                    num[i] = i+1;
+                }
+                info.setNavigatepageNums(num);
+                if (page==1){
+                    info.setHasPreviousPage(false);
+                }
+                else {
+                    info.setHasPreviousPage(true);
+                }
+                if (page == numOfPage){
+                    info.setHasNextPage(false);
+                }
+                else {
+                    info.setHasNextPage(true);
+                }
+                info.setPrePage(page-1);
+                info.setNextPage(page+1);
+                info.setPageNum(page);
+                model.addAttribute("thisCategoryName",classificationService.GetNameBySearchname(category).getName());
+            }
         }
         else {
-            List<Paper> papers = elasticsearchClassService.searchPaperByClassAndStatus(category,2);
-            System.out.println(papers);
-            info = new PageInfo<>(papers);
-            //System.out.println(papers.size());
-            int numOfPage = papers.size()/limit;
-            List<Paper> showPapers = new ArrayList<>();
-            if (papers.size()%limit!=0){
-                numOfPage++;
-                if (papers.size()/10+1>page){
-                    showPapers = papers.subList((page-1)*limit,(page)*limit);
-                }
-                else {
-                    showPapers = papers.subList((page-1)*limit,papers.size());
-                }
+            if (category.length()==1){
+                info = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(status));
             }
             else {
-                if (papers.size()==0){
+                List<Paper> papers = elasticsearchClassService.searchPaperByClassAndStatus(category,status);
+                info = new PageInfo<>(papers);
+                int numOfPage = papers.size()/limit;
+                List<Paper> showPapers = new ArrayList<>();
+                if (papers.size()%limit!=0){
+                    numOfPage++;
+                    if (papers.size()/10+1>page){
+                        showPapers = papers.subList((page-1)*limit,(page)*limit);
+                    }
+                    else {
+                        showPapers = papers.subList((page-1)*limit,papers.size());
+                    }
+                }
+                else {
+                    if (papers.size()==0){
 
-                    showPapers = null;
+                        showPapers = null;
+                    }
+                    else {
+                        showPapers = papers.subList((page-1)*limit,(page)*limit);
+                    }
+                }
+                if (numOfPage ==0){
+                    paperOfClassService.selectPaperOnlyByStatus(2);
+                    //PageHelper,第一个查询自动添加limit和page
+                    numOfPage++;
+                }
+                /*papers=papers.subList(1,4); //包含1不包含4*/
+                info.setList(showPapers);
+                int num[]= new int[numOfPage];
+                for (int i=0;i<numOfPage;i++){
+                    num[i] = i+1;
+                }
+                info.setNavigatepageNums(num);
+                if (page==1){
+                    info.setHasPreviousPage(false);
                 }
                 else {
-                    showPapers = papers.subList((page-1)*limit,(page)*limit);
+                    info.setHasPreviousPage(true);
                 }
+                if (page == numOfPage){
+                    info.setHasNextPage(false);
+                }
+                else {
+                    info.setHasNextPage(true);
+                }
+                info.setPrePage(page-1);
+                info.setNextPage(page+1);
+                info.setPageNum(page);
+                model.addAttribute("thisCategoryName",classificationService.GetNameBySearchname(category).getName());
             }
-            if (numOfPage ==0){
-                paperOfClassService.selectPaperOnlyByStatus(2);
-                //PageHelper,第一个查询自动添加limit和page
-                numOfPage++;
+            model.addAttribute("status",status);
+            String thisStatusName = null;
+            switch (status){
+                case 2:
+                    thisStatusName = "代码";
+                    break;
+                case 6:
+                    thisStatusName = "软件";
+                    break;
+                case 8:
+                    thisStatusName = "文献";
+                    break;
             }
-            /*papers=papers.subList(1,4); //包含1不包含4*/
-            info.setList(showPapers);
-            int num[]= new int[numOfPage];
-            for (int i=0;i<numOfPage;i++){
-                num[i] = i+1;
-            }
-            info.setNavigatepageNums(num);
-            if (page==1){
-                info.setHasPreviousPage(false);
-            }
-            else {
-                info.setHasPreviousPage(true);
-            }
-            if (page == numOfPage){
-                info.setHasNextPage(false);
-            }
-            else {
-                info.setHasNextPage(true);
-            }
-            info.setPrePage(page-1);
-            info.setNextPage(page+1);
-            info.setPageNum(page);
-            model.addAttribute("thisCategoryName",classificationService.GetNameBySearchname(category).getName());
+            model.addAttribute("thisStatusName",thisStatusName);
         }
         List<Paper> newPage = new ArrayList<>();
         if (info.getList()!=null){
@@ -299,6 +401,17 @@ public class SourceController {
                     user=userService.findUserById(p.getUserid());
                 }
                 p.setFilepath(user.getUsername());
+                switch (p.getStatus()){
+                    case 2:
+                        p.setFatherid("代码");
+                        break;
+                    case 6:
+                        p.setFatherid("软件");
+                        break;
+                    case 8:
+                        p.setFatherid("文献");
+                        break;
+                }
                 //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
                 newPage.add(p);
             }
@@ -318,7 +431,7 @@ public class SourceController {
     @ResponseBody
     public String passSource(int pid){
         Paper paper = paperOfClassService.selectPaperById(pid);
-        paper.setStatus(2);
+        paper.setStatus(paper.getStatus()-1);
         paperOfClassService.updatastatus(paper);
         paperRepository.save(paper);
         return CommunityUtil.getJSONString(0);

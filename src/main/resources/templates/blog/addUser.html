@@ -108,6 +108,7 @@
                 <div class="widget-body" >
                     <div onclick="myFunction()" id="mybt" style="background-color: white;color: grey; min-width: 150px;" class="btn  btn-primary">添加小组</div>
                     <div onclick="addline()" class="btn  btn-primary">+</div>
+                    <div onclick="deleteline()" class="btn  btn-primary">-</div>
                     <div  id="input1" class="dropdown-content ">
                         <!--                                            <input type='text' style='height: 40px' placeholder='搜索..' id='myInput' onkeyup='filterFunction()'>-->
                         <input type="text" style="height: 40px" placeholder="搜索.." id="myInput" onkeyup="filterFunction()">
@@ -116,11 +117,6 @@
                         </div>
                     </div>
                     <br>
-                    <!--<form method="post" th:action="@{|/user/addGroupMember|}">
-                        <textarea name="allMembers" id="addskilltxt" style="border-radius: 10px"
-                                  rows="3" required class="form-control" readonly="readonly"></textarea>
-                        <input class="btn btn-primary" type="submit" value="提交">
-                    </form>-->
                     <form method="post" th:action="@{|/blog/addGroup/${blog.id}|}">
                         <textarea name="groups" id="addskilltxt" style="border-radius: 10px"
                                   rows="3" required class="form-control" readonly="readonly"></textarea>
@@ -138,6 +134,7 @@
                 <div class="widget-body" >
                     <div onclick="usermyFunction()" id="usermybt" style="background-color: white;color: grey; min-width: 150px;" class="btn  btn-primary">添加用户</div>
                     <div onclick="useraddline()" class="btn  btn-primary">+</div>
+                    <div onclick="userdeleteline()" class="btn  btn-primary">-</div>
                     <div  id="userinput1" class="dropdown-content ">
                         <!--                                            <input type='text' style='height: 40px' placeholder='搜索..' id='myInput' onkeyup='filterFunction()'>-->
                         <input type="text" style="height: 40px" placeholder="搜索.." id="usermyInput" onkeyup="userfilterFunction()">
@@ -174,6 +171,19 @@
             w.value = s;
             document.getElementById("mybt").innerText="添加小组";
         }
+    }
+    function deleteline() {
+       var w=document.getElementById("addskilltxt");
+       var s = w.value;
+       if(s!=null){
+            var ss = s.split(" ");
+            var i = 1;
+            var newS="";
+            for(;i<ss.length-1;i++){
+                newS = newS+" "+ss[i];
+            }
+            w.value = newS;
+       }
     }
     function getid(i) {
         var x=i.innerText;
@@ -229,6 +239,19 @@
             w.value = s;
             document.getElementById("usermybt").innerText="添加用户";
         }
+    }
+    function userdeleteline() {
+       var w=document.getElementById("useraddskilltxt");
+       var s = w.value;
+       if(s!=null){
+            var ss = s.split(" ");
+            var i = 1;
+            var newS="";
+            for(;i<ss.length-1;i++){
+                newS = newS+" "+ss[i];
+            }
+            w.value = newS;
+       }
     }
 </script>
 

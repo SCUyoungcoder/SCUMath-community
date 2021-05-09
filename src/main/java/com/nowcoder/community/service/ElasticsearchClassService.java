@@ -55,6 +55,22 @@ public class ElasticsearchClassService {
                 .build();
         return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
     }*/
+    public List<Paper> NewSearchPaperByClassAndThreeStatus(String classname,int status1,int status2,int status3){
+        Pageable pageable = new PageRequest(0,1000);
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("fatherid",classname))
+                        .must(QueryBuilders.boolQuery()
+                                .should(QueryBuilders.matchQuery("status",status1))
+                                .should(QueryBuilders.matchQuery("status",status2))
+                                .should(QueryBuilders.matchQuery("status",status3))))
+                /*.withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))*/
+                .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
+                .withPageable(pageable)
+                .build();
+        return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
+    }
     public List<Paper> searchPaperByClassAndStatus(String classname,int status){
         Pageable pageable = new PageRequest(0,1000);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()

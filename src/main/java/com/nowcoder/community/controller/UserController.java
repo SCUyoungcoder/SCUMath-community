@@ -61,6 +61,16 @@ public class UserController {
     private HostHolder hostHolder;
 
     @LoginRequired
+    @RequestMapping(path = "/searchByName",method = RequestMethod.GET)
+    public String searchByName(String username){
+        User user = hostHolder.getUser();
+        User user1 = userService.selectByUserName(username);
+        if (user1 == null){
+            return "redirect:/user/blog/"+user.getId()+"?searchResult=1";
+        }
+        return "redirect:/user/blog/"+user1.getId();
+    }
+    @LoginRequired
     @RequestMapping(path = "/deleteMember/{groupMemberId}",method = RequestMethod.GET)
     public String deleteMember(@PathVariable("groupMemberId") int groupMemberId){
         User user = hostHolder.getUser();
@@ -85,7 +95,6 @@ public class UserController {
         }
         String[] memberList = allMembers.split(" ");
         userService.addGroupMember(memberList,groupId);
-        System.out.println(allMembers);
         return "redirect:/user/groupDetail/"+groupId;
     }
     @LoginRequired
@@ -359,7 +368,7 @@ public class UserController {
                 model.addAttribute("info",info3);
                 return "paper/list";
             case 4:
-                PageInfo<Paper> info4 = new PageInfo<>(paperOfClassService.selectPaperOnlyByStatus(3));
+                PageInfo<Paper> info4 = new PageInfo<>(paperOfClassService.NewSelectByThreeStatus(3,7,9));
                 List<Paper> newPage4 = new ArrayList<>();
                 if (info4.getList()!=null){
                     for (Paper p:info4.getList()){
@@ -369,6 +378,17 @@ public class UserController {
                             user=userService.findUserById(p.getUserid());
                         }
                         p.setFilepath(user.getUsername());
+                        switch (p.getStatus()){
+                            case 3:
+                                p.setFatherid("代码");
+                                break;
+                            case 7:
+                                p.setFatherid("软件");
+                                break;
+                            case 9:
+                                p.setFatherid("文献");
+                                break;
+                        }
                         //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
                         newPage4.add(p);
                     }
@@ -406,7 +426,6 @@ public class UserController {
         user.setEmail(null);
         model.addAttribute("user", user);
         Userinfo userInfo = userinfoService.selectInfoByUserId(user.getId());
-        System.out.println(userInfo);
         if (userInfo==null){
             userInfo = new Userinfo();
             userInfo.setUserid(user.getId());
@@ -462,6 +481,7 @@ public class UserController {
     @LoginRequired
     @RequestMapping(path = "/blog/{id}",method = RequestMethod.GET)
     public String userBlog(@PathVariable int id, Model model,
+                           @RequestParam(value = "searchResult",defaultValue = "0") int searchResult,
                            @RequestParam(value = "page", defaultValue = "1") int page,
                            @RequestParam(value = "limit", defaultValue = "10") int limit){
         User user = userService.findUserById(id);
@@ -486,6 +506,9 @@ public class UserController {
             if(attentionService.FindById(hostHolder.getUser().getId(), id)!=0){
                 hasFollowed = true;
             }
+        }
+        if (searchResult==1){
+            model.addAttribute("regMsg","未查找到该用户！");
         }
         model.addAttribute("label2",page);
         model.addAttribute("label","blog");
@@ -588,7 +611,7 @@ public class UserController {
         model.addAttribute("user", user);
         callbackInfo(id, model);
         PageHelper.startPage(page, limit);
-        PageInfo<Paper> info = new PageInfo<>(paperOfClassService.SelectByAuthorIdAndStatus(id,2));
+        PageInfo<Paper> info = new PageInfo<>(paperOfClassService.NewSelectByAutherIdAndThreeStatus(id,2,6,8));
         List<Paper> newPage = new ArrayList<>();
         if (info.getList()!=null){
             for (Paper p:info.getList()){
@@ -598,6 +621,17 @@ public class UserController {
                     user1=userService.findUserById(p.getUserid());
                 }
                 p.setFilepath(user1.getUsername());
+                switch (p.getStatus()){
+                    case 2:
+                        p.setFatherid("代码");
+                        break;
+                    case 6:
+                        p.setFatherid("软件");
+                        break;
+                    case 8:
+                        p.setFatherid("文献");
+                        break;
+                }
                 //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
                 newPage.add(p);
             }
@@ -645,14 +679,12 @@ public class UserController {
             List<Map<String,Object>> papers = new ArrayList<>();
             List<Map<String,Object>> classify = new ArrayList<>();
             String[] allfather={"logic","compute","number","algebra","geometry","topology","analysis","ODE","PDE","dynamical","functional","probability","statistics","opsearch","combinatorial","fuzzy","quantum","applied"};
-            //System.out.println(page.getOffset());
             //List<Paper> statusof1 = paperOfClassService.selectpaperByStatus(1,page.getOffset(),page.getLimit());
             List<Paper> statusof1 = paperOfClassService.selectpaperByStatus(1,page.getOffset(),page.getLimit());
             /*如果报错，研究下这里取出来的数据*/
             if (statusof1!=null){
                 for (Paper paper:statusof1){
                     Map<String,Object> map = new HashMap<>();
-                    System.out.println(paper.getFatherid());
                     String[] fathers =paper.getFatherid().split(",");
                     /*map.put("papertitle",paper.getTitle());
            //java.lang.NullPointerException: null报错，已解决。。。。paper表里第一个的userid为2，而user表里没有这个，故报错。已修改
@@ -675,7 +707,6 @@ public class UserController {
                     for (String str:fathers){
                         Map<String,Object> map1 = new HashMap<>();
                         map1.put("searchname",str);
-                        System.out.println(str);
                         map1.put("name",classificationService.GetNameBySearchname(str).getName());
                         fatherss.add(map1);
                     }
@@ -913,7 +944,6 @@ public class UserController {
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) throws UnsupportedEncodingException {
         String sqlFilepath = domain+"/user/file/"+fileName;
         Paper paper = paperOfClassService.selectByFilepath(sqlFilepath);
-        System.out.println(paper);
         // 文件后缀
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         //文件前缀
@@ -942,7 +972,6 @@ public class UserController {
         } catch (IOException e) {
             logger.error("下载文件失败: " + e.getMessage());
         }
-        //System.out.println(title);
 
         paper.setDownloadcount(paper.getDownloadcount()+1);
         paperOfClassService.updateDownloadcount(paper.getId(),paper.getDownloadcount());

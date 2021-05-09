@@ -53,6 +53,18 @@
         order by id desc
         limit #{offset},#{limit}
     </select>
+    <select id="newSelectByThreeStatus" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where status = #{status1} or status = #{status2} or status = #{status3}
+        order by id desc
+    </select>
+    <select id="newSelectByAuthorIdAndThreeStatus" resultType="Paper">
+        select <include refid="selectFields"></include>
+        from paper
+        where user_id = #{userId} and (status = #{status1} or status = #{status2} or status = #{status3})
+        order by id desc
+    </select>
     <select id="selectByTitle" resultType="Paper">
         select <include refid="selectFields"></include>
         from paper

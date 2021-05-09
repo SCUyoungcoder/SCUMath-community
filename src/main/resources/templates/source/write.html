@@ -13,6 +13,9 @@
             font-size: .875rem;
             color: #6c757d;
         }
+
+
+
     </style>
 </head>
 <body style="background: #f2f2f2;">
@@ -26,73 +29,47 @@
             <div class="col-md-12 order-md-1">
                 <h4 class="mb-3">上传资源</h4>
 
-                <form class="needs-validation" enctype="multipart/form-data" th:action="@{/source/upload}" method="post">
+                <form class="needs-validation" enctype="multipart/form-data" th:action="@{/source/upload}"
+                      method="post">
                     <!-- 隐藏域 -->
                     <!--<input type="hidden" name="authorId" th:value="${user.getId()}">
                     <input type="hidden" name="authorName" th:value="${user.getUsername()}">-->
                     <!--<input type="hidden" name="authorAvatar" th:value="${session.loginUser.getAvatar()}">-->
 
 
-                        <!--<div class="col-md-10 mb-3">
-                            <label for="firstName">提问标题</label>
-                            <input type="text" name="title" class="form-control" id="firstName" value="" required>
-                        </div>-->
+                    <!--<div class="col-md-10 mb-3">
+                        <label for="firstName">提问标题</label>
+                        <input type="text" name="title" class="form-control" id="firstName" value="" required>
+                    </div>-->
+                    <div class="row">
+                        <div class="col-md-10 mb-3">
+                            <label for="country">上传文件</label>
+                            <br>
+                            <input type="file"
+                                   id="paperfile" name="paperfile" lang="es" required="">
+                        </div>
 
-                        <input type="file"
-                               id="paperfile" name="paperfile" lang="es" required="">
-                    <br>
-                        <b class="label" >选择类别:</b>
-                        <!--<input id="fatherid" name="fatherid" class="input is-medium"
-                            required="" type="text" value="">-->
-                        <a th:each="category:${classificationList}">
-                            <label><input type="checkbox" name="fatherid" th:value="${category.searchname}" th:utext="${category.name}"></label>
-                        </a>
-                        <!--<label><input type="checkbox" name="fatherid" value="logic">数理逻辑与数学基础</label>
-                        <label><input type="checkbox" name="fatherid" value="compute">计算数学</label>
-                        <label><input type="checkbox" name="fatherid" value="number">数论</label>
-                        <label><input type="checkbox" name="fatherid" value="algebra">代数</label>
-                        <label><input type="checkbox" name="fatherid" value="geometry">几何</label>
-                        <label><input type="checkbox" name="fatherid" value="topology">拓扑</label>
-                        <label><input type="checkbox" name="fatherid" value="analysis">数学分析</label>
-                        <label><input type="checkbox" name="fatherid" value="ODE">常微分方程</label>
-                        <label><input type="checkbox" name="fatherid" value="PDE">偏微分方程</label>
-                        <label><input type="checkbox" name="fatherid" value="dynamical">动力系统</label>
-                        <label><input type="checkbox" name="fatherid" value="functional">泛函分析</label>
-                        <label><input type="checkbox" name="fatherid" value="probability">概率论</label>
-                        <label><input type="checkbox" name="fatherid" value="statistics">统计学</label>
-                        <label><input type="checkbox" name="fatherid" value="opsearch">运筹学</label>
-                        <label><input type="checkbox" name="fatherid" value="combinatorial">组合数学</label>
-                        <label><input type="checkbox" name="fatherid" value="fuzzy">模糊数学</label>
-                        <label><input type="checkbox" name="fatherid" value="quantum">量子数学</label>
-                        <label><input type="checkbox" name="fatherid" value="applied">应用数学</label>-->
+                        <div class="col-md-2 mb-3">
+                            <label for="country">资源分类</label>
+                            <select name="status" class="custom-select d-block w-100" id="country">
+                                <option value=3>代码</option>
+                                <option value=7>软件</option>
+                                <option value=9>文献</option>
+                            </select>
+                        </div>
                         <br>
-                        <b class="label" for="content">内容:</b><br>
-                        <!--<input id="content" name="content" class="input is-medium"
-                               required="" type="text" value="">-->
+                        <b style="margin-left:15px" class="label">选择类别:</b>
+                        <a th:each="category:${classificationList}">
+                            <label><input type="checkbox" name="fatherid" th:value="${category.searchname}"
+                                          th:utext="${category.name}"></label>
+                        </a>
+                    </div>
+                    <br>
+                    <b class="label" for="content">内容:</b><br>
                     <div class="form-group">
-                        <textarea style="border-radius: 10px" id ="content" name="content" rows="3" required
+                        <textarea style="border-radius: 10px" id="content" name="content" rows="3" required
                                   class="form-control"></textarea>
                     </div>
-                       <!-- <textarea style="width:50%;height:91px;" id="content" name="content" class="input is-medium"
-                                  required="" type="text" value=""></textarea>-->
-                        <!--<div class="col-md-2 mb-3">
-                            <label for="country">标签</label>
-                            <select name="categoryId" class="custom-select d-block w-100" id="country">
-                                <option th:each="classification:${classificationList}"
-                                        th:value="${classification.getId()}" th:text="${classification.getName()}">
-                                </option>
-                            </select>
-                        </div>-->
-
-                        <!--<div class="col-md-12 mb-3">
-                            <p>提问详情</p>
-                            <div id="blog-content">
-                                <textarea required name="content" id="content" style="display:none;" rows="3"
-                                          class="form-control"> </textarea>
-                            </div>
-                        </div>-->
-
-
 
                     <button class="btn btn-primary btn-lg btn-block" type="submit">立即上传</button>
                 </form>

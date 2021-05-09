@@ -51,4 +51,11 @@ public class PaperOfClassService {
 //【看完第六章视频后考虑是否有用】
     public int CountByAutherIdAndStatus(int autherid,int status){return paperMapper.countByAuthorIdAndStatus(autherid,status);}
     public List<Paper> SelectByAuthorIdAndStatus(int autherid,int status){return paperMapper.selectByAuthorIdAndStatus(autherid,status);}
+
+    public List<Paper> NewSelectByThreeStatus(int status1,int status2,int status3){
+        return paperMapper.newSelectByThreeStatus(status1,status2,status3);
+    }
+    public List<Paper> NewSelectByAutherIdAndThreeStatus(int userId,int status1,int status2,int status3){
+        return paperMapper.newSelectByAuthorIdAndThreeStatus(userId,status1,status2,status3);
+    }
 }

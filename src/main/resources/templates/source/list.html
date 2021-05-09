@@ -20,37 +20,24 @@
                 <h6 class="border-bottom border-gray pb-2 mb-0">
                     累计：
                     <span th:text="${info.getTotal()}"></span>
-                    <span class="float-right" th:if="${!#strings.isEmpty(thisCategoryName)}">
+                    <span class="float-right" th:if="${!#strings.isEmpty(thisCategoryName) || !#strings.isEmpty(thisStatusName)}">
                         <a th:href="@{/source/list}">全部</a>
                         /
-                        <span th:text="${thisCategoryName}"></span>
+                        <a th:if="${!#strings.isEmpty(thisStatusName)}"
+                                th:href="@{'/source/list?status='+${status}}" th:text="${thisStatusName}"></a>
+                        <span th:if="${!#strings.isEmpty(thisCategoryName) && !#strings.isEmpty(thisStatusName)}">/</span>
+                        <span th:if="${!#strings.isEmpty(thisCategoryName)}" th:text="${thisCategoryName}"></span>
                     </span>
                 </h6>
-<!--                博客列表-->
-                <!--<ul class="list-unstyled">
-                    <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="blog:${info.getList()}">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-3">
-                                &lt;!&ndash;标题 且根据id号 查询数据 跳转到指定的页面&ndash;&gt;
-                                <a th:href="@{'/blog/read/'+${blog.getBid()}}" th:text="${blog.getTitle()}"></a>
-                            </h5>
-                            <h6 class="mt-0 mb-3">
-                                <h th:utext="${blog.getContent()}"></h>
-                            </h6>
-                            <div class="text-muted font-size-12">
-                                <a class="mr-3" th:utext="${blog.getAuthorName()}" th:href="@{|/user/${blog.authorId}|}"></a> 发布于 <b th:text="${#dates.format(blog.getGmtCreate(),'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
-                            </div>
-                        </div>
-                    </li>
-                </ul>-->
                 <div th:each="blog:${info.getList()}" class="media text-muted pt-3">
 
                     <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
                         <a style="color:#71716999;background: #ffb700c4"  class="badge badge-danger float-right" th:href="@{'/user/blog/'+${blog.getUserid()}}" th:text="${blog.getFilepath()}"></a>
+                        <a style="color:#71716999;background: #24b75d"  class="badge badge-danger float-right"
+                           th:href="@{'/source/list?status='+${blog.getStatus()}}" th:text="${blog.getFatherid()}"></a>
                         <!--标题 且根据id号 查询数据 跳转到指定的页面-->
                         <a th:href="@{'/source/detail?id='+${blog.getId()}}" th:text="${blog.getTitle()}"
                            class="text-dark font-weight-bold text-decoration-none d-block"></a>
-
                         <!--浏览量-->
                         <li class="d-inline ml-2">下载次数 <i th:text="${blog.getDownloadcount()}"></i></li>
 
@@ -65,27 +52,37 @@
                     <ul class="pagination justify-content-center pagination-sm">
                         <!--往前翻 如果没有前一页 则禁用-->
                         <li th:class="${info.isHasPreviousPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:if="${category!='a'}" th:href="@{'/source/list?category='+${category}+'&page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:if="${category!='a' && #strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?category='+${category}+'&page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
-                            <a class="page-link" th:if="${category=='a'}" th:href="@{'/source/list?page='+${info.getPrePage()}+'&limit=10'}"
+                            <a class="page-link" th:if="${category=='a' && #strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                            <a class="page-link" th:if="${category!='a' && !#strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?category='+${category}+'&status='+${status}+'&page='+${info.getPrePage()}+'&limit=10'}"
+                               tabindex="">Previous</a>
+                            <a class="page-link" th:if="${category=='a' && !#strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?status='+${status}+'&page='+${info.getPrePage()}+'&limit=10'}"
                                tabindex="">Previous</a>
                         </li>
 
                         <div th:each="page:${info.getNavigatepageNums()}">
                             <li class="page-item"  th:classappend="${page}==${info.getPageNum()}?'active':''">
-                                <a class="page-link" th:if="${category!='a'}" th:href="@{'/source/list?category='+${category}+'&page='+${page}+'&limit=10'}"
-                                   th:text="${page}">
-                                </a>
-                                <a class="page-link" th:if="${category=='a'}" th:href="@{'/source/list?page='+${page}+'&limit=10'}"
-                                   th:text="${page}">
-                                </a>
+                                <a class="page-link" th:if="${category!='a' && #strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?category='+${category}+'&page='+${page}+'&limit=10'}"
+                                   th:text="${page}"></a>
+                                <a class="page-link" th:if="${category=='a' && #strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?page='+${page}+'&limit=10'}"
+                                   th:text="${page}"></a>
+                                <a class="page-link" th:if="${category!='a' && !#strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?category='+${category}+'&status='+${status}+'&page='+${page}+'&limit=10'}"
+                                   th:text="${page}"></a>
+                                <a class="page-link" th:if="${category=='a' && !#strings.isEmpty(thisStatusName)}" th:href="@{'/source/list?status='+${status}+'&page='+${page}+'&limit=10'}"
+                                   th:text="${page}"></a>
                             </li>
                         </div>
                         <li th:class="${info.isHasNextPage()==true?'page-item':'page-item disabled'}">
-                            <a class="page-link" th:if="${category!='a'}"
+                            <a class="page-link" th:if="${category!='a' && #strings.isEmpty(thisStatusName)}"
                                th:href="@{'/source/list?category='+${category}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
-                            <a class="page-link" th:if="${category=='a'}"
+                            <a class="page-link" th:if="${category=='a' && #strings.isEmpty(thisStatusName)}"
                                th:href="@{'/source/list?page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${category!='a' && !#strings.isEmpty(thisStatusName)}"
+                               th:href="@{'/source/list?category='+${category}+'&status='+${status}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
+                            <a class="page-link" th:if="${category=='a' && !#strings.isEmpty(thisStatusName)}"
+                               th:href="@{'/source/list?status='+${status}+'&page='+${info.getNextPage()}+'&limit=10'}">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -100,8 +97,19 @@
                 </p>
             </div>
             <div class="p-4 my-3 bg-white rounded">
-                <!--直接写默认值了 每页10条数据-->
-                <a th:href="@{'/source/list?category='+${category.getSearchname()}}"
+                <a th:if="${#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=2'}" class="badge badge-warning badge-pill badge-primary mr-1">代码</a>
+                <a th:if="${#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=6'}" class="badge badge-warning badge-pill badge-primary mr-1">软件</a>
+                <a th:if="${#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=8'}" class="badge badge-warning badge-pill badge-primary mr-1">文献</a>
+                <a th:if="${!#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=2&category='+${category}}" class="badge badge-warning badge-pill badge-primary mr-1">代码</a>
+                <a th:if="${!#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=6&category='+${category}}" class="badge badge-warning badge-pill badge-primary mr-1">软件</a>
+                <a th:if="${!#strings.isEmpty(thisCategoryName)}" th:href="@{'/source/list?status=8&category='+${category}}" class="badge badge-warning badge-pill badge-primary mr-1">文献</a>
+
+                <a th:if="${#strings.isEmpty(thisStatusName)}"
+                        th:href="@{'/source/list?category='+${category.getSearchname()}}"
+                   th:each="category:${categoryList}" th:text="${category.getName()}"
+                   class="badge badge-pill badge-primary mr-1"></a>
+                <a th:if="${!#strings.isEmpty(thisStatusName)}"
+                        th:href="@{'/source/list?category='+${category.getSearchname()}+'&status='+${status}}"
                    th:each="category:${categoryList}" th:text="${category.getName()}"
                    class="badge badge-pill badge-primary mr-1"></a>
             </div>

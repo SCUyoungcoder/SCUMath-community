@@ -50,7 +50,7 @@ public class LoginController {
         // 检查验证码
         String kaptcha = (String) session.getAttribute("kaptcha");
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
-            model.addAttribute("codeMsg", "验证码不正确!");
+            model.addAttribute("regMsg", "验证码不正确!");
             return "/login";
         }
 
@@ -65,8 +65,13 @@ public class LoginController {
             response.addCookie(cookie);
             return "redirect:/index";/*重定向到首页*/
         } else {
-            model.addAttribute("usernameMsg", map.get("usernameMsg"));/*如果不是usernameMsy的问题get到的是null，不影响*/
-            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            if (map.get("usernameMsg")!=null){
+                model.addAttribute("regMsg", map.get("usernameMsg"));/*如果不是usernameMsy的问题get到的是null，不影响*/
+            }
+            if (map.get("passwordMsg")!=null){
+                model.addAttribute("regMsg", map.get("passwordMsg"));
+            }
+
             return "/login";
         }
     }
@@ -94,7 +99,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(path = "/activation/{userId}/{code}",method = RequestMethod.GET)
+/*    @RequestMapping(path = "/activation/{userId}/{code}",method = RequestMethod.GET)
     public String activation(Model model, @PathVariable("userId") int userId,@PathVariable("code") String code){
         int result = loginService.activation(userId, code);
         if (result == 0) {
@@ -108,7 +113,7 @@ public class LoginController {
             model.addAttribute("target", "/index");
         }
         return "/site/registerresult";
-    }
+    }*/
 
 
 
@@ -140,14 +145,14 @@ public class LoginController {
     }
     //cookie示例 不够隐私，每次自动返回cookie增加数据量。浏览器关闭cookie消失
     /*                                                  4个测试用例，项目整合时期删除*/
-    @RequestMapping(path = "/cookie/set",method = RequestMethod.GET)
-    @ResponseBody/*将返回值转换为json格式*/
+   /* @RequestMapping(path = "/cookie/set",method = RequestMethod.GET)
+    @ResponseBody*//*将返回值转换为json格式*//*
     public String setCookie(HttpServletResponse response) {
         // 创建cookie
         Cookie cookie = new Cookie("code", CommunityUtil.generateUUID());
         // 设置cookie生效的范围
-        /*cookie.setPath("/community/alpha");*/
-        /*cookie.setPath("/");*//*不写或/即为在整个文件夹有效*/
+        *//*cookie.setPath("/community/alpha");*//*
+        *//*cookie.setPath("/");*//**//*不写或/即为在整个文件夹有效*//*
         // 设置cookie的生存时间
         cookie.setMaxAge(60 * 10);
         // 发送cookie
@@ -177,7 +182,7 @@ public class LoginController {
         System.out.println(session.getAttribute("id"));
         System.out.println(session.getAttribute("name"));
         return "get session";
-    }
+    }*/
 
 
 

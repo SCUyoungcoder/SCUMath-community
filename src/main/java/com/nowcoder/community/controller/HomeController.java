@@ -89,7 +89,6 @@ public class HomeController {
         }
         if(userId==0){
             attentionList  = attentionService.SelectByUserId(user.getId());
-            System.out.println(attentionList);
         }
         else {
             attentionList = new ArrayList<>();
@@ -126,8 +125,6 @@ public class HomeController {
                 }
             }
         }
-        System.out.println(sql.toString());
-        System.out.println(sql2.toString());
         PageHelper.startPage(page,limit);
         PageInfo<Itemindex> info = new PageInfo<>(attentionService.SelectAllItemByUserIds(sql2.toString(),sql.toString()));
         List<Itemindex> items = new ArrayList<>();
@@ -171,8 +168,6 @@ public class HomeController {
     /*@RequestMapping(path = "/ajax", method = RequestMethod.POST)
     @ResponseBody
     public String testAjax(String name, int age) {
-        System.out.println(name);
-        System.out.println(age);
         return CommunityUtil.getJSONString(0, "操作成功!");
     }*/
 }

@@ -128,10 +128,7 @@ public class CommentController {
                     break;
                 case 1:
                     Comment comment1 = commentService.selectcommentById(entityId);
-                    System.out.println(entityId);
                     entityId = comment1.getEntityid();
-                    System.out.println(entityId);
-                    System.out.println(comment1.getEntitytype());
                     switch (comment1.getEntitytype()){
                         case 0:
                             map.put("url","/detail?id="+entityId);
@@ -260,7 +257,6 @@ public class CommentController {
             else {
                 paperid=comment.getEntityid();
             }
-            System.out.println(paperid);
             cc.put("paperid" ,paperid);
             cc.put("papername",paperOfClassService.selectPaperById(paperid).getTitle());
             cc.put("status",paperOfClassService.selectPaperById(paperid).getStatus());

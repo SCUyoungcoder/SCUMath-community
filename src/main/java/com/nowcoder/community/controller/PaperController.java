@@ -22,7 +22,7 @@ import java.util.*;
 
 
 @Controller
-public class PaperOfClass3Controller {
+public class PaperController {
     @Value("${community.path.upload}")
     private String uploadPath;
     @Value("${community.path.domain}")
