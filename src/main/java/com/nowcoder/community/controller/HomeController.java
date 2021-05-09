@@ -76,7 +76,7 @@ public class HomeController {
             PageInfo<Itemindex> info1 = new PageInfo<>();
             model.addAttribute("info",info1);
             model.addAttribute("attentions",attentions);
-            return "/list";
+            return "/attentionList";
         }else {
             for (Attention attention:attentionList){
                 Map<String ,Object> map = new HashMap<>();

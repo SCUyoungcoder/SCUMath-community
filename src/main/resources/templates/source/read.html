@@ -162,14 +162,12 @@
                                             <div th:id="|huifu-${cvo.comment.id}-${rvoStat.count}|" class="mt-4 collapse">
                                                 <form method="post" th:action="@{|/source/add/${paper.id}|}">
                                                     <div>
-                                                        <input type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|" required/>
+                                                        <input style="width:90%" type="text" class="input-size" name="content" th:placeholder="|回复${rvo.user.username}|" required/>
                                                         <input type="hidden" name="entitytype" value="1">
                                                         <input type="hidden" name="type" value="1">
                                                         <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
                                                         <input type="hidden" name="targetid" th:value="${rvo.user.id}">
-                                                    </div>
-                                                    <div class="text-right mt-2">
-                                                        <button type="submit" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
+                                                        <button type="submit" style="float:right" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -179,14 +177,11 @@
                                     <li class="pb-3 pt-3">
                                         <form method="post" th:action="@{|/source/add/${paper.id}|}">
                                             <div>
-                                                <input type="text" class="input-size" name="content" placeholder="请输入你的观点" required/>
+                                                <input style="width:90%" type="text" class="input-size" name="content" placeholder="请输入你的观点" required/>
                                                 <input type="hidden" name="entitytype" value="1">
                                                 <input type="hidden" name="type" value="0">
                                                 <input type="hidden" name="entityid" th:value="${cvo.comment.id}">
-                                                <!--<input type="hidden" name="targetid" th:value="${cvo.comment.userid}">-->
-                                            </div>
-                                            <div class="pt-3 text-right">
-                                                <button type="submit" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
+                                                <button type="submit" style="float:right" class="btn btn-light btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
                                             </div>
                                         </form>
                                     </li>

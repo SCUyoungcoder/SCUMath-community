@@ -330,9 +330,7 @@ public class QuestionController {
         // 使用自定义的上传路径
         String path = uploadPicPath;
         // 调用上传图片的方法
-
         JSONObject res = uploadPic.uploadImgFile(request,path,file);
-
         return res;
     }
 

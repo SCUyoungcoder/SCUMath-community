@@ -12,12 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
+
+
+/////////////没用，不知道为什么，我写到LoginRequiredinterceptor里去了
 @Component
 public class AdminRequiredInterceptor implements HandlerInterceptor {
     @Autowired
     private HostHolder hostHolder;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("AdminRequired is run");
         if (handler instanceof HandlerMethod) {/*判断拦截下来的是否是方法*/
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();

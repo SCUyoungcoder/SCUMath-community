@@ -18,6 +18,10 @@ public class UploadPicService {
 
     public JSONObject uploadImgFile(HttpServletRequest request,String filePath, MultipartFile file){
 
+        System.out.println(file.getSize());
+        if (file.getSize()>1024*1024){
+            return null;
+        }
         Picture pic = new Picture();
         // 获取完整的文件名
         String trueFileName = file.getOriginalFilename();

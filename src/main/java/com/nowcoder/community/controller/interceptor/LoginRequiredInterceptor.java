@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller.interceptor;
 
+import com.nowcoder.community.annotation.AdminRequired;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,16 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
             if (loginRequired != null && hostHolder.getUser() == null) {/*当前方法需要登录，而未获取到用户信息*/
                 response.sendRedirect(request.getContextPath() + "/login");
                 /*request取到路径加上login，跳转到login*/
+                return false;
+            }
+            AdminRequired adminRequired = method.getAnnotation(AdminRequired.class);
+            if (adminRequired != null && hostHolder.getUser() == null) {/*当前方法需要登录，而未获取到用户信息*/
+                response.sendRedirect(request.getContextPath() + "/login");
+                /*request取到路径加上login，跳转到login*/
+                return false;
+            }
+            if (adminRequired != null && hostHolder.getUser().getType()==0){
+                response.sendRedirect(request.getContextPath()+"/index");
                 return false;
             }
         }

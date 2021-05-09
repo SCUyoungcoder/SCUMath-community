@@ -63,6 +63,21 @@ public class BlogController {
     private UploadPicService uploadPic;
 
     @LoginRequired
+    @RequestMapping(path = "/deleteUselessPic",method = RequestMethod.GET)
+    public String deleteUselessPic(Model model){
+        List<Picture> pictureList = pictureService.SelectByType(0);
+        for (Picture picture:pictureList){
+            String path = uploadPicPath+"/"+picture.getSaveName();
+            File file = new File(path);
+            if (!file.isDirectory()){
+                file.delete();
+            }
+            pictureService.DeleteById(picture.getId());
+        }
+        model.addAttribute("deletePicMsg","删除成功");
+        return "index";
+    }
+    @LoginRequired
     @RequestMapping(path = "/passApply/{blogAbleId}",method = RequestMethod.GET)
     public String passApply(Model model,@PathVariable("blogAbleId") int blogAbleId){
         User user = hostHolder.getUser();
@@ -609,18 +624,24 @@ public class BlogController {
     @RequestMapping(path = "toTop", method = RequestMethod.POST)
     @ResponseBody
     public String toTop(String bid) {
-        Blog blog = blogService.SelectByBid(bid);
-        blog.setGmtUpdate(new Date(System.currentTimeMillis()));
-        int re = 0;
-        if (blog.getAuthorAvatar().equals("置顶")) {
-            blog.setAuthorAvatar("取消置顶");
-            re = 1;
-        } else {
-            blog.setAuthorAvatar("置顶");
-        }
-        blogService.UpdateBlog(blog);
-        blogRepository.save(blog);
-        return CommunityUtil.getJSONString(re);
+        /*User user = hostHolder.getUser();*/
+        /*if (user.getType()==1){*/
+            Blog blog = blogService.SelectByBid(bid);
+            blog.setGmtUpdate(new Date(System.currentTimeMillis()));
+            int re = 0;
+            if (blog.getAuthorAvatar().equals("置顶")) {
+                blog.setAuthorAvatar("取消置顶");
+                re = 1;
+            } else {
+                blog.setAuthorAvatar("置顶");
+            }
+            blogService.UpdateBlog(blog);
+            blogRepository.save(blog);
+            return CommunityUtil.getJSONString(re);
+        /*}
+        else {
+            return null;
+        }*/
     }
 
     @AdminRequired

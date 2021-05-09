@@ -21,33 +21,10 @@
 
             </p>
             <p><a class="btn btn-primary btn-lg" target="_blank" href="/blog/list" role="button">了解更多</a></p>
+            <span th:text="${deletePicMsg}" style="font-size:30px;color: green"></span>
         </div>
-
     </div>
-<!--    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h2>博客</h2>
-                <p> 想写什么就写什么吧  你的文章将会被更多的人看到哦 </p>
-                <p><a th:href="@{/blog/list}" class="btn btn-secondary" role="button">前往 »</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>问答</h2>
-                <p> 大家畅所欲言  有什么问题尽管提哦 </p>
-                <p><a th:href="@{/question/list}" class="btn btn-secondary" role="button">前往 »</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>论文库</h2>
-                <p> 一些优秀的论文都放在这里</p>
-                <p>  <p><a th:href="@{/paper/list}" class="btn btn-secondary" role="button">前往 »</a></p></p>
-            </div>
-            <div class="col-md-4">
-                <h2>资源库</h2>
-                <p> 一些资源都放在这里哦</p>
-                <p>  <p><a th:href="@{/source/list}" class="btn btn-secondary" role="button">前往 »</a></p></p>
-            </div>
-        </div>
-    </div>-->
+
     <div th:each="paper:${notice}" class="jumbotron" style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc inset;" >
         <div class="" style="margin-left: 5px">
             <span class="badge badge-info" >公告</span>
