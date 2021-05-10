@@ -17,9 +17,6 @@ public class PictureService {
     public int UpdateFather(int id,int fatherId,int fatherType){
         return pictureMapper.updateFather(id,fatherId,fatherType);
     }
-    public int UpdateFahterTypeByFather(int newtype,int fatherid,int oldtype){
-        return pictureMapper.updateFahterTypeByFather(newtype,fatherid,oldtype);
-    }
     public int DeleteByFather(int fatherId,int fatherType){
         return pictureMapper.deleteByFather(fatherId,fatherType);
     }

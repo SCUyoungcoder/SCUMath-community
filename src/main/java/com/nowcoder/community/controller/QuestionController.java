@@ -67,7 +67,6 @@ public class QuestionController {
         model.addAttribute("blogs",searchQuestion);
         model.addAttribute("fieldname",fieldname);
         model.addAttribute("label","question");
-        //model.addAttribute("text","");
         page.setPath("/question/search?keyword="+keyword+"&fieldname="+fieldname+"&sortname"+sortname);
         page.setRows(searchQuestion == null?0:searchQuestion.getTotalPages());
         return "search/list";
@@ -105,7 +104,6 @@ public class QuestionController {
         List<Classification> classifications = classificationService.AllClassifications();
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
-        //model.addAttribute("checkLabel",0);
         return "question/list";
     }
     @LoginRequired
@@ -179,7 +177,6 @@ public class QuestionController {
         //数据库中删除本博客没用的图片
         int newtype = (int)(Math.random()*90+10);
         List<Picture> pictureList = pictureService.SelectByFather(oldQuestion.getId(),2);
-        //System.out.println(question.getId());
         if (!pictureList.isEmpty()){
             for (Picture picture:pictureList){
                 pictureService.UpdateFather(picture.getId(),picture.getFatherId(),newtype);
@@ -206,16 +203,6 @@ public class QuestionController {
             }
             pictureService.DeleteByFather(oldQuestion.getId(),newtype);
         }
-        /*List<Picture> pictures = pictureService.SelectByFather(oldQuestion.getId(),1)
-        pictureService.DeleteByFather(oldQuestion.getId(),1);
-        String[] findPicName = Content.split("/question/UsingTheComplexLinkGetThePicForPicManage/");
-        for(int i = 1;i<findPicName.length;i++){
-            String newPic = findPicName[i].split("\\)")[0];
-            Picture findSql = pictureService.SelectBySaveName(newPic);
-            if (findSql!=null){
-                pictureService.UpdateFather(findSql.getId(),question.getId(),1);
-            }
-        }*/
         return "redirect:/question/read/" + qid;
     }
     @LoginRequired
@@ -257,8 +244,6 @@ public class QuestionController {
             questionService.UpdateViews(question.getId(),question.getViews());
             questionRepository.save(question);
         }
-
-        //List<Comment> questionComments = commentService.selectcommentByEntity(2,question.getId(),0);//status=评论，entitytype=论文
         PageHelper.startPage(page,limit);
         PageInfo<Comment> questionComments = new PageInfo<>(commentService.selectcommentByEntity(3,question.getId(),0));
         if (page==1 && question.getSort()==1){
@@ -267,14 +252,12 @@ public class QuestionController {
                 List<Comment> c1 = questionComments.getList();
                 if (c1.contains(comment)){
                     c1.remove(comment);
-
                 }
                 comment.setTable(1);
                 c1.add(0,comment);
                 questionComments.setList(c1);
             }
         }
-        //List<Comment> questionComments = commentService.selectByEntityAndPage(3,question.getId(),0,page.getCurrent()-1,page.getLimit());
         List<Map<String,Object>> coms = new ArrayList<>();
         if (questionComments.getList().size()>0) {
             for (Comment questionComment : questionComments.getList()) {
@@ -304,7 +287,6 @@ public class QuestionController {
                             target.put("username",user33.getUsername());
                             target.put("id",user33.getId());
                         }
-                        //target = commentComment.getTargetid() == 0 ? null:userService.findUserById(commentComment.getTargetid());
                         cc.put("target",target);
                         ccs.add(cc);
                     }
@@ -333,43 +315,6 @@ public class QuestionController {
         JSONObject res = uploadPic.uploadImgFile(request,path,file);
         return res;
     }
-
-    //返回图片，参考url：https://question.csdn.net/meiqi0538/article/details/79862213/?utm_term=java%E8%BF%94%E5%9B%9E%E5%9B%BE%E7%89%87%E7%BB%99%E5%89%8D%E7%AB%AF&utm_medium=distribute.pc_aggpage_search_result.none-task-question-2~all~sobaiduweb~default-1-79862213&spm=3001.4430
-    /*@LoginRequired
-    @RequestMapping(value = "/UsingTheComplexLinkGetThePicForPicManage/{picname}",method = RequestMethod.GET)
-    public void returnPic(HttpServletResponse response,@PathVariable("picname") String picname){
-        String filePath = uploadPicPath + "/"+picname;
-        //创建一个文件对象，对应的文件就是python把词云图片生成后的路径以及对应的文件名
-        File file = new File(filePath);
-        //使用字节流读取本地图片
-        *//*ServletOutputStream out=null;
-        BufferedInputStream buf=null;*//*
-        //response.setContentType("image/png");
-        try {
-            //使用输入读取缓冲流读取一个文件输入流
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            //利用response获取一个字节流输出对象
-            OutputStream out = response.getOutputStream();
-            //定义个数组，由于读取缓冲流中的内容
-            byte[] buffer=new byte[1024];
-            //while循环一直读取缓冲流中的内容到输出的对象中
-            while(buf.read(buffer)!=-1) {
-                out.write(buffer);
-            }
-            //写出到请求的地方
-            out.flush();
-            out.close();;
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //传输结束后，删除文件，可以不删除，在生成的图片中回对此进行覆盖
-*//*        File file1 = new File("E:\\Java\\eclipse_code\\NLP\\WebContent\\source\\wordcloud.png");
-        file1.delete();
-        System.out.println("文件删除！");*//*
-
-    }*/
     @LoginRequired
     @RequestMapping(path = "/delete/{qid}" ,method = RequestMethod.GET)
     public String delete(@PathVariable("qid") String qid){
@@ -425,21 +370,5 @@ public class QuestionController {
         else {
             return CommunityUtil.getJSONString(1,"没有权限！");
         }
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

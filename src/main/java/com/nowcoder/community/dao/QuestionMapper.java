@@ -17,7 +17,7 @@ public interface QuestionMapper {
     int updateViews(int id,int count);
     int updateQuestion(Question question);
     int updateStatus(int id,int status);
-    List<Question> selectBySort(int sort);
+    /*List<Question> selectBySort(int sort);*/
     List<Question> selectAllByStatus(int status);
     List<Question> selectByCategory(int categoryId);
     List<Question> selectByAuthorId(int userId);

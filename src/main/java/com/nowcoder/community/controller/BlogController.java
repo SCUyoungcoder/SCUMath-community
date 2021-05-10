@@ -63,42 +63,46 @@ public class BlogController {
     private UploadPicService uploadPic;
 
     @LoginRequired
-    @RequestMapping(path = "/deleteUselessPic",method = RequestMethod.GET)
-    public String deleteUselessPic(Model model){
+    @RequestMapping(path = "/deleteUselessPic", method = RequestMethod.GET)
+    public String deleteUselessPic(Model model) {
         List<Picture> pictureList = pictureService.SelectByType(0);
-        for (Picture picture:pictureList){
-            String path = uploadPicPath+"/"+picture.getSaveName();
+        for (Picture picture : pictureList) {
+            String path = uploadPicPath + "/" + picture.getSaveName();
             File file = new File(path);
-            if (!file.isDirectory()){
+            if (!file.isDirectory()) {
                 file.delete();
             }
             pictureService.DeleteById(picture.getId());
         }
-        model.addAttribute("deletePicMsg","删除成功");
+        model.addAttribute("deletePicMsg", "删除成功");
         return "index";
     }
+
     @LoginRequired
-    @RequestMapping(path = "/passApply/{blogAbleId}",method = RequestMethod.GET)
-    public String passApply(Model model,@PathVariable("blogAbleId") int blogAbleId){
+    @RequestMapping(path = "/passApply/{blogAbleId}", method = RequestMethod.GET)
+    public String passApply(Model model, @PathVariable("blogAbleId") int blogAbleId) {
         User user = hostHolder.getUser();
-        blogAbleService.passBlogAbleById(blogAbleId,user.getId());
+        blogAbleService.passBlogAbleById(blogAbleId, user.getId());
         return "redirect:/comment/blogApply";
     }
+
     @LoginRequired
-    @RequestMapping(path = "/deleteApply/{blogAbleId}",method = RequestMethod.GET)
-    public String deleteApply(Model model,@PathVariable("blogAbleId") int blogAbleId){
+    @RequestMapping(path = "/deleteApply/{blogAbleId}", method = RequestMethod.GET)
+    public String deleteApply(Model model, @PathVariable("blogAbleId") int blogAbleId) {
         User user = hostHolder.getUser();
-        blogAbleService.deleteBlogAbleById(blogAbleId,user.getId());
+        blogAbleService.deleteBlogAbleById(blogAbleId, user.getId());
         return "redirect:/comment/blogApply";
     }
+
     @LoginRequired
-    @RequestMapping(path = "/applyForBlog/{bid}",method = RequestMethod.GET)
-    public String applyForBlog(@PathVariable("bid") String bid){
+    @RequestMapping(path = "/applyForBlog/{bid}", method = RequestMethod.GET)
+    public String applyForBlog(@PathVariable("bid") String bid) {
         User user = hostHolder.getUser();
         Blog blog = blogService.SelectByBid(bid);
-        blogAbleService.insertApplyForBlog(blog.getId(),blog.getAuthorId(),user.getId());
+        blogAbleService.insertApplyForBlog(blog.getId(), blog.getAuthorId(), user.getId());
         return "redirect:/blog/list";
     }
+
     @LoginRequired
     @RequestMapping(path = "/deleteGroup/{blogId}/{groupId}", method = RequestMethod.GET)
     public String deleteGroup(@PathVariable("blogId") int blogId, @PathVariable("groupId") int groupId) {
@@ -135,7 +139,7 @@ public class BlogController {
             return "redirect:/blog/read/" + blog.getBid();
         }
         String[] groupList = groups.split(" ");
-        blogAbleService.addGroupToBlogAble(groupList, blogid, user.getId(),blog.getAuthorId());
+        blogAbleService.addGroupToBlogAble(groupList, blogid, user.getId(), blog.getAuthorId());
         return "redirect:/blog/addAbleUser/" + blogid;
     }
 
@@ -151,7 +155,7 @@ public class BlogController {
             return "redirect:/blog/read/" + blog.getBid();
         }
         String[] userList = users.split(" ");
-        blogAbleService.addUserToBlogAble(userList, blogid,blog.getAuthorId());
+        blogAbleService.addUserToBlogAble(userList, blogid, blog.getAuthorId());
         return "redirect:/blog/addAbleUser/" + blogid;
     }
 
@@ -238,7 +242,6 @@ public class BlogController {
         model.addAttribute("blogs", searchBlog);
         model.addAttribute("fieldname", fieldname);
         model.addAttribute("label", "blog");
-        //model.addAttribute("text","");
         page.setPath("/blog/search?keyword=" + keyword + "&fieldname=" + fieldname + "&sortname" + sortname);
         page.setRows(searchBlog == null ? 0 : searchBlog.getTotalPages());
         return "search/list";
@@ -411,16 +414,6 @@ public class BlogController {
             }
             pictureService.DeleteByFather(oldBlog.getId(), newtype);
         }
-        /*List<Picture> pictures = pictureService.SelectByFather(oldBlog.getId(),1)
-        pictureService.DeleteByFather(oldBlog.getId(),1);
-        String[] findPicName = Content.split("/blog/UsingTheComplexLinkGetThePicForPicManage/");
-        for(int i = 1;i<findPicName.length;i++){
-            String newPic = findPicName[i].split("\\)")[0];
-            Picture findSql = pictureService.SelectBySaveName(newPic);
-            if (findSql!=null){
-                pictureService.UpdateFather(findSql.getId(),blog.getId(),1);
-            }
-        }*/
         return "redirect:/blog/read/" + bid;
     }
 
@@ -449,10 +442,10 @@ public class BlogController {
                        @RequestParam(defaultValue = "10") int limit) {
         Blog blog = blogService.SelectByBid(bid);
         User user = hostHolder.getUser();
-        if (user.getId()!=blog.getAuthorId()){
-            int canView = blogAbleService.ableToViewBlog(blog.getId(),user.getId());
-            if (canView==0){
-                model.addAttribute("blog",blog);
+        if (user.getId() != blog.getAuthorId()) {
+            int canView = blogAbleService.ableToViewBlog(blog.getId(), user.getId());
+            if (canView == 0) {
+                model.addAttribute("blog", blog);
                 return "group/apply";
             }
         }
@@ -470,16 +463,8 @@ public class BlogController {
         } else {
             model.addAttribute("isLike", 0);
         }
-        /*else {
-            blog.setViews(blog.getViews()+1);
-            blogService.UpdateViews(blog.getId(),blog.getViews());
-            blogRepository.save(blog);
-        }*/
-
-        //List<Comment> blogComments = commentService.selectcommentByEntity(2,blog.getId(),0);//status=评论，entitytype=论文
         PageHelper.startPage(page, limit);
         PageInfo<Comment> blogComments = new PageInfo<>(commentService.selectcommentByEntity(2, blog.getId(), 0));
-        //List<Comment> blogComments = commentService.selectByEntityAndPage(2,blog.getId(),0,page.getCurrent()-1,page.getLimit());
         List<Map<String, Object>> coms = new ArrayList<>();
         if (blogComments.getList().size() > 0) {
             for (Comment blogComment : blogComments.getList()) {
@@ -521,8 +506,6 @@ public class BlogController {
                 coms.add(map);
             }
         }
-        //page.setRows(blogComments == null?0:(int)commentService.CountByEntity(blog.getId(),2)/10);
-        //page.setPath("/blog/read/"+bid);
         model.addAttribute("info", blogComments);
         model.addAttribute("comments", coms);
         model.addAttribute("blog", blog);
@@ -549,10 +532,6 @@ public class BlogController {
         String filePath = uploadPicPath + "/" + picname;
         //创建一个文件对象，对应的文件就是python把词云图片生成后的路径以及对应的文件名
         File file = new File(filePath);
-        //使用字节流读取本地图片
-        /*ServletOutputStream out=null;
-        BufferedInputStream buf=null;*/
-        //response.setContentType("image/png");
         try {
             //使用输入读取缓冲流读取一个文件输入流
             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
@@ -572,12 +551,6 @@ public class BlogController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //传输结束后，删除文件，可以不删除，在生成的图片中回对此进行覆盖
-/*        File file1 = new File("E:\\Java\\eclipse_code\\NLP\\WebContent\\source\\wordcloud.png");
-        file1.delete();
-        */
-
     }
 
     @LoginRequired
@@ -624,24 +597,18 @@ public class BlogController {
     @RequestMapping(path = "toTop", method = RequestMethod.POST)
     @ResponseBody
     public String toTop(String bid) {
-        /*User user = hostHolder.getUser();*/
-        /*if (user.getType()==1){*/
-            Blog blog = blogService.SelectByBid(bid);
-            blog.setGmtUpdate(new Date(System.currentTimeMillis()));
-            int re = 0;
-            if (blog.getAuthorAvatar().equals("置顶")) {
-                blog.setAuthorAvatar("取消置顶");
-                re = 1;
-            } else {
-                blog.setAuthorAvatar("置顶");
-            }
-            blogService.UpdateBlog(blog);
-            blogRepository.save(blog);
-            return CommunityUtil.getJSONString(re);
-        /*}
-        else {
-            return null;
-        }*/
+        Blog blog = blogService.SelectByBid(bid);
+        blog.setGmtUpdate(new Date(System.currentTimeMillis()));
+        int re = 0;
+        if (blog.getAuthorAvatar().equals("置顶")) {
+            blog.setAuthorAvatar("取消置顶");
+            re = 1;
+        } else {
+            blog.setAuthorAvatar("置顶");
+        }
+        blogService.UpdateBlog(blog);
+        blogRepository.save(blog);
+        return CommunityUtil.getJSONString(re);
     }
 
     @AdminRequired

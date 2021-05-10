@@ -49,7 +49,6 @@ public class SourceController {
         if (sortname==null){
             sortname="downloadcount";
         }
-        //org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.searchPaperByFieldname(keyword,2,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
         org.springframework.data.domain.Page<Paper> searchSource =elasticsearchService.newSearchSourceByFieldname(keyword,2,6,8,fieldname,sortname,page.getCurrent() - 1,page.getLimit());
         List<Map<String ,Object>> sources = new ArrayList<>();
         if (searchSource !=null){
@@ -80,7 +79,7 @@ public class SourceController {
     public String uploadSource(MultipartFile paperfile, Paper paper, Model model){
         User user = hostHolder.getUser();
         if (paperfile == null){
-            return "error/404";
+            return "error/5xx";
         }
         String fileName = paperfile.getOriginalFilename();
         /*获取前缀存入数据库*/
@@ -92,18 +91,8 @@ public class SourceController {
         String path = uploadPath;
         //判断后缀是否为空
         if (StringUtils.isBlank(suffix)) {
-
-
-            /*model.addAttribute("error", "文件的格式不正确!");
-            if (user.getType()==1){
-                return "/site/adminmanage";
-            }else {
-                return "/site/usermanage";
-            }*/
+            return "error/5xx";
         }
-        /*if (paper.getContent().length()> 250){
-            ////????
-        }*/
         File targetFile = new File(path,newName);
         if(!targetFile.exists()){
             targetFile.getParentFile().mkdirs();
@@ -128,10 +117,6 @@ public class SourceController {
         return "redirect:/source/detail?id="+paper.getId();
     }
 
-
-
-
-    //******************以上为usercontroller中paper操作改过来
     @LoginRequired
     @RequestMapping(path = "/source/write",method = RequestMethod.GET)
     public String uploadSource(Model model){
@@ -147,7 +132,6 @@ public class SourceController {
         User user = hostHolder.getUser();
         Paper paper = paperOfClassService.selectPaperById(id);
         if (paper.getUserid()==user.getId()||user.getType()==1){
-            /*List<Map<String,Object>> classify = new ArrayList<>();*/
             String[] allfather={"logic","compute","number","algebra","geometry","topology","analysis","ODE","PDE","dynamical","functional","probability","statistics","opsearch","combinatorial","fuzzy","quantum","applied"};
             String[] fathers =paper.getFatherid().split(",");
             List<String> otherfathers = new ArrayList<>();
@@ -412,7 +396,6 @@ public class SourceController {
                         p.setFatherid("文献");
                         break;
                 }
-                //p.setFilepath(commentService.SelectUsernameById(p.getUserid()));
                 newPage.add(p);
             }
         }
@@ -422,7 +405,6 @@ public class SourceController {
         model.addAttribute("category",category);
         model.addAttribute("info", info);
         model.addAttribute("categoryList",classifications);
-        //model.addAttribute("checkLabel",0);
         return "source/list";
     }
     //******************下面少了responseBody就报JSONString回显的错
@@ -487,7 +469,6 @@ public class SourceController {
                         cc.put("target",target);
                         ccs.add(cc);
                     }
-
                 }
                 map.put("replys",ccs);
                 int replyCount = commentService.findCommentCount(1, questionComment.getId());

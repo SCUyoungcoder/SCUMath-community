@@ -8,28 +8,7 @@
     insert into mylike (user_id,blog_id)
     values (#{userId},#{blogId})
   </insert>
-  <delete id="deleteBlogLike">
-    delete from mylike where id=#{id}
-  </delete>
   <delete id="deleteBlogByTwoId">
     delete from mylike where user_id = #{userId} and blog_id = #{blogId}
   </delete>
-  <select id="countBlogLike" resultType="int">
-    select count(id) from mylike where blog_id =#{blogId}
-  </select>
-
-
-  <select id="findQuestionLikeById" resultType="int">
-    select id from mylike where user_id=#{userId} and question_id = #{questionId}
-  </select>
-  <insert id="insertQuestionLike">
-    insert into mylike (user_id,question_id)
-    values (#{userId},#{questionId})
-  </insert>
-  <delete id="deleteQuestionLike">
-    delete from mylike where id=#{id}
-  </delete>
-  <select id="countQuestionLike" resultType="int">
-    select count(id) from mylike where question_id =#{questionId}
-  </select>
 </mapper>

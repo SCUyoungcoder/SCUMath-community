@@ -15,7 +15,6 @@ public class AttentionService {
     public List<Attention> SelectByFocusId(int focusId){return attentionMapper.selectByFocusId(focusId);}
     public List<Attention> SelectByUserId(int userId){return attentionMapper.selectByUserId(userId);}
     public int FindById(int userId,int focusId){return attentionMapper.findById(userId,focusId);}
-    public int DeleteAttentionById(int id){return attentionMapper.deleteAttentionById(id);}
     public int DeleteById(int userId,int focusId){return attentionMapper.deleteById(userId,focusId);}
     public int InsertAttention(int userId,int focusId){return attentionMapper.insertAttention(userId,focusId);}
     public int CountAttentionByFocusId(int focusId){return attentionMapper.countAttention(focusId);}

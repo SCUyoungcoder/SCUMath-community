@@ -23,12 +23,6 @@
         where file_path = #{filepath}
     </select>
 
-
-    <select id="selectByFatherid" resultType="Paper">
-        select <include refid="selectFields"></include>
-        from paper
-        where father_id = #{fatherid}
-    </select>
     <select id="selectOnlyByStatus" resultType="Paper">
         select <include refid="selectFields"></include>
         from paper
@@ -70,11 +64,6 @@
         from paper
         where title = #{title}
     </select>
-    <select id="selectByFulltitle" resultType="Paper">
-        select <include refid="selectFields"></include>
-        from paper
-        where title = #{title}
-    </select>
     <select id="countByAuthorIdAndStatus" resultType="int">
         select count(id) from paper where user_id = #{id} and status = #{status}
     </select>
@@ -99,11 +88,4 @@
     <update id="updateDownloadcount">
         update paper set download_count = #{downloadcount} where id = #{id}
     </update>
-    <select id="countstatus" resultType="int">
-        select count(id)
-        from paper
-        where status = #{status}
-    </select>
-
-
 </mapper>

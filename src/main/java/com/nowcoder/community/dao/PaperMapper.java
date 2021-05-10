@@ -11,11 +11,9 @@ import java.util.List;
 public interface PaperMapper {
     //@Param注解用于给参数取别名，如果只有一个参数，并且在<if>里使用，则必须加别名
     Paper selectById(int id);
-    List<Paper> selectByFatherid(@Param("fatherid") int fatherid);//第二级科目标签页面论文查询需要，添加@Param注解 By MY
     List<Paper> selecyByUserid(int userid);
     List<Paper> selectOnlyByStatus(int status);
     List<Paper> selectByTitle(String title);/*这里是否与elasticsearch搜索有关*/
-    Paper selectByFulltitle(String title);
     Paper selectByFilepath(String filepath);
     Paper selectByIdAndCreateTime(int id , Date gmtCreate);
     List<Paper> selectByStatus(int status, int offset,int limit);
@@ -23,11 +21,8 @@ public interface PaperMapper {
     int delectById(int id);
     int updateDownloadcount(int id,int downloadcount);
     int updatePaperstatus(Paper paper);
-    int countstatus(int status);
     int countByAuthorIdAndStatus(int id,int status);
     List<Paper> selectByAuthorIdAndStatus(int id,int status);
-
-
     List<Paper> newSelectByThreeStatus(int status1,int status2,int status3);
     List<Paper> newSelectByAuthorIdAndThreeStatus(int userId,int status1,int status2,int status3);
 }

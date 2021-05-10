@@ -22,13 +22,9 @@ public class PaperOfClassService {
     @Autowired
     private PaperMapper paperMapper;
 
-    public Paper selectpaperByTitle(String title){ return paperMapper.selectByFulltitle(title);}
     public Paper selectPaperById(int id){return paperMapper.selectById(id);}
     public Paper SelectByIdAndCreateTime(int id, Date gmtCreate){return paperMapper.selectByIdAndCreateTime(id,gmtCreate);}
     public int updateDownloadcount(int id,int downloadcount){return paperMapper.updateDownloadcount(id,downloadcount);}
-    /*public int updateHeader(int userId, String headerUrl) {
-        return userMapper.updateHeader(userId, headerUrl);*//*上传文件例子*/
-    /*将paper信息存到数据库*/
     public List<Paper> selectPaperOnlyByStatus(int status){return paperMapper.selectOnlyByStatus(status);}
     public int updatastatus(Paper paper){return paperMapper.updatePaperstatus(paper);}
     public int uploadpaper(Paper paper){
@@ -39,16 +35,6 @@ public class PaperOfClassService {
         return paperMapper.selectByStatus(status,offset,limit);
     }
     public int delectPaperById(int id){return paperMapper.delectById(id);}
-    public int countstatus(int status){return paperMapper.countstatus(status);}
-    /*public Page<Paper> selectpaperByStatus(int status , int current, int limit){
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(current,limit))
-                .build();
-        //return paperMapper.selectByStatus(status);
-        return paperMapper.
-    }*/
-//【看完第六章视频后考虑是否有用】
     public int CountByAutherIdAndStatus(int autherid,int status){return paperMapper.countByAuthorIdAndStatus(autherid,status);}
     public List<Paper> SelectByAuthorIdAndStatus(int autherid,int status){return paperMapper.selectByAuthorIdAndStatus(autherid,status);}
 

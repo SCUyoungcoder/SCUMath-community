@@ -5,12 +5,10 @@ import com.nowcoder.community.entity.*;
 import com.nowcoder.community.util.CommunityUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -102,10 +100,23 @@ public class UserService {
         return invitationCodeMapper.insertCode(invitationCode);
     }
 
-    public int updatepassword(int id,String password){
-        String salt = CommunityUtil.generateUUID().substring(0,5);
-        password=CommunityUtil.md5(password+salt);
-        return userMapper.updatePassword(id,password,salt);
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
+        User user = this.findUserById(userId);
+
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+
+            @Override
+            public String getAuthority() {
+                switch (user.getType()) {
+                    case 1:
+                        return "admin";
+                    default:
+                        return "user";
+                }
+            }
+        });
+        return list;
     }
 
 }

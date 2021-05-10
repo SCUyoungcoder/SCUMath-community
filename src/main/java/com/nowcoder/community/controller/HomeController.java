@@ -39,23 +39,6 @@ public class HomeController {
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
     public String findClassification(Model model) {
-        /*List<Classification> allClassList = classificationService.AllClassifications();
-        List<Map<String, Object>> allClass = new ArrayList<>();
-        for (Classification class1 : allClassList) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("class1", class1);
-            allClass.add(map);
-        }
-        List<Paper> papers = paperOfClassService.selectpaperByStatus(2,0,10);
-        List<Map<String,Object>> maps = new ArrayList<>();
-        for (Paper paper:papers){
-            Map<String,Object> map = new HashMap<>();
-            map.put("ownername", userService.findUserById(paper.getUserid()).getUsername());
-            map.put("reward",paper);
-            maps.add(map);
-        }
-        model.addAttribute("rewards",maps);
-        model.addAttribute("allClass", allClass);*/
         List<Paper> notices = paperOfClassService.selectpaperByStatus(5,0,3);
         for (Paper paper:notices){
             paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
@@ -100,16 +83,12 @@ public class HomeController {
         StringBuilder sql = new StringBuilder();
         StringBuilder sql2 = new StringBuilder();
         if (!attentionList.isEmpty()){
-            /*Map<String ,Object> map = new HashMap<>();*/
             int id;
             id = attentionList.get(0).getFocusId();
             sql.append(" author_id = ");
             sql2.append(" user_id = ");
             sql2.append(id);
             sql.append(id);
-            /*map.put("userId",id);
-            map.put("userName",userService.findUserById(id).getUsername());
-            attentions.add(map);*/
             attentionList.remove(0);
             if (!attentionList.isEmpty()){
                 for (Attention attention:attentionList){
@@ -118,10 +97,6 @@ public class HomeController {
                     sql2.append(" or user_id = ");
                     sql2.append(id);
                     sql.append(id);
-                    /*Map<String ,Object> map1 = new HashMap<>();
-                    map1.put("userId",id);
-                    map1.put("userName",userService.findUserById(id).getUsername());
-                    attentions.add(map1);*/
                 }
             }
         }
@@ -160,14 +135,6 @@ public class HomeController {
             }
         }
         model.addAttribute("info",info);
-        /*model.addAttribute("attentions",attentions);*/
         return "/attentionList";
-
     }
-    // ajax示例
-    /*@RequestMapping(path = "/ajax", method = RequestMethod.POST)
-    @ResponseBody
-    public String testAjax(String name, int age) {
-        return CommunityUtil.getJSONString(0, "操作成功!");
-    }*/
 }

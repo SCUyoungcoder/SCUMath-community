@@ -44,42 +44,6 @@ public class PaperController {
     @Autowired
     private ElasticsearchService elasticsearchService;
 
-//第二级 对应科目标签的论文展示页
-    //【POST用法，现已弃用】需要第一级的前端表单<method="post" action="/paperofclass"> 传给此页面名为“classname”的参数【已弃用】
-    //【POST用法，现已弃用】此方法下行要获取“科目标签”，只要直接声明参数，与表单名称（classname）一致，即可传过来【已弃用】
-
-    //***************已无用
-    //paperofclass?classname=XXX  6.6课选用GET方式传参，参数通过
-    @LoginRequired
-    @RequestMapping(path = "/paperofclass", method = RequestMethod.GET)
-    public String searchpaperofclass(String classname,Model model,Page page) {//此处前端的classname参数的形式是String
-        //搜索论文(6.6课22：56开始介绍查询的controller)
-        org.springframework.data.domain.Page<Paper> searchResult =
-                elasticsearchClassService.searchPaperByClass(classname,page.getCurrent() - 1 ,page.getLimit());
-        //聚合数据——上面操作得到的只是Paper实体类，里面包含的信息需要查出来，处理一下聚合起来
-        List<Map<String,Object>> papers = new ArrayList<>();//声明聚合的结果——一个集合，里面封装的Map，命名为papers，这是我最终实例化的结果
-        if(searchResult != null){
-            for (Paper paper : searchResult){//遍历，每次都会得到一个paper（论文）
-                //if( paper.getStatus()==0){
-                    Map<String,Object> map =  new HashMap<>();//每次实例化一个Map,封装聚合的数据
-                    /*显示用户名*/
-                    paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
-                    map.put("paper",paper);
-                    //如果还有啥需要往里放的还可以添加，写好相应的service，然后继续map.put()即可
-                    papers.add(map);//得到聚合数据map后，装进集合里
-                //}
-                /*备注：Map<String,Object> map这一行放出去会出错，每次必须重新定义map，否则得到n条重复数据*/
-            }
-        }
-        model.addAttribute("papers",papers);//得到的最终数据要传给模板/页面
-        model.addAttribute("classname",classificationService.GetNameBySearchname(classname).getName());//希望返回的页面上也带上刚刚的classname参数信息
-
-        //分页信息
-        page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());//多少数据？多少页数？从searchResult里取
-        page.setPath("/paperofclass?classname=" + classname);//路径
-
-        return "/paperofclass";//返回第二级网页
-    }
     @LoginRequired
     @RequestMapping(path = "/paper/search",method = RequestMethod.GET)
     public String searchpaper(String keyword,String fieldname,String sortname,Page page,Model model){
@@ -105,8 +69,7 @@ public class PaperController {
     public String uploadPaper(MultipartFile paperfile,Paper paper,Model model){
         User user = hostHolder.getUser();
         if (paperfile == null){
-
-
+            return "error/5xx";
         }
         String fileName = paperfile.getOriginalFilename();
         /*获取前缀存入数据库*/
@@ -118,14 +81,7 @@ public class PaperController {
         String path = uploadPath;
         //判断后缀是否为空
         if (StringUtils.isBlank(suffix)) {
-
-
-            /*model.addAttribute("error", "文件的格式不正确!");
-            if (user.getType()==1){
-                return "/site/adminmanage";
-            }else {
-                return "/site/usermanage";
-            }*/
+            return "error/5xx";
         }
         File targetFile = new File(path,newName);
         if(!targetFile.exists()){
@@ -169,7 +125,6 @@ public class PaperController {
             User user = hostHolder.getUser();
             Paper paper = paperOfClassService.selectPaperById(id);
             if (paper.getUserid()==user.getId()||user.getType()==1){
-                /*List<Map<String,Object>> classify = new ArrayList<>();*/
                 String[] allfather={"logic","compute","number","algebra","geometry","topology","analysis","ODE","PDE","dynamical","functional","probability","statistics","opsearch","combinatorial","fuzzy","quantum","applied"};
                 String[] fathers =paper.getFatherid().split(",");
                 List<String> otherfathers = new ArrayList<>();
@@ -350,7 +305,6 @@ public class PaperController {
         return CommunityUtil.getJSONString(0);
     }
 
-    //第三级页面——论文详情页//******************已重构
     @LoginRequired
     @RequestMapping(path = "/detail",method = RequestMethod.GET)
     public String PaperDetail(int id,Model model,

@@ -1,7 +1,6 @@
 package com.nowcoder.community;
 
 
-import com.nowcoder.community.util.MailClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,12 @@ import org.thymeleaf.context.Context;
 @ContextConfiguration(classes = CommunityApplication.class)
 public class MailTests {
 
-    @Autowired
-    private MailClient mailClient;
+/*    @Autowired
+    private MailClient mailClient;*/
 
     @Autowired
     private TemplateEngine templateEngine;
-    @Test
+    /*@Test
     public void testTextMail(){
         mailClient.sendMail("602563146@qq.com","TEST","hello");
     }
@@ -35,5 +34,5 @@ public class MailTests {
         String content = templateEngine.process("/mail/register.html",context);
 
         mailClient.sendMail("602563146@qq.com","HTML",content);
-    }
+    }*/
 }

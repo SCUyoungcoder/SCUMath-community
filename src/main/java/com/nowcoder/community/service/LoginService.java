@@ -7,7 +7,6 @@ import com.nowcoder.community.entity.InvitationCode;
 import com.nowcoder.community.entity.Loginticket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
-import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,16 +29,12 @@ public class LoginService {
     private InvitationCodeMapper invitationCodeMapper;
 
     @Autowired
-    private MailClient mailClient;
-
-    @Autowired
     private TemplateEngine templateEngine;
 
     @Value("${community.path.domain}")
     private String domain;
 
-    /*@Value("${server.servlet.context-path}")
-    private String contextPath;*/
+
     public Map<String,Object> register(User user,String code){
         Map<String,Object>map = new HashMap<>();
         //空之判断
@@ -54,10 +49,6 @@ public class LoginService {
             map.put("regMsg","密码不能为空！");
             return map;
         }
-/*        if(StringUtils.isBlank(user.getEmail())){
-            map.put("emailMsg","邮箱不能为空！");
-            return map;
-        }*/
         InvitationCode invitationCode = invitationCodeMapper.selectByCode(code);
         if (invitationCode==null){
             map.put("regMsg","邀请码不正确!");
@@ -69,12 +60,6 @@ public class LoginService {
             map.put("regMsg","该账号已存在!");
             return map;
         }
-        //验证邮箱
-/*        u = userMapper.selectByEmail(user.getEmail());
-        if (u != null){
-            map.put("emailMsg","该邮箱已被注册！");
-            return map;
-        }*/
         //用户注册
         user.setSalt(CommunityUtil.generateUUID().substring(0,5));
         user.setPassword(CommunityUtil.md5(user.getPassword()+user.getSalt()));
@@ -83,14 +68,6 @@ public class LoginService {
         user.setActivationCode(CommunityUtil.generateUUID());//激活码
         user.setCreateTime(new Date());
         userMapper.insertUser(user);//insert后自动生成id
-        //发送激活邮件
-        /*Context context = new Context();
-        context.setVariable("email",user.getEmail());
-        //http://localhost:8080/xxx/101(用户id)/code(激活码)domain后未加contextPath
-        String url = domain+"/activation/"+user.getId()+"/"+user.getActivationCode();
-        context.setVariable("url",url);
-        String content = templateEngine.process("/mail/register",context);
-        mailClient.sendMail(user.getEmail(),"激活账号",content);*/
         return map;
     }
     public int activation(int userId,String code){

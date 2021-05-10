@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,19 +32,8 @@ public class LoginController {
 
     @RequestMapping(path = "/register",method = RequestMethod.GET)
     public String getRegisterPage(){
-        //return "/site/register";
         return "/register";
     }
-
-    /*index的引用路径在HomeController里面用了，去那里找
-    @RequestMapping(path = "/index",method = RequestMethod.GET)
-    public String getindexPage(Model model){
-    *//*用login里的方式更改登录都页面的改变*//*
-        *//*model.addAttribute("loginMsg","登录");
-        model.addAttribute("logoutMsg","退出");
-        model.addAttribute("manageMsg","管理");*//*
-        return "/index";
-    }*/
     @RequestMapping(path = "/login", method = RequestMethod.POST)/*。。。。。remreber me。。用户验证码放session里 response创建cookie*/
     public String login(String username, String password, String code, boolean rememberme,
                         Model model, HttpSession session, HttpServletResponse response) {
@@ -53,7 +43,6 @@ public class LoginController {
             model.addAttribute("regMsg", "验证码不正确!");
             return "/login";
         }
-
         // 检查账号,密码                      两个常量，勾选了记住我，记住时间很长，否则相对短
         //7天或者3小时
         int expiredSeconds = rememberme ? 3600*24*7 : 3600*3;
@@ -78,7 +67,6 @@ public class LoginController {
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     public String getLoginPage(){
         return "/login";
-        //return "/site/login";
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)
@@ -86,7 +74,6 @@ public class LoginController {
         Map<String,Object>map = loginService.register(user,code);
         if(map == null || map.isEmpty()){
             model.addAttribute("regMsg","注册成功，请登录");
-            //model.addAttribute("target","/index");
             return "/login";
         }else {
             /*model.addAttribute("usernameMsy",map.get("usernameMsy"));
@@ -99,27 +86,10 @@ public class LoginController {
         }
     }
 
-/*    @RequestMapping(path = "/activation/{userId}/{code}",method = RequestMethod.GET)
-    public String activation(Model model, @PathVariable("userId") int userId,@PathVariable("code") String code){
-        int result = loginService.activation(userId, code);
-        if (result == 0) {
-            model.addAttribute("msg", "激活成功,您的账号已经可以正常使用了!");
-            model.addAttribute("target", "/login");
-        } else if (result == 1) {
-            model.addAttribute("msg", "无效操作,该账号已经激活过了!");
-            model.addAttribute("target", "/index");
-        } else {
-            model.addAttribute("msg", "激活失败,您提供的激活码不正确!");
-            model.addAttribute("target", "/index");
-        }
-        return "/site/registerresult";
-    }*/
-
-
-
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket") String ticket) {
         loginService.logout(ticket);
+        SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 
@@ -143,47 +113,4 @@ public class LoginController {
             logger.error("响应验证码失败:" + e.getMessage());
         }
     }
-    //cookie示例 不够隐私，每次自动返回cookie增加数据量。浏览器关闭cookie消失
-    /*                                                  4个测试用例，项目整合时期删除*/
-   /* @RequestMapping(path = "/cookie/set",method = RequestMethod.GET)
-    @ResponseBody*//*将返回值转换为json格式*//*
-    public String setCookie(HttpServletResponse response) {
-        // 创建cookie
-        Cookie cookie = new Cookie("code", CommunityUtil.generateUUID());
-        // 设置cookie生效的范围
-        *//*cookie.setPath("/community/alpha");*//*
-        *//*cookie.setPath("/");*//**//*不写或/即为在整个文件夹有效*//*
-        // 设置cookie的生存时间
-        cookie.setMaxAge(60 * 10);
-        // 发送cookie
-        response.addCookie(cookie);
-        return "set cookie";
-    }
-    @RequestMapping(path = "/cookie/get", method = RequestMethod.GET)
-    @ResponseBody
-    public String getCookie(@CookieValue("code") String code) {
-        System.out.println(code);
-        return "get cookie";
-    }
-
-    // session示例 存在服务端，加大服务器内存压力，如非特隐私没必要用session。session实际用cookie传
-
-    @RequestMapping(path = "/session/set", method = RequestMethod.GET)
-    @ResponseBody
-    public String setSession(HttpSession session) {
-        session.setAttribute("id", 1);
-        session.setAttribute("name", "Test");
-        return "set session";
-    }
-
-    @RequestMapping(path = "/session/get", method = RequestMethod.GET)
-    @ResponseBody
-    public String getSession(HttpSession session) {
-        System.out.println(session.getAttribute("id"));
-        System.out.println(session.getAttribute("name"));
-        return "get session";
-    }*/
-
-
-
 }

@@ -23,7 +23,6 @@ public class QuestionService {
     public Question SelectById(int id){return questionMapper.selectById(id);}
     public Question SelectByIdAndCreateTime(int id, Date gmtCreate){return questionMapper.selectByIdAndCreateTime(id,gmtCreate);}
 
-    public List<Question> SelectBySort(int sort){return questionMapper.selectBySort(sort);}
     public List<Question> SelectByAuthorId(int userId){return questionMapper.selectByAuthorId(userId);}
     public List<Question> SelectAllByStatus(int status){return questionMapper.selectAllByStatus(status);}
     public List<Question> SelectByCategoryId(int categoryId){return questionMapper.selectByCategory(categoryId);}

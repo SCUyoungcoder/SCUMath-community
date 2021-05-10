@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 public class UserinfoService {
     @Autowired
     private UserinfoMapper userinfoMapper;
+
     public int insert(Userinfo record) {
         return userinfoMapper.insert(record);
     }
 
 
-    public int insertSelective(Userinfo record) {
-        return userinfoMapper.insertSelective(record);
-    }
 
     public Userinfo selectInfoByUserId(int userid) {
         return userinfoMapper.selectInfoByUserId(userid);

@@ -43,18 +43,6 @@ public class ElasticsearchClassService {
         paperRepository.deleteById(id);
     }
 
-
-    /*public List<Paper> searchPaperOnlyByClass(String classname){
-        Pageable pageable = new PageRequest(0,1000);
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("fatherid",classname)).must(QueryBuilders.matchQuery("status","0")))//构造查询条件——classname，在fatherid里面查;且status==0的论文
-                .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("gmtcreate").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("id").order(SortOrder.DESC))
-                .withPageable(pageable)
-                .build();
-        return elasticsearchTemplate.queryForList(searchQuery,Paper.class);
-    }*/
     public List<Paper> NewSearchPaperByClassAndThreeStatus(String classname,int status1,int status2,int status3){
         Pageable pageable = new PageRequest(0,1000);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
