@@ -45,25 +45,25 @@ public class ElasticsearthTests {
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
 
-    @Test
+    /*@Test
     public void esinsert(){
-        /*从数据库中获取数据插入se中，若插入时发现没有这个索引会自动创建。save每次插入一条数据*/
-        /*主键如果相同则覆盖*/
-        paperRepository.save(paperMapper.selectById(5));
-        /*paperRepository.save(paperMapper.selectById(3));
-        paperRepository.save(paperMapper.selectById(4));*/
-    }
+        *//*从数据库中获取数据插入se中，若插入时发现没有这个索引会自动创建。save每次插入一条数据*//*
+        *//*主键如果相同则覆盖*//*
+        //paperRepository.save(paperMapper.selectById(5));
+        *//*paperRepository.save(paperMapper.selectById(3));
+        paperRepository.save(paperMapper.selectById(4));*//*
+    }*/
     @Test
     public void esinsertList(){
         paperRepository.saveAll(paperMapper.selecyByUserid(113));/* 这里Userid必须是云数据库里已有的，否则会报错 */
         paperRepository.saveAll(paperMapper.selecyByUserid(111));
     }
-    @Test
+    /*@Test
     public void esupdate(){
         Paper paper = paperMapper.selectById(2);
         paper.setContent("计算数学++应用数学");
         paperRepository.save(paper);
-    }
+    }*/
     @Test
     public void sedelete(){
         paperRepository.deleteById(2);
@@ -71,13 +71,13 @@ public class ElasticsearthTests {
         /*删除所有数据*/
         paperRepository.deleteAll();
     }
-    @Test
+    /*@Test
     public void searchByRepository(){
-        /*6.4，42min搜索后可排序(方式设置)/分页(方式设置)/高亮显示(返回的搜索词两边加标签)*/
-        /*withQuery构造搜索条件;withSort构造排序方式SortOrder.DESC(倒序);withPageable构造分页条件page表明这是第几页，size表明这一页有几条*/
-        /*withHighlightFields指定哪些属性字段高亮显示，对哪些词高亮显示，怎么高亮显示。在html中设置cssstyle*/
+        *//*6.4，42min搜索后可排序(方式设置)/分页(方式设置)/高亮显示(返回的搜索词两边加标签)*//*
+        *//*withQuery构造搜索条件;withSort构造排序方式SortOrder.DESC(倒序);withPageable构造分页条件page表明这是第几页，size表明这一页有几条*//*
+        *//*withHighlightFields指定哪些属性字段高亮显示，对哪些词高亮显示，怎么高亮显示。在html中设置cssstyle*//*
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                /*text里"计算数学"被拆分为“计算”和“数学”进行搜索,英文必须严格按空格分割*/
+                *//*text里"计算数学"被拆分为“计算”和“数学”进行搜索,英文必须严格按空格分割*//*
                 .withQuery(QueryBuilders.multiMatchQuery("basics application","title","content"))
                 .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
@@ -92,23 +92,23 @@ public class ElasticsearthTests {
         // 底层获取得到了高亮显示的值, 但是没有返回,SearchResultMapper出现问题.（即没有高亮功能，后一个测试实现高亮）
         Page<Paper> page = paperRepository.search(searchQuery);
 
-        /*查到多少条数据*/
+        *//*查到多少条数据*//*
         System.out.println(page.getTotalElements());
-        /*按照当前分页方式有多少页*/
+        *//*按照当前分页方式有多少页*//*
         System.out.println(page.getTotalPages());
-        /*当前处在第几页*/
+        *//*当前处在第几页*//*
         System.out.println(page.getNumber());
-        /*每一页最多显示多少数据*/
+        *//*每一页最多显示多少数据*//*
         System.out.println(page.getSize());
-        /*遍历输出，即使返回结果大于10也最大输出10行*/
+        *//*遍历输出，即使返回结果大于10也最大输出10行*//*
         for (Paper post : page) {
             System.out.println(post);
         }
-    }
-    @Test/*在搜索项加上标签，高亮基本用不上...数据类型错误，不影响暂时不想弄了。。*/
+    }*/
+    /*@Test*//*在搜索项加上标签，高亮基本用不上...数据类型错误，不影响暂时不想弄了。。*//*
     public void searchByTemplate(){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                /*text里"计算数学"被拆分为“计算”和“数学”进行搜索,英文必须严格按空格分割*/
+                *//*text里"计算数学"被拆分为“计算”和“数学”进行搜索,英文必须严格按空格分割*//*
                 .withQuery(QueryBuilders.multiMatchQuery("basics application","title","content"))
                 .withSort(SortBuilders.fieldSort("downloadcount").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createtime").order(SortOrder.DESC))
@@ -118,7 +118,7 @@ public class ElasticsearthTests {
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("<em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("<em>")
                 ).build();
-        /*自己实现SearchResultMapper接口*/
+        *//*自己实现SearchResultMapper接口*//*
         Page<Paper> page = elasticsearchTemplate.queryForPage(searchQuery, Paper.class, new SearchResultMapper() {
             @Override
             public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
@@ -145,31 +145,31 @@ public class ElasticsearthTests {
                     String content = hit.getSourceAsMap().get("content").toString();
                     post.setContent(content);
 
-                    /*String filepath = String.valueof(hit.getSourceAsMap().get("filepath"));*/
+                    *//*String filepath = String.valueof(hit.getSourceAsMap().get("filepath"));*//*
                     String f = String.valueOf(hit.getSourceAsMap().get("filepath"));
                     post.setFilepath(f);
 
                     String status = hit.getSourceAsMap().get("status").toString();
                     post.setStatus(Integer.valueOf(status));
 
-                    /*String createtime = hit.getSourceAsMap().get("createtime").toString();*/
+                    *//*String createtime = hit.getSourceAsMap().get("createtime").toString();*//*
                     String createtime = String.valueOf(hit.getSourceAsMap().get("createtime"));
-                    /*ParsePosition pos = new ParsePosition(8);
-                    Date createtime2 = formatter*/
+                    *//*ParsePosition pos = new ParsePosition(8);
+                    Date createtime2 = formatter*//*
                     post.setGmtcreate(new Date(Long.valueOf(createtime)));
 
                     String downloadcount = hit.getSourceAsMap().get("downloadcount").toString();
                     post.setDownloadcount(Integer.valueOf(downloadcount));
 
-                    /*处理高亮显示的结果*/
+                    *//*处理高亮显示的结果*//*
                     HighlightField titleField = hit.getHighlightFields().get("title");
                     if (titleField != null){
-                        /*title里可能匹配多段，取第一段高亮*/
+                        *//*title里可能匹配多段，取第一段高亮*//*
                         post.setTitle(titleField.getFragments()[0].toString());
                     }
                     HighlightField contentField = hit.getHighlightFields().get("content");
                     if (contentField != null){
-                        /*title里可能匹配多段，取第一段高亮*/
+                        *//*title里可能匹配多段，取第一段高亮*//*
                         post.setTitle(contentField.getFragments()[0].toString());
                     }
                     list.add(post);
@@ -178,19 +178,19 @@ public class ElasticsearthTests {
                         response.getScrollId(),hits.getMaxScore());
             }
         });
-        /*查到多少条数据*/
+        *//*查到多少条数据*//*
         System.out.println(page.getTotalElements());
-        /*按照当前分页方式有多少页*/
+        *//*按照当前分页方式有多少页*//*
         System.out.println(page.getTotalPages());
-        /*当前处在第几页*/
+        *//*当前处在第几页*//*
         System.out.println(page.getNumber());
-        /*每一页最多显示多少数据*/
+        *//*每一页最多显示多少数据*//*
         System.out.println(page.getSize());
-        /*遍历输出，即使返回结果大于10也最大输出10行*/
+        *//*遍历输出，即使返回结果大于10也最大输出10行*//*
         for (Paper post : page) {
             System.out.println(post);
         }
-    }
+    }*/
 
 }
 

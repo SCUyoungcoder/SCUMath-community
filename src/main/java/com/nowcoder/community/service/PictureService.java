@@ -5,6 +5,7 @@ import com.nowcoder.community.entity.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,5 +34,8 @@ public class PictureService {
 
     public List<Picture> SelectByFather(int fatherid,int fathertype){
         return pictureMapper.selectByFather(fatherid,fathertype);
+    }
+    public List<Picture> SelectByTime(Date date1, Date date2){
+        return pictureMapper.selectByTime(date1,date2);
     }
 }

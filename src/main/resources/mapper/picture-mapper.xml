@@ -39,4 +39,9 @@
         where father_id = #{fatherid}
         and father_type = #{fathertype}
     </select>
+    <select id="selectByTime" resultType="Picture">
+        select <include refid="selectFields"></include>
+        from picture
+        where create_time between #{date1} and #{date2}
+    </select>
 </mapper>

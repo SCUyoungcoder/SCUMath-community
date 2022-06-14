@@ -442,7 +442,7 @@ public class BlogController {
                        @RequestParam(defaultValue = "10") int limit) {
         Blog blog = blogService.SelectByBid(bid);
         User user = hostHolder.getUser();
-        if (user.getId() != blog.getAuthorId()) {
+        if (user.getId() != blog.getAuthorId() && user.getType() == 0) {
             int canView = blogAbleService.ableToViewBlog(blog.getId(), user.getId());
             if (canView == 0) {
                 model.addAttribute("blog", blog);
@@ -513,9 +513,9 @@ public class BlogController {
     }
 
     @LoginRequired
-    @RequestMapping(path = "/upFile")
+    @RequestMapping(path = "/upFile",method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject uploadImg(@RequestParam(value = "editormd-image-file", required = true) MultipartFile file, HttpServletRequest request) {
+    public JSONObject uploadImg(@RequestParam(value = "editormd-image-file", required = true) MultipartFile file,HttpServletRequest request) {
         // 使用自定义的上传路径
         String path = uploadPicPath;
         // 调用上传图片的方法
@@ -524,6 +524,7 @@ public class BlogController {
 
         return res;
     }
+
 
     //返回图片，参考url：https://blog.csdn.net/meiqi0538/article/details/79862213/?utm_term=java%E8%BF%94%E5%9B%9E%E5%9B%BE%E7%89%87%E7%BB%99%E5%89%8D%E7%AB%AF&utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduweb~default-1-79862213&spm=3001.4430
     @LoginRequired

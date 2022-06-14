@@ -44,7 +44,7 @@ public class HomeController {
             paper.setFatherid(userService.findUserById(paper.getUserid()).getUsername());
         }
         model.addAttribute("notice",notices);
-        return "/index";
+        return "index";
     }
     @LoginRequired
     @RequestMapping(path = "/attention",method = RequestMethod.GET)
@@ -59,7 +59,7 @@ public class HomeController {
             PageInfo<Itemindex> info1 = new PageInfo<>();
             model.addAttribute("info",info1);
             model.addAttribute("attentions",attentions);
-            return "/attentionList";
+            return "attentionList";
         }else {
             for (Attention attention:attentionList){
                 Map<String ,Object> map = new HashMap<>();
@@ -135,6 +135,10 @@ public class HomeController {
             }
         }
         model.addAttribute("info",info);
-        return "/attentionList";
+        return "attentionList";
+    }
+    @RequestMapping(path = "/error", method = RequestMethod.GET)
+    public String getErrorPage() {
+        return "error/5xx";
     }
 }

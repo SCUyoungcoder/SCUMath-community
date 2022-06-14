@@ -14,10 +14,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
         http.authorizeRequests()
                 .antMatchers("/actuator/**")
                 .hasAnyAuthority("admin")
-                .anyRequest().permitAll();
+                .anyRequest().permitAll()
+                .and().csrf().disable();
         http.logout().logoutUrl("/securitylogout");
     }
 }

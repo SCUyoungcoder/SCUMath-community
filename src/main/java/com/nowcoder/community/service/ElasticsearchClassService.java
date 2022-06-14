@@ -91,7 +91,6 @@ public class ElasticsearchClassService {
                     return null;
                 }//判断是否查询到数据（数据量是否大于0）
 
-                //System.out.print(hits);
 
                 List<Paper> list = new ArrayList<>();//实例化一个集合，把数据封装到这个集合里
                 for (SearchHit hit:hits){//遍历命中的数据，找到并作处理，处理完放进集合里
@@ -131,9 +130,6 @@ public class ElasticsearchClassService {
                         list.add(post);//处理完的数据加进集合里
 
                 }
-
-                //System.out.print(list);//测试用
-
                 return new AggregatedPageImpl(list,pageable,
                         hits.getTotalHits(),response.getAggregations(), response.getScrollId(),hits.getMaxScore());//返回的类型是AggregatedPage，所以需要传很多参数来建立
             }

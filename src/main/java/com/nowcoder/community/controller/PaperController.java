@@ -191,7 +191,7 @@ public class PaperController {
                     commentService.DeleteById(dc.getId());
                 }
             }
-            String fileName = paper.getFilepath().split("http://localhost:8080/user/file/")[1];
+            String fileName = paper.getFilepath().split("http://106.14.118.188:8080/user/file/")[1];
 
             if (fileName!=null){
                 String path = uploadPath+"/"+fileName;
@@ -374,6 +374,6 @@ public class PaperController {
         model.addAttribute("paper",paper);
         model.addAttribute("fathernames",fathernames);
         model.addAttribute("comments",coms);
-        return "/paper/read";
+        return "paper/read";
     }
 }

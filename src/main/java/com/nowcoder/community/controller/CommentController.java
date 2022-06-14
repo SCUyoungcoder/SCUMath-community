@@ -161,7 +161,7 @@ public class CommentController {
         return "comment/list";
     }
     @LoginRequired
-    @RequestMapping(path = "/comment/blog/{bid}")
+    @RequestMapping(path = "/comment/blog/{bid}",method = RequestMethod.POST)
     public String addBlogComment(@PathVariable("bid") String bid, Comment comment) {
         comment.setUserid(hostHolder.getUser().getId());
         //1论文 2问答 3博客
@@ -176,7 +176,7 @@ public class CommentController {
         return "redirect:/blog/read/" + bid;
     }
     @LoginRequired
-    @RequestMapping(path = "/comment/question/{qid}")
+    @RequestMapping(path = "/comment/question/{qid}",method = RequestMethod.POST)
     public String addQuestionComment(@PathVariable("qid") String qid, Comment comment) {
         comment.setUserid(hostHolder.getUser().getId());
         //1论文 2问答 3博客

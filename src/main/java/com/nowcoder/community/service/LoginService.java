@@ -123,7 +123,6 @@ public class LoginService {
         loginticket.setTicket(CommunityUtil.generateUUID());/*这里的ticket是一个随机生成的字符串，存进数据库后，将其发给客户端，让其凭此访问服务器*/
         loginticket.setStatus(0);
         loginticket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
-        System.out.println(loginticket.getExpired());
         loginticketMapper.insertTicket(loginticket);
 
         map.put("ticket", loginticket.getTicket());

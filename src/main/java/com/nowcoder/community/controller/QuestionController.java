@@ -306,7 +306,7 @@ public class QuestionController {
     }
 
     @LoginRequired
-    @RequestMapping(path = "/upFile")
+    @RequestMapping(path = "/upFile",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject uploadImg(@RequestParam(value = "editormd-image-file", required = true) MultipartFile file, HttpServletRequest request){
         // 使用自定义的上传路径

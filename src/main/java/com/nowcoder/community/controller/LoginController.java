@@ -32,7 +32,7 @@ public class LoginController {
 
     @RequestMapping(path = "/register",method = RequestMethod.GET)
     public String getRegisterPage(){
-        return "/register";
+        return "register";
     }
     @RequestMapping(path = "/login", method = RequestMethod.POST)/*。。。。。remreber me。。用户验证码放session里 response创建cookie*/
     public String login(String username, String password, String code, boolean rememberme,
@@ -41,7 +41,7 @@ public class LoginController {
         String kaptcha = (String) session.getAttribute("kaptcha");
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
             model.addAttribute("regMsg", "验证码不正确!");
-            return "/login";
+            return "login";
         }
         // 检查账号,密码                      两个常量，勾选了记住我，记住时间很长，否则相对短
         //7天或者3小时
@@ -61,12 +61,12 @@ public class LoginController {
                 model.addAttribute("regMsg", map.get("passwordMsg"));
             }
 
-            return "/login";
+            return "login";
         }
     }
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     public String getLoginPage(){
-        return "/login";
+        return "login";
     }
 
     @RequestMapping(path = "/register",method=RequestMethod.POST)
@@ -74,7 +74,7 @@ public class LoginController {
         Map<String,Object>map = loginService.register(user,code);
         if(map == null || map.isEmpty()){
             model.addAttribute("regMsg","注册成功，请登录");
-            return "/login";
+            return "login";
         }else {
             /*model.addAttribute("usernameMsy",map.get("usernameMsy"));
             model.addAttribute("passwordMsg",map.get("passwordMsg"));
@@ -82,7 +82,7 @@ public class LoginController {
             model.addAttribute("regMsg",map.get("regMsg"));
             model.addAttribute("code",code);
             model.addAttribute("user",user);
-            return "/register";
+            return "register";
         }
     }
 

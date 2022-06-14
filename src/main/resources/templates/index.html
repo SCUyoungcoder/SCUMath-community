@@ -20,8 +20,8 @@
             <p style="margin-top: 2rem;">
 
             </p>
-            <p><a th:if="${loginUser != null && loginUser.getType()==0}" class="btn btn-primary btn-lg" target="_blank" href="http://localhost:8080/user/file/1620616217261_4ab39fc1001b421a99a287390fdda49b.docx" role="button">使用手册</a></p>
-            <p><a th:if="${loginUser != null && loginUser.getType()==1}" class="btn btn-primary btn-lg" target="_blank" href="http://localhost:8080/user/file/1620616217261_4ab39fc1001b421a99a287390fdda49b.docx" role="button">管理员手册</a></p>
+            <p><a th:if="${loginUser != null && loginUser.getType()==0}" class="btn btn-primary btn-lg" href="http://106.14.118.188:8080/user/file/1620616217261_4ab39fc1001b421a99a287390fdda49b.docx" role="button">使用手册</a></p>
+            <p><a th:if="${loginUser != null && loginUser.getType()==1}" class="btn btn-primary btn-lg" href="http://106.14.118.188:8080/user/file/1620616217261_4ab39fc1001b421a99a287390fdda49b.docx" role="button">管理员手册</a></p>
             <span th:text="${deletePicMsg}" style="font-size:30px;color: green"></span>
         </div>
     </div>
